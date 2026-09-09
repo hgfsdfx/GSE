@@ -15,4 +15,10 @@
 *.db
 *.vcxproj.user
 *.exe.recipe
+*.save
+*.save.tmp
+/x64/Debug/Shaders/
+/x64/Release/Shaders/
+/Debug/Shaders/
+/Release/Shaders/
 
