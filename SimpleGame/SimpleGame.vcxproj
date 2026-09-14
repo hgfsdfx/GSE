@@ -161,21 +161,29 @@
   <ItemGroup>
     <Text Include="..\프로토타입_실행안내.txt" />
     <Text Include="..\후처리_구현안내.txt" />
+    <Text Include="..\레벨1_실행안내.txt" />
+    <Text Include="..\렌더링_캐시_구조.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="MeshCache.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="World.h" />
+    <ClInclude Include="LevelOne.h" />
     <ClInclude Include="Prototype.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="MeshCache.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="World.cpp" />
+    <ClCompile Include="LevelOne.cpp" />
+    <ClCompile Include="LevelOneSave.cpp" />
+    <ClCompile Include="PrototypeLevel.cpp" />
     <ClCompile Include="Prototype.cpp" />
     <ClCompile Include="SimpleGame.cpp" />
     <ClCompile Include="stdafx.cpp">

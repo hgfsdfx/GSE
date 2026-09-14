@@ -1,30 +1,45 @@
 #pragma once
 #include "Renderer.h"
 #include "World.h"
+#include "LevelOne.h"
 #include <array>
 
-class Prototype {
-public:
+class Prototype
+{
+  public:
+
     Prototype(Renderer& renderer, const std::filesystem::path& savePath);
     void Update(float dt);
     void Draw();
     void Key(unsigned char key, bool down);
     void ReleaseKeys();
     bool Save();
-private:
+
+  private:
+
     Point Project(double x, double y, float height = 0) const;
     void Ground(const Chunk& chunk);
+    void GroundMesh(const Chunk& chunk);
     void DrawBuilding(const Building& building, const ChunkKey& key);
+    void DrawBuildingMesh(const Building& building, bool powered, bool open, bool dataTaken);
     void DrawDevice(const Device& device);
     void DrawPlayer();
     void Hud();
+    void DrawLevelGround();
+    void DrawLevelEnemy(const LevelEnemy& enemy);
+    void DrawLevelLoot(const LevelLoot& item);
+    void DrawLevelProjectile(const LevelProjectile& shot);
+    void DrawCombatNumbers();
+    void DrawLevelHud();
+    void WorldRing(WorldPoint center, float radius, Color color, float width = 1);
     void Hack(const Device& target);
     void Notify(const std::string& message);
     int StreamRadius() const;
     Renderer& r_;
     World world_;
+    LevelOne level_;
     std::filesystem::path savePath_;
-    WorldPoint player_{82, 245}, camera_{82,245};
+    WorldPoint player_{82, 245}, camera_{82, 245};
     std::array<bool, 256> keys_{};
     Device target_, hacking_;
     float time_ = 0, zoom_ = 1, hackProgress_ = 0, trace_ = 0, lockdown_ = 0;

@@ -7,9 +7,13 @@ uniform bool u_Extract;
 uniform float u_Threshold;
 uniform float u_Knee;
 
-vec3 Filter(vec2 uv) {
+vec3 Filter(vec2 uv)
+{
     vec3 color = max(texture(u_Source, uv).rgb, vec3(0.0));
-    if (!u_Extract) return color;
+    if (!u_Extract)
+    {
+        return color;
+    }
     // Channel maximum preserves saturated cyan/magenta neon highlights.
     float brightness = max(color.r, max(color.g, color.b));
     float knee = max(u_Knee, 0.0001);
@@ -18,7 +22,9 @@ vec3 Filter(vec2 uv) {
     float contribution = max(brightness - u_Threshold, soft) / max(brightness, 0.0001);
     return color * contribution;
 }
-void main() {
+
+void main()
+{
     // Prefilter each tap before averaging, retaining narrow emissive lines.
     vec2 offset = u_Texel * 0.5;
     vec3 color = Filter(v_UV + vec2(-offset.x, -offset.y));

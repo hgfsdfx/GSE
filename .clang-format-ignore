@@ -1,0 +1,5 @@
+# Third-party dependency headers keep their upstream formatting.
+SimpleGame/Dependencies/**
+SimpleGame/x64/**
+SimpleGame/Debug/**
+SimpleGame/Release/**

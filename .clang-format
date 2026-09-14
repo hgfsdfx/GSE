@@ -1,0 +1,45 @@
+---
+Language: Cpp
+BasedOnStyle: Microsoft
+Standard: c++17
+UseTab: Never
+IndentWidth: 4
+ContinuationIndentWidth: 4
+ColumnLimit: 100
+
+# Allman braces and expanded control flow, including single-statement bodies.
+BreakBeforeBraces: Allman
+InsertBraces: true
+AllowShortFunctionsOnASingleLine: None
+AllowShortBlocksOnASingleLine: Never
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortLambdasOnASingleLine: None
+AllowShortEnumsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortCaseExpressionOnASingleLine: false
+
+# Space between definitions; keep wrapped arguments and initializers readable.
+SeparateDefinitionBlocks: Always
+EmptyLineBeforeAccessModifier: Always
+EmptyLineAfterAccessModifier: Always
+MaxEmptyLinesToKeep: 2
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+PackConstructorInitializers: Never
+BreakConstructorInitializers: BeforeColon
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+IndentCaseLabels: true
+NamespaceIndentation: All
+
+# Preserve precompiled-header order and comment contents.
+SortIncludes: Never
+IncludeBlocks: Preserve
+ReflowComments: false
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReferenceAlignment: Left
+LineEnding: CRLF

@@ -2,7 +2,8 @@
 #include <filesystem>
 #include "Dependencies/glew.h"
 
-struct PostProcessingSettings {
+struct PostProcessingSettings
+{
     bool enabled = true;
     bool bloom = true;
     bool vignette = true;
@@ -17,13 +18,15 @@ struct PostProcessingSettings {
     float edgeBlurStrength = .80f;
     float edgeBlurStart = .48f;
     float edgeBlurEnd = 1.16f;
-    float bloomRadius = 1.6f;       // In half-resolution texels.
-    float edgeBlurRadius = 2.2f;    // In half-resolution texels.
+    float bloomRadius = 1.6f;    // In half-resolution texels.
+    float edgeBlurRadius = 2.2f; // In half-resolution texels.
 };
 
 // Linear RGBA16F scene -> half-resolution filters -> tone-mapped SDR output.
-class PostProcessor {
-public:
+class PostProcessor
+{
+  public:
+
     PostProcessor() = default;
     ~PostProcessor();
     PostProcessor(const PostProcessor&) = delete;
@@ -32,16 +35,37 @@ public:
     void Resize(int width, int height);
     bool BeginScene();
     void Present();
-    bool Available() const { return ready_; }
+
+    bool Available() const
+    {
+        return ready_;
+    }
+
     PostProcessingSettings settings;
-private:
-    struct Target { GLuint framebuffer = 0, texture = 0; };
-    struct DownsampleUniforms { GLint source, texel, extract, threshold, knee; } down_{};
-    struct BlurUniforms { GLint source, direction; } blur_{};
-    struct CompositeUniforms {
+
+  private:
+
+    struct Target
+    {
+        GLuint framebuffer = 0, texture = 0;
+    };
+
+    struct DownsampleUniforms
+    {
+        GLint source, texel, extract, threshold, knee;
+    } down_{};
+
+    struct BlurUniforms
+    {
+        GLint source, direction;
+    } blur_{};
+
+    struct CompositeUniforms
+    {
         GLint scene, bloom, softScene, exposure, bloomStrength;
         GLint vignetteStrength, vignetteRange, edgeStrength, edgeRange;
     } composite_{};
+
     bool MakeTarget(Target& target, int width, int height);
     void ReleaseTargets();
     void Downsample(Target& destination, bool extract);
