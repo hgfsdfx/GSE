@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="소스 파일">
@@ -22,6 +22,7 @@
     <Text Include="..\후처리_구현안내.txt" />
     <Text Include="..\레벨1_실행안내.txt" />
     <Text Include="..\렌더링_캐시_구조.txt" />
+    <None Include="..\Actor_SceneGraph_구조.md" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -30,6 +31,7 @@
     <ClInclude Include="targetver.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="FontGlyphCache.h"><Filter>헤더 파일</Filter></ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -45,6 +47,14 @@
     <ClInclude Include="World.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Actor.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="SceneGraph.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="WorldTypes.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="WorldActors.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="GameplayActors.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="NavigationGrid.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="PlayerStats.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="GameMath.h"><Filter>헤더 파일</Filter></ClInclude>
     <ClInclude Include="LevelOne.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -59,6 +69,7 @@
     <ClCompile Include="SimpleGame.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="FontGlyphCache.cpp"><Filter>소스 파일</Filter></ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -74,6 +85,20 @@
     <ClCompile Include="World.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Actor.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="SceneGraph.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="WorldActors.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="WorldScene.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="PlayerActors.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="EnemyActor.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="ProjectileActor.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="LootActor.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="EffectActors.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="NavigationGrid.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="PlayerStats.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="LevelOneEncounters.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="LevelOneRewards.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="PrototypeScene.cpp"><Filter>소스 파일</Filter></ClCompile>
     <ClCompile Include="LevelOne.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>

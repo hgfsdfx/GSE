@@ -1,66 +1,11 @@
 #pragma once
-#include <cstdint>
+#include "WorldTypes.h"
 #include <filesystem>
 #include <iosfwd>
 #include <map>
 #include <vector>
 
-struct WorldPoint
-{
-    double x = 0, y = 0;
-};
-
-struct ChunkKey
-{
-    int64_t x = 0, y = 0;
-
-    bool operator<(const ChunkKey& other) const
-    {
-        return x != other.x ? x < other.x : y < other.y;
-    }
-
-    bool operator==(const ChunkKey& other) const
-    {
-        return x == other.x && y == other.y;
-    }
-};
-
-struct Building
-{
-    double x, y;
-    float width, depth, height;
-    unsigned style;
-    bool accessRoom;
-};
-
-struct Chunk
-{
-    ChunkKey key;
-    std::vector<Building> buildings;
-};
-
-struct ChunkChanges
-{
-    bool doorOpen = false;
-    bool cameraOff = false;
-    bool eventSolved = false;
-    bool dataTaken = false;
-};
-enum class DeviceType
-{
-    Power,
-    Camera,
-    Door
-};
-
-struct Device
-{
-    ChunkKey key;
-    DeviceType type = DeviceType::Power;
-    WorldPoint position;
-    double distance = 0;
-    bool valid = false;
-};
+class SceneGraph;
 
 class World
 {
@@ -70,6 +15,8 @@ class World
     static constexpr double CoordinateLimit = 1.0e12;
     static constexpr uint64_t Seed = 0x4e494748544c494eULL;
     void ConfigureLevelOne(uint64_t seed);
+    void BindScene(SceneGraph* scene);
+    void RefreshColliders();
     bool WriteChanges(std::ostream& stream) const;
     bool ReadChanges(std::istream& stream);
     ChunkKey KeyAt(WorldPoint point) const;
@@ -105,6 +52,9 @@ class World
   private:
 
     Chunk Generate(ChunkKey key) const;
+    void SpawnChunkActors(Chunk& chunk);
+    SceneGraph* scene_ = nullptr;
+    std::map<ChunkKey, std::vector<uint64_t>> colliders_;
     std::map<ChunkKey, Chunk> chunks_;
     std::map<ChunkKey, ChunkChanges> changes_;
     bool saveWarning_ = false;

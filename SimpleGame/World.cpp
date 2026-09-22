@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "World.h"
+#include "SceneGraph.h"
+#include "WorldActors.h"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -47,7 +49,7 @@ Chunk World::Generate(ChunkKey key) const
                               float(86 + h % 130),
                               unsigned(h % 5),
                               row == 0 && col == 0};
-            if (levelOne_ && !building.accessRoom)
+            if (levelOne_ && !building.hackable)
             {
                 // Random footprints stay inside their plots. Reserved roads and
                 // gaps between plots cannot be occupied by generated buildings.
@@ -74,6 +76,10 @@ void World::Stream(WorldPoint player, int radius)
     {
         if (std::abs(it->first.x - center.x) > radius || std::abs(it->first.y - center.y) > radius)
         {
+            if (scene_)
+            {
+                scene_->Destroy(it->second.actorRoot);
+            }
             it = chunks_.erase(it);
         }
         else
@@ -88,10 +94,15 @@ void World::Stream(WorldPoint player, int radius)
             const ChunkKey key{center.x + x, center.y + y};
             if (chunks_.find(key) == chunks_.end())
             {
-                chunks_.emplace(key, Generate(key));
+                auto inserted = chunks_.emplace(key, Generate(key));
+                if (scene_)
+                {
+                    SpawnChunkActors(inserted.first->second);
+                }
             }
         }
     }
+    RefreshColliders();
 }
 
 const ChunkChanges& World::Changes(const ChunkKey& key) const
@@ -134,6 +145,22 @@ bool World::CanWalk(WorldPoint point) const
     {
         return false;
     }
+    if (scene_)
+    {
+        const auto bucket = colliders_.find(KeyAt(point));
+        if (bucket != colliders_.end())
+        {
+            for (auto id : bucket->second)
+            {
+                const auto building = dynamic_cast<const BuildingActor*>(scene_->Find(id));
+                if (building && scene_->IsActive(id) && building->Contains(point))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     for (const auto& b : it->second.buildings)
     {
         const bool overlapsBuilding = point.x > b.x - 8 && point.x < b.x + b.width + 8
@@ -142,19 +169,8 @@ bool World::CanWalk(WorldPoint point) const
         {
             continue;
         }
-        if (!b.accessRoom || !Changes(it->first).doorOpen)
-        {
-            return false;
-        }
-        // Room walls remain solid; only the south doorway is passable.
-        const bool inside = point.x > b.x + 12 && point.x < b.x + b.width - 12 && point.y > b.y + 12
-                            && point.y < b.y + b.depth - 12;
-        const bool doorway =
-            std::abs(point.x - (b.x + b.width / 2)) < 23 && point.y >= b.y + b.depth - 16;
-        if (!inside && !doorway)
-        {
-            return false;
-        }
+        // Lighting hacks do not alter the building footprint or its collision.
+        return false;
     }
     return true;
 }
@@ -165,10 +181,24 @@ std::vector<Device> World::Devices(const ChunkKey& key) const
     {
         return {};
     }
+    const auto chunk = chunks_.find(key);
+    if (scene_ && chunk != chunks_.end() && chunk->second.actorRoot)
+    {
+        std::vector<Device> result;
+        for (auto id : chunk->second.deviceActors)
+        {
+            const auto actor = dynamic_cast<const DeviceActor*>(scene_->Find(id));
+            if (actor && scene_->IsActive(id))
+            {
+                result.push_back(actor->Description());
+            }
+        }
+        return result;
+    }
     const double x = key.x * ChunkSize, y = key.y * ChunkSize;
     return {{key, DeviceType::Power, {x + 116, y + 118}},
             {key, DeviceType::Camera, {x + 346, y + 153}},
-            {key, DeviceType::Door, {x + 235, y + 324}}};
+            {key, DeviceType::Building, {x + 235, y + 324}}};
 }
 
 Device World::NearestDevice(WorldPoint point) const
@@ -214,12 +244,12 @@ bool World::Save(const std::filesystem::path& path, WorldPoint player) const
     {
         return false;
     }
-    file << "GSE_NIGHT_CITY 1 " << Seed << '\n'
+    file << "GSE_NIGHT_CITY 2 " << Seed << '\n'
          << std::setprecision(17) << player.x << ' ' << player.y << '\n'
          << changes_.size() << '\n';
     for (const auto& entry : changes_)
     {
-        file << entry.first.x << ' ' << entry.first.y << ' ' << entry.second.doorOpen << ' '
+        file << entry.first.x << ' ' << entry.first.y << ' ' << entry.second.lightsOff << ' '
              << entry.second.cameraOff << ' ' << entry.second.eventSolved << ' '
              << entry.second.dataTaken << '\n';
     }
@@ -255,8 +285,8 @@ bool World::Load(const std::filesystem::path& path, WorldPoint& player)
     size_t count = 0;
     WorldPoint loaded;
     if (!(file >> header >> version >> seed >> loaded.x >> loaded.y >> count)
-        || header != "GSE_NIGHT_CITY" || version != 1 || seed != Seed || count > 1000000
-        || !std::isfinite(loaded.x) || !std::isfinite(loaded.y)
+        || header != "GSE_NIGHT_CITY" || (version != 1 && version != 2) || seed != Seed
+        || count > 1000000 || !std::isfinite(loaded.x) || !std::isfinite(loaded.y)
         || std::abs(loaded.x) > CoordinateLimit || std::abs(loaded.y) > CoordinateLimit)
     {
         return false;
@@ -265,15 +295,15 @@ bool World::Load(const std::filesystem::path& path, WorldPoint& player)
     for (size_t i = 0; i < count; ++i)
     {
         ChunkKey key;
-        int door, camera, event, data;
-        if (!(file >> key.x >> key.y >> door >> camera >> event >> data) || key.x < -1562500000LL
-            || key.x > 1562500000LL || key.y < -1562500000LL || key.y > 1562500000LL || door < 0
-            || door > 1 || camera < 0 || camera > 1 || event < 0 || event > 1 || data < 0
+        int lights, camera, event, data;
+        if (!(file >> key.x >> key.y >> lights >> camera >> event >> data) || key.x < -1562500000LL
+            || key.x > 1562500000LL || key.y < -1562500000LL || key.y > 1562500000LL || lights < 0
+            || lights > 1 || camera < 0 || camera > 1 || event < 0 || event > 1 || data < 0
             || data > 1 || parsed.count(key))
         {
             return false;
         }
-        parsed[key] = {door != 0, camera != 0, event != 0, data != 0};
+        parsed[key] = {lights != 0, camera != 0, event != 0, data != 0};
     }
     file >> std::ws;
     if (!file.eof())
@@ -288,6 +318,14 @@ bool World::Load(const std::filesystem::path& path, WorldPoint& player)
 
 void World::ConfigureLevelOne(uint64_t seed)
 {
+    if (scene_)
+    {
+        for (const auto& entry : chunks_)
+        {
+            scene_->Destroy(entry.second.actorRoot);
+        }
+    }
+    colliders_.clear();
     generationSeed_ = seed;
     levelOne_ = true;
     chunks_.clear();
@@ -303,7 +341,7 @@ bool World::WriteChanges(std::ostream& stream) const
     stream << changes_.size() << '\n';
     for (const auto& entry : changes_)
     {
-        stream << entry.first.x << ' ' << entry.first.y << ' ' << entry.second.doorOpen << ' '
+        stream << entry.first.x << ' ' << entry.first.y << ' ' << entry.second.lightsOff << ' '
                << entry.second.cameraOff << ' ' << entry.second.eventSolved << ' '
                << entry.second.dataTaken << '\n';
     }
@@ -321,15 +359,15 @@ bool World::ReadChanges(std::istream& stream)
     for (size_t i = 0; i < count; ++i)
     {
         ChunkKey key;
-        int door = 0, camera = 0, event = 0, data = 0;
-        if (!(stream >> key.x >> key.y >> door >> camera >> event >> data) || key.x < -1562500000LL
-            || key.x > 1562500000LL || key.y < -1562500000LL || key.y > 1562500000LL || door < 0
-            || door > 1 || camera < 0 || camera > 1 || event < 0 || event > 1 || data < 0
-            || data > 1 || parsed.count(key))
+        int lights = 0, camera = 0, event = 0, data = 0;
+        if (!(stream >> key.x >> key.y >> lights >> camera >> event >> data)
+            || key.x < -1562500000LL || key.x > 1562500000LL || key.y < -1562500000LL
+            || key.y > 1562500000LL || lights < 0 || lights > 1 || camera < 0 || camera > 1
+            || event < 0 || event > 1 || data < 0 || data > 1 || parsed.count(key))
         {
             return false;
         }
-        parsed[key] = {door != 0, camera != 0, event != 0, data != 0};
+        parsed[key] = {lights != 0, camera != 0, event != 0, data != 0};
     }
     changes_ = std::move(parsed);
     return true;

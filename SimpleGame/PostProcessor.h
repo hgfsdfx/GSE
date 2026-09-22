@@ -1,5 +1,6 @@
 #pragma once
 #include <filesystem>
+#include <cstdint>
 #include "Dependencies/glew.h"
 
 struct PostProcessingSettings
@@ -35,6 +36,11 @@ class PostProcessor
     void Resize(int width, int height);
     bool BeginScene();
     void Present();
+
+    std::uint64_t DrawCalls() const
+    {
+        return drawCalls_;
+    }
 
     bool Available() const
     {
@@ -76,4 +82,5 @@ class PostProcessor
     GLuint downsampleProgram_ = 0, blurProgram_ = 0, compositeProgram_ = 0, vao_ = 0;
     int width_ = 1, height_ = 1, halfWidth_ = 1, halfHeight_ = 1;
     bool ready_ = false;
+    std::uint64_t drawCalls_ = 0;
 };

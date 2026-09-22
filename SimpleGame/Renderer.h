@@ -1,11 +1,12 @@
 #pragma once
 #include <string>
-#include <array>
 #include <map>
 #include <vector>
+#include <cstdint>
 #include "Dependencies/glew.h"
 #include "PostProcessor.h"
 #include "MeshCache.h"
+#include "FontGlyphCache.h"
 
 struct Point
 {
@@ -78,6 +79,13 @@ class Renderer
     // Composite the world, then accept crisp display-space HUD geometry.
     void BeginOverlay();
     void End();
+
+    // Actual draw submissions in this frame, including post-processing and HUD.
+    std::uint64_t DrawCalls() const
+    {
+        return drawCalls_ + postProcessor_.DrawCalls();
+    }
+
     // On a cache hit, enqueue the mesh and return false. On a miss, submit local
     // coordinates until EndCachedMesh(). Origin/scale apply at draw time only.
     // Do not nest recordings; the key must identify geometry AND color state.
@@ -101,6 +109,7 @@ class Renderer
     void Circle(Point center, float radius, Color color, int segments = 24);
     void Ring(Point center, float radius, float width, Color color);
     void Text(float x, float y, const std::string& text, Color color, float scale = 2);
+    float TextWidth(const std::string& text, float scale = 2);
 
     int Width() const
     {
@@ -117,7 +126,6 @@ class Renderer
     void Flush();
     void SealDynamicBatch();
     const std::vector<Point>& CirclePoints(int segments);
-    const std::vector<Point>& GlyphMesh(unsigned char ch);
     using Vertex = MeshVertex;
 
     struct DrawCommand
@@ -133,6 +141,7 @@ class Renderer
     GLuint program_ = 0, vao_ = 0, vbo_ = 0;
     GLint viewport_ = -1, linearScene_ = -1, transform_ = -1;
     bool capturing_ = false, overlay_ = false;
+    std::uint64_t drawCalls_ = 0;
     PostProcessor postProcessor_;
     MeshCache meshes_;
     std::vector<Vertex> vertices_;
@@ -144,6 +153,5 @@ class Renderer
     float recordingScale_ = 1;
     std::vector<Vertex> recordedVertices_;
     std::map<int, std::vector<Point>> circles_;
-    std::array<std::vector<Point>, 128> glyphs_;
-    std::array<bool, 128> glyphReady_{};
+    FontGlyphCache font_;
 };

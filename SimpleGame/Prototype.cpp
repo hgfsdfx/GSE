@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Prototype.h"
 #include <algorithm>
 #include <cmath>
@@ -22,11 +22,6 @@ namespace
         return a.valid && b.valid && a.key == b.key && a.type == b.type;
     }
 
-    std::string Number(int64_t n)
-    {
-        return std::to_string(n);
-    }
-
     std::string Decimal(float n)
     {
         std::ostringstream out;
@@ -40,12 +35,12 @@ namespace
         return {float((x - y) * .82), float((x + y) * .43 - height)};
     }
 
-    std::string BuildingMeshKey(const Building& b, bool powered, bool open, bool dataTaken)
+    std::string BuildingMeshKey(const Building& b, bool illuminated)
     {
         // Identical buildings can share a mesh even in different world chunks.
         std::ostringstream out;
         out << "building:" << std::hexfloat << b.width << ':' << b.depth << ':' << b.height << ':'
-            << b.style << ':' << powered << ':' << open << ':' << (open && dataTaken);
+            << b.style << ':' << illuminated;
         return out.str();
     }
 } // namespace
@@ -54,21 +49,23 @@ Prototype::Prototype(Renderer& renderer, const std::filesystem::path& savePath)
     : r_(renderer),
       savePath_(savePath.parent_path() / L"level_one.save")
 {
-    level_.Start(world_, player_);
-    level_.Load(savePath_, world_, player_);
+    BindActorRenderers();
+    level_.Start(world_);
+    level_.Load(savePath_, world_);
     saveAllowed_ = !level_.SaveBlocked();
     if (!saveAllowed_)
     {
-        Notify("SAVE UNREADABLE - ORIGINAL FILE PRESERVED");
+        Notify("저장 파일 읽기 실패 / 원본 보존됨");
     }
-    world_.Stream(player_, StreamRadius());
-    if (!world_.CanWalk(player_))
+    world_.Stream(level_.Player().WorldPosition(), StreamRadius());
+    if (!world_.CanWalk(level_.Player().WorldPosition()))
     {
-        const auto key = world_.KeyAt(player_);
-        player_ = {key.x * World::ChunkSize + 50, key.y * World::ChunkSize + 50};
+        const auto key = world_.KeyAt(level_.Player().WorldPosition());
+        level_.Player().SetWorldPosition(
+            {key.x * World::ChunkSize + 50, key.y * World::ChunkSize + 50});
     }
-    camera_ = player_;
-    target_ = world_.NearestDevice(player_);
+    camera_ = level_.Player().WorldPosition();
+    target_ = world_.NearestDevice(level_.Player().WorldPosition());
     const std::string message = level_.TakeMessage();
     if (!message.empty())
     {
@@ -93,13 +90,13 @@ bool Prototype::Save()
 {
     if (!saveAllowed_)
     {
-        Notify("SAVE DISABLED - MOVE THE UNREADABLE SAVE FIRST");
+        Notify("저장 불가 / 손상된 저장 파일을 먼저 옮겨 주세요");
         return false;
     }
-    if (!level_.Save(savePath_, world_, player_))
+    if (!level_.Save(savePath_, world_))
     {
-        Notify("SAVE FAILED - CHECK FOLDER WRITE ACCESS");
-        std::cerr << "Could not save progress: " << savePath_ << '\n';
+        Notify("저장 실패 / 폴더 쓰기 권한을 확인해 주세요");
+        std::cerr << "진행 상황 저장 실패: " << savePath_.u8string() << '\n';
         return false;
     }
     return true;
@@ -127,9 +124,10 @@ void Prototype::Key(unsigned char key, bool down)
     {
         // Retrying is explicit. An unreadable existing save remains protected.
         const bool canSave = saveAllowed_;
-        level_.Start(world_, player_);
+        BindActorRenderers();
+        level_.Start(world_);
         saveAllowed_ = canSave;
-        camera_ = player_;
+        camera_ = level_.Player().WorldPosition();
         paused_ = false;
         trace_ = 0;
         lockdown_ = 0;
@@ -161,51 +159,51 @@ void Prototype::Key(unsigned char key, bool down)
     }
     if (key == 'k' && Save())
     {
-        Notify("PROGRESS SAVED");
+        Notify("진행 상황을 저장했습니다");
     }
     auto& effects = r_.PostEffects();
     if (key == 'o')
     {
         effects.enabled = !effects.enabled;
-        Notify(effects.enabled ? "POST EFFECTS ENABLED" : "POST EFFECTS DISABLED / ORIGINAL VIEW");
+        Notify(effects.enabled ? "후처리 켜짐" : "후처리 꺼짐");
     }
     if (key == 'b')
     {
         effects.bloom = !effects.bloom;
-        Notify(effects.bloom ? "BLOOM ENABLED" : "BLOOM DISABLED");
+        Notify(effects.bloom ? "블룸 켜짐" : "블룸 꺼짐");
     }
     if (key == 'v')
     {
         effects.vignette = !effects.vignette;
-        Notify(effects.vignette ? "VIGNETTE ENABLED" : "VIGNETTE DISABLED");
+        Notify(effects.vignette ? "비네트 켜짐" : "비네트 꺼짐");
     }
     if (key == 'f')
     {
         effects.edgeBlur = !effects.edgeBlur;
-        Notify(effects.edgeBlur ? "EDGE BLUR ENABLED" : "EDGE BLUR DISABLED");
+        Notify(effects.edgeBlur ? "가장자리 흐림 켜짐" : "가장자리 흐림 꺼짐");
     }
     if (key == '[' || key == ']')
     {
         effects.exposure = std::clamp(effects.exposure + (key == ']' ? .1f : -.1f), .25f, 4.f);
-        Notify("EXPOSURE / " + Decimal(effects.exposure));
+        Notify("노출 / " + Decimal(effects.exposure));
     }
     if (key == ',' || key == '.')
     {
         effects.bloomStrength =
             std::clamp(effects.bloomStrength + (key == '.' ? .05f : -.05f), 0.f, 2.f);
-        Notify("BLOOM STRENGTH / " + Decimal(effects.bloomStrength));
+        Notify("블룸 강도 / " + Decimal(effects.bloomStrength));
     }
     if (key == '1' || key == '2')
     {
         effects.vignetteStrength =
             std::clamp(effects.vignetteStrength + (key == '2' ? .05f : -.05f), 0.f, .95f);
-        Notify("VIGNETTE STRENGTH / " + Decimal(effects.vignetteStrength));
+        Notify("비네트 강도 / " + Decimal(effects.vignetteStrength));
     }
     if (key == '3' || key == '4')
     {
         effects.edgeBlurStrength =
             std::clamp(effects.edgeBlurStrength + (key == '4' ? .05f : -.05f), 0.f, 1.f);
-        Notify("EDGE BLUR STRENGTH / " + Decimal(effects.edgeBlurStrength));
+        Notify("가장자리 흐림 강도 / " + Decimal(effects.edgeBlurStrength));
     }
 }
 
@@ -225,39 +223,19 @@ void Prototype::Update(float dt)
     }
     saveTime_ += dt;
     lockdown_ = std::max(0.f, lockdown_ - dt);
-    float sx = float(keys_['d']) - float(keys_['a']), sy = float(keys_['s']) - float(keys_['w']);
-    float length = std::sqrt(sx * sx + sy * sy);
-    moving_ = length > 0;
-    if (moving_)
-    {
-        sx /= length;
-        sy /= length;
-        const double speed = level_.MovementSpeed() * (keys_[' '] ? 1.53 : 1.0);
-        // WASD follows screen axes; small substeps prevent tunnelling through walls.
-        const double dx = (sx + sy) * .70710678 * speed * dt,
-                     dy = (sy - sx) * .70710678 * speed * dt;
-        const int steps =
-            std::max(1, static_cast<int>(std::ceil(std::max(std::abs(dx), std::abs(dy)) / 4)));
-        for (int i = 0; i < steps; ++i)
-        {
-            WorldPoint next{player_.x + dx / steps, player_.y};
-            if (world_.CanWalk(next))
-            {
-                player_ = next;
-            }
-            next = {player_.x, player_.y + dy / steps};
-            if (world_.CanWalk(next))
-            {
-                player_ = next;
-            }
-        }
-    }
-    world_.Stream(player_, StreamRadius());
+    const float sx = float(keys_['d']) - float(keys_['a']);
+    const float sy = float(keys_['s']) - float(keys_['w']);
+    moving_ = sx != 0 || sy != 0;
+    level_.Player().input = {sx, sy};
+    level_.Player().running = keys_[' '];
+    const bool wasCleared = level_.Cleared();
+    level_.Update(dt, world_, StreamRadius());
     const double follow = 1 - std::exp(-dt * 8);
-    camera_.x += (player_.x - camera_.x) * follow;
-    camera_.y += (player_.y - camera_.y) * follow;
-    target_ = world_.NearestDevice(player_);
-    const bool wantsHack = keys_['e'] && target_.valid && !moving_ && lockdown_ <= 0;
+    camera_.x += (level_.Player().WorldPosition().x - camera_.x) * follow;
+    camera_.y += (level_.Player().WorldPosition().y - camera_.y) * follow;
+    target_ = world_.NearestDevice(level_.Player().WorldPosition());
+    const bool wantsHack =
+        !level_.Dead() && keys_['e'] && target_.valid && !moving_ && lockdown_ <= 0;
     if (wantsHack)
     {
         if (!SameDevice(target_, hacking_))
@@ -279,12 +257,14 @@ void Prototype::Update(float dt)
         hacking_.valid = false;
     }
     bool watched = false;
-    const auto key = world_.KeyAt(player_);
+    const auto key = world_.KeyAt(level_.Player().WorldPosition());
     for (const auto& device : world_.Devices(key))
     {
         if (device.type == DeviceType::Camera && world_.Powered(key)
             && !world_.Changes(key).cameraOff
-            && std::hypot(player_.x - device.position.x, player_.y - device.position.y) < 155)
+            && std::hypot(level_.Player().WorldPosition().x - device.position.x,
+                          level_.Player().WorldPosition().y - device.position.y)
+                   < 155)
         {
             watched = true;
         }
@@ -302,19 +282,9 @@ void Prototype::Update(float dt)
         lockdown_ = 8;
         trace_ = 65;
         hackProgress_ = 0;
-        Notify("CONNECTION LOCKED - WAIT 8 SECONDS");
+        Notify("접속 차단 / 8초 후 다시 시도");
     }
-    const auto& changes = world_.Changes(key);
-    const double roomX = key.x * World::ChunkSize + 235, roomY = key.y * World::ChunkSize + 210;
-    if (changes.doorOpen && !changes.dataTaken
-        && std::hypot(player_.x - roomX, player_.y - roomY) < 24)
-    {
-        world_.Change(key).dataTaken = true;
-        Notify("ARCHIVE RECOVERED / +75 CR");
-        Save();
-    }
-    const bool wasCleared = level_.Cleared();
-    level_.Update(dt, world_, player_);
+
     const std::string message = level_.TakeMessage();
     if (!message.empty())
     {
@@ -333,68 +303,43 @@ void Prototype::Hack(const Device& target)
     {
         if (world_.Powered(target.key))
         {
-            Notify("RELAY ONLINE - NO REPAIR REQUIRED");
+            Notify("중계기 정상 / 복구할 필요가 없습니다");
             return;
         }
         world_.Change(target.key).eventSolved = true;
-        Notify("POWER RESTORED / +150 CR / FASTER UPLINK UNLOCKED");
+        Notify("전력 복구 / 150 크레딧 획득 / 해킹 속도 증가");
     }
     else if (target.type == DeviceType::Camera)
     {
         if (!world_.Powered(target.key))
         {
-            Notify("CAMERA HAS NO POWER - RESTORE THE RELAY FIRST");
+            Notify("카메라 전력 없음 / 중계기를 먼저 복구하세요");
             return;
         }
         auto& change = world_.Change(target.key);
         change.cameraOff = !change.cameraOff;
-        Notify(change.cameraOff ? "CAMERA LOOP ACTIVE - LOCAL TRACE SUPPRESSED"
-                                : "CAMERA SURVEILLANCE RESTORED");
+        Notify(change.cameraOff ? "카메라 영상 반복 / 지역 추적 억제" : "카메라 감시 복원");
         trace_ = std::min(100.f, trace_ + 14);
     }
     else
     {
         if (!world_.Powered(target.key))
         {
-            Notify("DOOR OFFLINE - RESTORE THE RELAY FIRST");
+            Notify("건물 전력 없음 / 중계기를 먼저 복구하세요");
             return;
         }
         auto& change = world_.Change(target.key);
-        const double x = target.key.x * World::ChunkSize + 145,
-                     y = target.key.y * World::ChunkSize + 145;
-        if (change.doorOpen && player_.x > x - 8 && player_.x < x + 188 && player_.y > y - 8
-            && player_.y < y + 178)
+        change.lightsOff = !change.lightsOff;
+        if (change.lightsOff && !change.dataTaken)
         {
-            Notify("STEP OUT OF THE ROOM BEFORE LOCKING THE DOOR");
-            return;
+            // Recover the archive through the exterior terminal, without entering geometry.
+            change.dataTaken = true;
+            Notify("건물 소등 / 자료 다운로드 / 75 크레딧 획득");
         }
-        if (change.doorOpen)
+        else
         {
-            auto blocksDoor = [&](WorldPoint position)
-            {
-                return position.x > x - 8 && position.x < x + 188 && position.y > y - 8
-                       && position.y < y + 178;
-            };
-            for (const auto& enemy : level_.Enemies())
-            {
-                if (blocksDoor(enemy.position))
-                {
-                    Notify("CLEAR HOSTILES FROM THE ROOM BEFORE LOCKING");
-                    return;
-                }
-            }
-            for (const auto& item : level_.Loot())
-            {
-                if (blocksDoor(item.position))
-                {
-                    Notify("COLLECT ROOM LOOT BEFORE LOCKING THE DOOR");
-                    return;
-                }
-            }
+            Notify(change.lightsOff ? "건물 조명 꺼짐" : "건물 조명 켜짐");
         }
-        change.doorOpen = !change.doorOpen;
-        Notify(change.doorOpen ? "ACCESS GRANTED - ENTER AND RECOVER THE ARCHIVE"
-                               : "ACCESS DOOR LOCKED");
         trace_ = std::min(100.f, trace_ + 22);
     }
     Save();
@@ -408,29 +353,39 @@ Point Prototype::Project(double x, double y, float height) const
             r_.Height() * .56f + float((dx + dy) * .43 - height) * zoom_};
 }
 
-void Prototype::Ground(const Chunk& chunk)
+void Prototype::Ground(const GroundActor& actor)
 {
-    const double x = chunk.key.x * World::ChunkSize, y = chunk.key.y * World::ChunkSize;
-    const std::string meshKey = "ground:" + std::to_string(level_.Seed()) + ":"
-                                + Number(chunk.key.x) + ":" + Number(chunk.key.y);
-    if (r_.BeginCachedMesh(meshKey, Project(x, y), zoom_))
+    const auto found = world_.Chunks().find(actor.key);
+    if (found == world_.Chunks().end())
+    {
+        return;
+    }
+    Chunk chunk;
+    chunk.key = actor.key;
+    const auto origin = actor.WorldPosition();
+    std::ostringstream signature;
+    signature << "ground:" << level_.Seed() << ':' << chunk.key.x << ':' << chunk.key.y
+              << std::hexfloat;
+    for (auto id : level_.Scene().Children(actor.Parent()))
+    {
+        const auto building = dynamic_cast<const BuildingActor*>(level_.Scene().Find(id));
+        if (!building || !level_.Scene().IsActive(id) || !level_.Scene().IsVisible(id))
+        {
+            continue;
+        }
+        auto geometry = building->Geometry();
+        geometry.x += chunk.key.x * World::ChunkSize - origin.x;
+        geometry.y += chunk.key.y * World::ChunkSize - origin.y;
+        signature << ':' << geometry.x << ':' << geometry.y << ':' << geometry.width << ':'
+                  << geometry.depth;
+        chunk.buildings.push_back(geometry);
+    }
+    const std::string meshKey = signature.str();
+    if (r_.BeginCachedMesh(meshKey, Project(origin.x, origin.y), zoom_))
     {
         GroundMesh(chunk);
         r_.EndCachedMesh();
     }
-    auto quad = [&](double a, double b, double w, double d, Color c)
-    {
-        r_.Quad(Project(a, b), Project(a + w, b), Project(a + w, b + d), Project(a, b + d), c);
-    };
-    // Decorative road traffic; it does not implement NPC navigation or collisions.
-    const uint64_t hash = World::Hash(static_cast<uint64_t>(chunk.key.x)
-                                      ^ World::Hash(static_cast<uint64_t>(chunk.key.y)));
-    const double carY = y + std::fmod(time_ * 65 + double(hash % 600), 620.0);
-    quad(x + 18, carY, 24, 39, Color(.17f, .25f, .33f));
-    quad(x + 20, carY + 7, 20, 12, Color(.27f, .49f, .58f));
-    // Draw the light surface only; the post-process bloom creates its spread.
-    r_.Line(Project(x + 18, carY + 39), Project(x + 42, carY + 39), 2, White.Emissive(4));
-    r_.Line(Project(x + 18, carY), Project(x + 42, carY), 2, Pink.Emissive(3));
     if (scan_)
     {
         const auto devices = world_.Devices(chunk.key);
@@ -503,14 +458,14 @@ void Prototype::DrawBuilding(const Building& b, const ChunkKey& key)
         return;
     }
     const auto& changes = world_.Changes(key);
-    const bool power = world_.Powered(key), open = b.accessRoom && changes.doorOpen;
-    const std::string meshKey = BuildingMeshKey(b, power, open, changes.dataTaken);
+    const bool power = world_.Powered(key) && !(b.hackable && changes.lightsOff);
+    const std::string meshKey = BuildingMeshKey(b, power);
     if (r_.BeginCachedMesh(meshKey, a, zoom_))
     {
-        DrawBuildingMesh(b, power, open, changes.dataTaken);
+        DrawBuildingMesh(b, power);
         r_.EndCachedMesh();
     }
-    if (!open)
+    if (power)
     {
         // Time-dependent lights remain dynamic; the antenna itself is cached.
         const Point antenna = Project(b.x + std::min(130.f, b.width - 16), b.y + 45, b.height);
@@ -520,7 +475,7 @@ void Prototype::DrawBuilding(const Building& b, const ChunkKey& key)
     }
 }
 
-void Prototype::DrawBuildingMesh(const Building& b, bool power, bool open, bool dataTaken)
+void Prototype::DrawBuildingMesh(const Building& b, bool power)
 {
     auto project = [&](double x, double y, float height = 0)
     {
@@ -529,7 +484,7 @@ void Prototype::DrawBuildingMesh(const Building& b, bool power, bool open, bool 
     const Point a = project(b.x, b.y), c = project(b.x + b.width, b.y + b.depth);
     const Point d = project(b.x, b.y + b.depth), e = project(b.x + b.width, b.y);
     const Color accent = power ? Accent(b.style).Emissive(3) : Color(.15f, .22f, .26f);
-    const float h = open ? 18 : b.height;
+    const float h = b.height;
     const Point up(0, -h), ar = a + up, cr = c + up, dr = d + up, er = e + up;
     r_.Quad(d, c, cr, dr, Color(.075f, .105f, .165f));
     r_.Quad(e, c, cr, er, Color(.045f, .065f, .12f));
@@ -538,32 +493,6 @@ void Prototype::DrawBuildingMesh(const Building& b, bool power, bool open, bool 
     r_.Line(ar, dr, 1, Color(.26f, .32f, .4f));
     r_.Line(dr, cr, 2, accent.Alpha(.7f));
     r_.Line(er, cr, 2, accent.Alpha(.6f));
-    if (open)
-    {
-        r_.Quad(project(b.x + 9, b.y + 9, 19),
-                project(b.x + b.width - 9, b.y + 9, 19),
-                project(b.x + b.width - 9, b.y + b.depth - 9, 19),
-                project(b.x + 9, b.y + b.depth - 9, 19),
-                Color(.035f, .095f, .12f));
-        for (int i = 25; i < 170; i += 25)
-        {
-            r_.Line(project(b.x + i, b.y + 12, 20),
-                    project(b.x + i, b.y + b.depth - 12, 20),
-                    1,
-                    Cyan.Alpha(.14f));
-        }
-        const Point archive = project(b.x + 90, b.y + 65, 25);
-        if (!dataTaken)
-        {
-            r_.Quad(archive + Point(0, -10),
-                    archive + Point(9, 0),
-                    archive + Point(0, 10),
-                    archive + Point(-9, 0),
-                    Cyan.Emissive(3));
-            r_.Text(archive.x - 28, archive.y - 25, "DATA", White, 1.4f);
-        }
-        return;
-    }
     // Individually seeded windows on both visible building faces.
     for (int floor = 18; floor < int(b.height) - 12; floor += 20)
     {
@@ -595,17 +524,14 @@ void Prototype::DrawBuildingMesh(const Building& b, bool power, bool open, bool 
     }
     const Point antenna = project(b.x + std::min(130.f, b.width - 16), b.y + 45, h);
     r_.Line(antenna, antenna + Point(0, -25), 2, Muted);
-    if (power)
-    {
-        const Point sign = project(b.x + 40, b.y + b.depth + 1, h - 25);
-        const char* names[] = {"NOVA", "CYBER", "NEXUS", "RAMEN", "HOTEL"};
-        r_.Rect(sign.x - 6, sign.y - 5, 68, 19, Panel);
-        r_.Text(sign.x, sign.y, names[b.style % 5], accent, 1.7f);
-        r_.Line(project(b.x + b.width, b.y + b.depth, 9),
-                project(b.x + b.width, b.y + b.depth, h - 6),
-                2,
-                accent.Alpha(.8f));
-    }
+    const Point sign = project(b.x + 40, b.y + b.depth + 1, h - 25);
+    const char* names[] = {"노바", "사이버", "넥서스", "라멘", "호텔"};
+    r_.Rect(sign.x - 6, sign.y - 5, 68, 19, Panel);
+    r_.Text(sign.x, sign.y, names[b.style % 5], accent, 1.7f);
+    r_.Line(project(b.x + b.width, b.y + b.depth, 9),
+            project(b.x + b.width, b.y + b.depth, h - 6),
+            2,
+            accent.Alpha(.8f));
 }
 
 void Prototype::DrawDevice(const Device& device)
@@ -640,22 +566,11 @@ void Prototype::DrawDevice(const Device& device)
     }
     else
     {
-        const Point left = Project(device.position.x - 26, device.position.y, 0),
-                    right = Project(device.position.x + 26, device.position.y, 0);
-        color = change.doorOpen ? Cyan.Emissive(2)
-                : powered       ? Pink.Emissive(2)
-                                : Amber.Emissive(.8f);
-        r_.Line(left, left + Point(0, -30 * zoom_), 3, color);
-        r_.Line(right, right + Point(0, -30 * zoom_), 3, color);
-        r_.Line(left + Point(0, -30 * zoom_), right + Point(0, -30 * zoom_), 3, color);
-        if (!change.doorOpen)
-        {
-            r_.Quad(left,
-                    right,
-                    right + Point(0, -28 * zoom_),
-                    left + Point(0, -28 * zoom_),
-                    color.Alpha(.35f));
-        }
+        // Exterior lighting terminal; its indicator is separate from building illumination.
+        color = !powered ? Muted : change.lightsOff ? Amber : Cyan;
+        r_.Rect(p.x - 8 * zoom_, p.y - 25 * zoom_, 16 * zoom_, 25 * zoom_, Color(.12f, .18f, .23f));
+        r_.Rect(p.x - 5 * zoom_, p.y - 21 * zoom_, 10 * zoom_, 11 * zoom_, color);
+        r_.Line(p + Point(-3, -5) * zoom_, p + Point(3, -5) * zoom_, 2 * zoom_, color);
     }
     if (scan_ || selected)
     {
@@ -665,22 +580,22 @@ void Prototype::DrawDevice(const Device& device)
         if (selected)
         {
             r_.Line(p + Point(0, -50), p + Point(0, -68), 1, marker);
-            const char* label = device.type == DeviceType::Power    ? "RELAY"
-                                : device.type == DeviceType::Camera ? "CAMERA"
-                                                                    : "DOOR";
-            r_.Text(p.x - 24, p.y - 83, label, marker, 1.5f);
+            const char* label = device.type == DeviceType::Power    ? "중계기"
+                                : device.type == DeviceType::Camera ? "카메라"
+                                                                    : "조명";
+            r_.Text(p.x - r_.TextWidth(label, 1.5f) / 2, p.y - 83, label, marker, 1.5f);
         }
     }
 }
 
-void Prototype::DrawPlayer()
+void Prototype::DrawPlayer(const PlayerActor& actor)
 {
-    const Point p = Project(player_.x, player_.y);
-    if (level_.Invulnerability() > 0 && std::fmod(time_, .16f) < .05f)
+    const Point p = Project(actor.WorldPosition().x, actor.WorldPosition().y);
+    if (actor.stats.Invulnerability() > 0 && std::fmod(time_, .16f) < .05f)
     {
         return;
     }
-    const float step = moving_ ? std::sin(time_ * 14) * 3 : 0;
+    const float step = actor.input.x != 0 || actor.input.y != 0 ? std::sin(time_ * 14) * 3 : 0;
     r_.Circle(p + Point(0, 2), 10, Color(0, 0, 0, .5f));
     r_.Line(p + Point(-4, -2), p + Point(-4 + step, -11), 4, Color(.13f, .2f, .26f));
     r_.Line(p + Point(4, -2), p + Point(4 - step, -11), 4, Color(.13f, .2f, .26f));
@@ -694,6 +609,17 @@ void Prototype::DrawPlayer()
     r_.Circle(p + Point(0, -30), 6, Color(.16f, .23f, .3f));
     r_.Line(p + Point(-4, -31), p + Point(4, -31), 2, Cyan.Emissive(3));
     r_.Line(p + Point(-3, -20), p + Point(3, -20), 2, Cyan.Emissive(2));
+}
+
+void Prototype::DrawSmartphone(const SmartphoneActor& actor)
+{
+    const auto owner = dynamic_cast<const PlayerActor*>(level_.Scene().Find(actor.Parent()));
+    if (owner && owner->stats.Invulnerability() > 0 && std::fmod(time_, .16f) < .05f)
+    {
+        return;
+    }
+    const auto position = actor.WorldPosition();
+    const Point p = Project(position.x, position.y);
     // The equipped ranged weapon is a smartphone, held beside the character.
     r_.Rect(p.x + 9, p.y - 24, 8, 14, Color(.12f, .16f, .22f));
     r_.Rect(p.x + 10, p.y - 22, 6, 9, Cyan.Emissive(2));
@@ -702,110 +628,44 @@ void Prototype::DrawPlayer()
 
 void Prototype::Draw()
 {
+    EnsurePresentationActors();
     r_.Begin(Color(.025f, .042f, .075f));
-    for (const auto& entry : world_.Chunks())
-    {
-        Ground(entry.second);
-    }
-    DrawLevelGround();
+    auto& scene = level_.Scene();
+    depthBuildings_ = std::as_const(scene).Actors<BuildingActor>();
+    scene.Render(RenderLayer::Ground, actorRenderer_);
+    scene.Render(RenderLayer::GroundEffect, actorRenderer_);
+    scene.Render(RenderLayer::World, actorRenderer_);
+    scene.Render(RenderLayer::Marker, actorRenderer_);
+    r_.BeginOverlay();
+    scene.Render(RenderLayer::Overlay, actorRenderer_);
+    scene.Render(RenderLayer::Hud, actorRenderer_);
+    r_.End();
+}
 
-    struct Item
+void Prototype::DrawMarkers()
+{
+    if (scan_)
     {
-        double depth;
-        const Building* building;
-        ChunkKey key;
-        Device device;
-        int type;
-        size_t index = 0;
-    };
-
-    std::vector<Item> items;
-    auto actorDepth = [&](WorldPoint point)
-    {
-        double depth = point.x + point.y;
-        const auto found = world_.Chunks().find(world_.KeyAt(point));
-        if (found == world_.Chunks().end())
+        // Keep nearby threats discoverable when tall buildings cover their bodies.
+        for (const auto& enemy : level_.Enemies())
         {
-            return depth;
-        }
-        for (const auto& b : found->second.buildings)
-        {
-            const bool south = point.y >= b.y + b.depth && point.y < b.y + b.depth + 55
-                               && point.x >= b.x - 8 && point.x <= b.x + b.width + 8;
-            const bool east = point.x >= b.x + b.width && point.x < b.x + b.width + 55
-                              && point.y >= b.y - 8 && point.y <= b.y + b.depth + 8;
-            const bool room = b.accessRoom && world_.Changes(found->first).doorOpen && point.x > b.x
-                              && point.x < b.x + b.width && point.y > b.y
-                              && point.y < b.y + b.depth;
-            if (south || east || room)
+            if (!level_.Scene().IsActive(enemy.Id()) || !level_.Scene().IsVisible(enemy.Id())
+                || enemy.kind == EnemyKind::Boss || enemy.health <= 0
+                || std::hypot(enemy.WorldPosition().x - level_.Player().WorldPosition().x,
+                              enemy.WorldPosition().y - level_.Player().WorldPosition().y)
+                       > 650)
             {
-                depth = std::max(depth, b.x + b.y + b.width + b.depth + 1);
+                continue;
             }
-        }
-        return depth;
-    };
-    for (const auto& entry : world_.Chunks())
-    {
-        for (const auto& building : entry.second.buildings)
-        {
-            items.push_back({building.x + building.y + building.width + building.depth,
-                             &building,
-                             entry.first,
-                             {},
-                             0});
-        }
-        for (const auto& device : world_.Devices(entry.first))
-        {
-            items.push_back({actorDepth(device.position), nullptr, entry.first, device, 1});
+            const Point marker = Project(enemy.WorldPosition().x, enemy.WorldPosition().y, 54);
+            if (marker.x < 0 || marker.x > r_.Width() || marker.y < 0 || marker.y > r_.Height())
+            {
+                continue;
+            }
+            r_.Triangle(marker + Point(-4, -4), marker + Point(4, -4), marker + Point(0, 2), Pink);
         }
     }
-    items.push_back({actorDepth(player_), nullptr, {}, {}, 2});
-    for (size_t i = 0; i < level_.Enemies().size(); ++i)
-    {
-        items.push_back({actorDepth(level_.Enemies()[i].position), nullptr, {}, {}, 3, i});
-    }
-    for (size_t i = 0; i < level_.Loot().size(); ++i)
-    {
-        items.push_back({actorDepth(level_.Loot()[i].position), nullptr, {}, {}, 4, i});
-    }
-    for (size_t i = 0; i < level_.Projectiles().size(); ++i)
-    {
-        items.push_back({actorDepth(level_.Projectiles()[i].position), nullptr, {}, {}, 5, i});
-    }
-    std::stable_sort(items.begin(),
-                     items.end(),
-                     [](const Item& a, const Item& b)
-                     {
-                         return a.depth < b.depth;
-                     });
-    for (const auto& item : items)
-    {
-        if (item.type == 0)
-        {
-            DrawBuilding(*item.building, item.key);
-        }
-        else if (item.type == 1)
-        {
-            DrawDevice(item.device);
-        }
-        else if (item.type == 2)
-        {
-            DrawPlayer();
-        }
-        else if (item.type == 3)
-        {
-            DrawLevelEnemy(level_.Enemies()[item.index]);
-        }
-        else if (item.type == 4)
-        {
-            DrawLevelLoot(level_.Loot()[item.index]);
-        }
-        else
-        {
-            DrawLevelProjectile(level_.Projectiles()[item.index]);
-        }
-    }
-    const Point p = Project(player_.x, player_.y);
+    const Point p = Project(level_.Player().WorldPosition().x, level_.Player().WorldPosition().y);
     // An always-visible locator preserves orientation behind tall buildings.
     r_.Ring(p, 13, 1, Cyan.Alpha(.65f));
     r_.Circle(p + Point(0, -48), 2, Cyan);
@@ -815,8 +675,10 @@ void Prototype::Draw()
         for (int i = 0; i < 48; ++i)
         {
             const double a = i * 6.2831853 / 48, b = (i + 1) * 6.2831853 / 48;
-            r_.Line(Project(player_.x + std::cos(a) * radius, player_.y + std::sin(a) * radius),
-                    Project(player_.x + std::cos(b) * radius, player_.y + std::sin(b) * radius),
+            r_.Line(Project(level_.Player().WorldPosition().x + std::cos(a) * radius,
+                            level_.Player().WorldPosition().y + std::sin(a) * radius),
+                    Project(level_.Player().WorldPosition().x + std::cos(b) * radius,
+                            level_.Player().WorldPosition().y + std::sin(b) * radius),
                     1,
                     Cyan.Alpha((1 - (radius - 45) / 95) * .18f));
         }
@@ -827,10 +689,6 @@ void Prototype::Draw()
         r_.Line(p + Point(0, -18), endpoint, 1.5f, Cyan.Alpha(.45f));
         r_.Ring(endpoint, 20 + std::sin(time_ * 3) * 2, 1, Cyan);
     }
-    r_.BeginOverlay();
-    DrawCombatNumbers();
-    Hud();
-    r_.End();
 }
 
 void Prototype::Hud()

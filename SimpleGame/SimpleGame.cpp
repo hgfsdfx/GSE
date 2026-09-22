@@ -12,6 +12,9 @@ Prototype extensions: procedural night city and simulated hacking.
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <cstdint>
+#include <iomanip>
+#include <sstream>
 #include <Windows.h>
 
 namespace
@@ -20,6 +23,53 @@ namespace
     std::unique_ptr<Prototype> game;
     auto previousTick = std::chrono::steady_clock::now();
     bool closing = false;
+
+    struct FrameProfiler
+    {
+        using Clock = std::chrono::steady_clock;
+
+        Clock::time_point sampleStart = Clock::now();
+        std::uint64_t frames = 0;
+        std::uint64_t totalDrawCalls = 0;
+        std::uint64_t minimumDrawCalls = 0;
+        std::uint64_t maximumDrawCalls = 0;
+
+        void RecordFrame(std::uint64_t drawCalls)
+        {
+            const auto now = Clock::now();
+            if (frames == 0)
+            {
+                minimumDrawCalls = drawCalls;
+                maximumDrawCalls = drawCalls;
+            }
+            ++frames;
+            totalDrawCalls += drawCalls;
+            minimumDrawCalls = std::min(minimumDrawCalls, drawCalls);
+            maximumDrawCalls = std::max(maximumDrawCalls, drawCalls);
+
+            const double seconds = std::chrono::duration<double>(now - sampleStart).count();
+            if (seconds < 1.0)
+            {
+                return;
+            }
+
+            // Use real display intervals, including update/timer/swap waits, not clamped game dt.
+            std::ostringstream line;
+            line << std::fixed << std::setprecision(1)
+                 << "[Profile] FPS=" << double(frames) / seconds
+                 << " | FrameMs(avg)=" << seconds * 1000.0 / double(frames)
+                 << " | DrawCalls/frame: last=" << drawCalls
+                 << " avg=" << double(totalDrawCalls) / double(frames)
+                 << " min=" << minimumDrawCalls << " max=" << maximumDrawCalls
+                 << " | Frames=" << frames << '\n';
+            std::cout << line.str() << std::flush;
+
+            // Include logging overhead in the following interval.
+            sampleStart = now;
+            frames = 0;
+            totalDrawCalls = 0;
+        }
+    } profiler;
 
     void Close()
     {
@@ -45,6 +95,7 @@ namespace
         }
         game->Draw();
         glutSwapBuffers();
+        profiler.RecordFrame(renderer->DrawCalls());
     }
 
     void Resize(int width, int height)
@@ -108,6 +159,9 @@ namespace
 
 int main(int argc, char** argv)
 {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+    SetConsoleTitleW(L"나이트 / 링크 - 성능 로그");
     glutInit(&argc, argv);
     glutInitContextVersion(3, 3);
     glutInitContextProfile(GLUT_CORE_PROFILE);
@@ -118,14 +172,19 @@ int main(int argc, char** argv)
     const int window = glutCreateWindow("NIGHT / LINK - Level 01: Scavenger District");
     if (!window)
     {
-        std::cerr << "Cannot create OpenGL window.\n";
+        std::cerr << "OpenGL 창을 생성할 수 없습니다.\n";
         return 1;
+    }
+    // freeglut's narrow title API depends on the Windows ANSI code page.
+    if (const HWND handle = WindowFromDC(wglGetCurrentDC()))
+    {
+        SetWindowTextW(handle, L"나이트 / 링크 - 레벨 01: 수집가 구역");
     }
     glewExperimental = GL_TRUE;
     const GLenum glewResult = glewInit();
     if (glewResult != GLEW_OK || !GLEW_VERSION_3_3)
     {
-        std::cerr << "OpenGL 3.3 is required. GLEW: " << glewGetErrorString(glewResult) << '\n';
+        std::cerr << "OpenGL 3.3이 필요합니다. GLEW: " << glewGetErrorString(glewResult) << '\n';
         glutDestroyWindow(window);
         return 1;
     }
@@ -133,8 +192,7 @@ int main(int argc, char** argv)
     renderer = std::make_unique<Renderer>(1440, 900);
     if (!renderer->IsInitialized())
     {
-        std::cerr
-            << "Renderer initialization failed. Check the Shaders folder beside the executable.\n";
+        std::cerr << "렌더러 초기화 실패. 실행 파일 옆의 Shaders 폴더를 확인해 주세요.\n";
         renderer.reset();
         glutDestroyWindow(window);
         return 1;
@@ -158,12 +216,14 @@ int main(int argc, char** argv)
     glutIgnoreKeyRepeat(1);
     previousTick = std::chrono::steady_clock::now();
     glutTimerFunc(16, Tick, 0);
-    std::cout << "NIGHT / LINK - Level 01\nWASD move | Space run | Smartphone auto fire\n"
-              << "Tab range/scan | Hold E hack | R retry after defeat or clear\n"
-              << "+/- zoom | K save | P pause | Esc save and exit\n"
-              << "O post FX | B bloom | V vignette | F edge blur | [ ] exposure\n"
-              << ", . bloom strength | 1 2 vignette strength | 3 4 edge blur strength\n"
-              << "Save: " << savePath << '\n';
+    std::cout << "나이트 / 링크 - 레벨 01\nWASD 이동 | Space 달리기 | 스마트폰 자동 발사\n"
+              << "Tab 사거리·스캔 | E 길게 눌러 해킹 | 패배·완료 후 R 다시 시작\n"
+              << "+/- 확대·축소 | K 저장 | P 일시정지 | Esc 저장 후 종료\n"
+              << "O 후처리 | B 블룸 | V 비네트 | F 가장자리 흐림 | [ ] 노출\n"
+              << ", . 블룸 강도 | 1 2 비네트 강도 | 3 4 가장자리 흐림 강도\n"
+              << "저장 위치: " << savePath.u8string() << '\n';
+    std::cout << "성능 로그: 1초마다 FPS 및 프레임당 draw call 출력 (월드 + HUD + 후처리).\n";
+    profiler = FrameProfiler{};
     glutMainLoop();
     Close();
     return 0;

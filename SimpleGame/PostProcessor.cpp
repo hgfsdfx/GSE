@@ -145,6 +145,7 @@ void PostProcessor::Resize(int width, int height)
 
 bool PostProcessor::BeginScene()
 {
+    drawCalls_ = 0;
     const bool capture = ready_ && settings.enabled;
     glBindFramebuffer(GL_FRAMEBUFFER, capture ? scene_.framebuffer : 0);
     glViewport(0, 0, width_, height_);
@@ -163,6 +164,7 @@ void PostProcessor::DrawTriangle()
 {
     glBindVertexArray(vao_);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    ++drawCalls_;
 }
 
 void PostProcessor::Downsample(Target& destination, bool extract)

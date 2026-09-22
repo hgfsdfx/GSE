@@ -163,13 +163,23 @@
     <Text Include="..\후처리_구현안내.txt" />
     <Text Include="..\레벨1_실행안내.txt" />
     <Text Include="..\렌더링_캐시_구조.txt" />
+    <None Include="..\Actor_SceneGraph_구조.md" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="FontGlyphCache.h" />
     <ClInclude Include="MeshCache.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="World.h" />
+    <ClInclude Include="Actor.h" />
+    <ClInclude Include="SceneGraph.h" />
+    <ClInclude Include="WorldTypes.h" />
+    <ClInclude Include="WorldActors.h" />
+    <ClInclude Include="GameplayActors.h" />
+    <ClInclude Include="NavigationGrid.h" />
+    <ClInclude Include="PlayerStats.h" />
+    <ClInclude Include="GameMath.h" />
     <ClInclude Include="LevelOne.h" />
     <ClInclude Include="Prototype.h" />
     <ClInclude Include="stdafx.h" />
@@ -177,10 +187,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="FontGlyphCache.cpp" />
     <ClCompile Include="MeshCache.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="World.cpp" />
+    <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="SceneGraph.cpp" />
+    <ClCompile Include="WorldActors.cpp" />
+    <ClCompile Include="WorldScene.cpp" />
+    <ClCompile Include="PlayerActors.cpp" />
+    <ClCompile Include="EnemyActor.cpp" />
+    <ClCompile Include="ProjectileActor.cpp" />
+    <ClCompile Include="LootActor.cpp" />
+    <ClCompile Include="EffectActors.cpp" />
+    <ClCompile Include="NavigationGrid.cpp" />
+    <ClCompile Include="PlayerStats.cpp" />
+    <ClCompile Include="LevelOneEncounters.cpp" />
+    <ClCompile Include="LevelOneRewards.cpp" />
+    <ClCompile Include="PrototypeScene.cpp" />
     <ClCompile Include="LevelOne.cpp" />
     <ClCompile Include="LevelOneSave.cpp" />
     <ClCompile Include="PrototypeLevel.cpp" />

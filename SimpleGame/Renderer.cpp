@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Renderer.h"
 #include "ShaderProgram.h"
 #include <algorithm>
@@ -15,25 +15,6 @@ namespace
         return value <= .04045f ? value / 12.92f : std::pow((value + .055f) / 1.055f, 2.4f);
     }
 
-    // Original compact 5x7 bitmap alphabet; rendered as batched geometry.
-    const unsigned char letters[26][5] = {
-        {126, 17, 17, 17, 126}, {127, 73, 73, 73, 54}, {62, 65, 65, 65, 34},  {127, 65, 65, 34, 28},
-        {127, 73, 73, 73, 65},  {127, 9, 9, 9, 1},     {62, 65, 73, 73, 122}, {127, 8, 8, 8, 127},
-        {0, 65, 127, 65, 0},    {32, 64, 65, 63, 1},   {127, 8, 20, 34, 65},  {127, 64, 64, 64, 64},
-        {127, 2, 12, 2, 127},   {127, 4, 8, 16, 127},  {62, 65, 65, 65, 62},  {127, 9, 9, 9, 6},
-        {62, 65, 81, 33, 94},   {127, 9, 25, 41, 70},  {38, 73, 73, 73, 50},  {1, 1, 127, 1, 1},
-        {63, 64, 64, 64, 63},   {31, 32, 64, 32, 31},  {63, 64, 56, 64, 63},  {99, 20, 8, 20, 99},
-        {7, 8, 112, 8, 7},      {97, 81, 73, 69, 67}};
-    const unsigned char digits[10][5] = {{62, 81, 73, 69, 62},
-                                         {0, 66, 127, 64, 0},
-                                         {98, 81, 73, 73, 70},
-                                         {34, 65, 73, 73, 54},
-                                         {24, 20, 18, 127, 16},
-                                         {39, 69, 69, 69, 57},
-                                         {62, 73, 73, 73, 50},
-                                         {1, 113, 9, 5, 3},
-                                         {54, 73, 73, 73, 54},
-                                         {38, 73, 73, 73, 62}};
 } // namespace
 
 Renderer::Renderer(int width, int height)
@@ -103,6 +84,7 @@ void Renderer::Resize(int width, int height)
 
 void Renderer::Begin(Color c)
 {
+    drawCalls_ = 0;
     vertices_.clear();
     commands_.clear();
     dynamicStart_ = 0;
@@ -179,6 +161,7 @@ void Renderer::Flush()
                         command.scale,
                         command.scale);
             glDrawArrays(GL_TRIANGLES, 0, command.mesh->vertexCount);
+            ++drawCalls_;
         }
         else
         {
@@ -187,6 +170,7 @@ void Renderer::Flush()
             glDrawArrays(GL_TRIANGLES,
                          static_cast<GLint>(command.first),
                          static_cast<GLsizei>(command.count));
+            ++drawCalls_;
         }
     }
     glBindVertexArray(0);
@@ -318,120 +302,49 @@ const std::vector<Point>& Renderer::CirclePoints(int segments)
     return points;
 }
 
-const std::vector<Point>& Renderer::GlyphMesh(unsigned char ch)
-{
-    if (ch >= glyphs_.size())
-    {
-        ch = ' ';
-    }
-    auto& mesh = glyphs_[ch];
-    if (glyphReady_[ch])
-    {
-        return mesh;
-    }
-    glyphReady_[ch] = true;
-    unsigned char punctuation[5] = {};
-    const unsigned char* glyph = punctuation;
-    if (ch >= 'A' && ch <= 'Z')
-    {
-        glyph = letters[ch - 'A'];
-    }
-    else if (ch >= '0' && ch <= '9')
-    {
-        glyph = digits[ch - '0'];
-    }
-    else
-    {
-        switch (ch)
-        {
-            case '-':
-                for (auto& v : punctuation)
-                {
-                    v = 8;
-                }
-                break;
-            case '.':
-                punctuation[2] = 64;
-                break;
-            case ':':
-                punctuation[2] = 36;
-                break;
-            case '/':
-                punctuation[0] = 64;
-                punctuation[1] = 48;
-                punctuation[2] = 8;
-                punctuation[3] = 6;
-                punctuation[4] = 1;
-                break;
-            case '[':
-                punctuation[1] = 127;
-                punctuation[2] = 65;
-                break;
-            case ']':
-                punctuation[2] = 65;
-                punctuation[3] = 127;
-                break;
-            case '+':
-                punctuation[1] = 8;
-                punctuation[2] = 28;
-                punctuation[3] = 8;
-                break;
-            case '>':
-                punctuation[1] = 65;
-                punctuation[2] = 34;
-                punctuation[3] = 20;
-                punctuation[4] = 8;
-                break;
-            case '%':
-                punctuation[0] = 99;
-                punctuation[1] = 19;
-                punctuation[2] = 8;
-                punctuation[3] = 100;
-                punctuation[4] = 99;
-                break;
-        }
-    }
-    for (int col = 0; col < 5; ++col)
-    {
-        for (int row = 0; row < 7; ++row)
-        {
-            if (glyph[col] & (1 << row))
-            {
-                const Point a{float(col), float(row)};
-                const Point b{float(col + 1), float(row)};
-                const Point c{float(col + 1), float(row + 1)};
-                const Point d{float(col), float(row + 1)};
-                mesh.insert(mesh.end(), {a, b, c, a, c, d});
-            }
-        }
-    }
-    return mesh;
-}
-
-void Renderer::Text(float x, float y, const std::string& text, Color c, float scale)
+void Renderer::Text(float x, float y, const std::string& text, Color color, float scale)
 {
     const float start = x;
-    for (unsigned char ch : text)
+    for (const wchar_t ch : FontGlyphCache::Decode(text))
     {
-        if (ch == '\n')
+        if (ch == L'\n')
         {
             x = start;
-            y += 10 * scale;
+            y += FontGlyphCache::LineHeight * scale;
             continue;
         }
-        if (ch >= 'a' && ch <= 'z')
+        if (ch == L'\r')
         {
-            ch -= 32;
+            continue;
         }
-        const auto& mesh = GlyphMesh(ch);
-        const Point origin(x, y);
-        for (size_t i = 0; i < mesh.size(); i += 3)
+        const auto& glyph = font_.Get(ch);
+        for (const auto& run : glyph.runs)
         {
-            Triangle(origin + mesh[i] * scale,
-                     origin + mesh[i + 1] * scale,
-                     origin + mesh[i + 2] * scale,
-                     c);
+            Rect(x + run.x * scale,
+                 y + run.y * scale,
+                 run.width * scale,
+                 run.height * scale,
+                 color.Alpha(color.a * run.coverage));
         }
-        x += 6 * scale;
+        x += glyph.advance * scale;
     }
+}
+
+float Renderer::TextWidth(const std::string& text, float scale)
+{
+    float widest = 0;
+    float width = 0;
+    for (const wchar_t ch : FontGlyphCache::Decode(text))
+    {
+        if (ch == L'\n')
+        {
+            widest = std::max(widest, width);
+            width = 0;
+        }
+        else if (ch != L'\r')
+        {
+            width += font_.Get(ch).advance * scale;
+        }
+    }
+    return std::max(widest, width);
 }
