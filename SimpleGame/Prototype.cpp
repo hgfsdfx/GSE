@@ -88,6 +88,7 @@ void Prototype::Notify(const std::string& message)
 
 bool Prototype::Save()
 {
+    const CpuProfileScope profile(CpuMetric::SaveGame);
     if (!saveAllowed_)
     {
         Notify("저장 불가 / 손상된 저장 파일을 먼저 옮겨 주세요");
@@ -631,7 +632,7 @@ void Prototype::Draw()
     EnsurePresentationActors();
     r_.Begin(Color(.025f, .042f, .075f));
     auto& scene = level_.Scene();
-    depthBuildings_ = std::as_const(scene).Actors<BuildingActor>();
+    PrepareDepthBuildings();
     scene.Render(RenderLayer::Ground, actorRenderer_);
     scene.Render(RenderLayer::GroundEffect, actorRenderer_);
     scene.Render(RenderLayer::World, actorRenderer_);
@@ -694,4 +695,25 @@ void Prototype::DrawMarkers()
 void Prototype::Hud()
 {
     DrawLevelHud();
+}
+
+GameProfileState Prototype::ProfileState() const
+{
+    GameProfileState state;
+    state.seed = level_.Seed();
+    const auto player = level_.Player().WorldPosition();
+    state.playerX = player.x;
+    state.playerY = player.y;
+    state.zoom = zoom_;
+    state.actors = level_.Scene().Count();
+    state.chunks = world_.Chunks().size();
+    state.enemies = level_.Scene().Count<EnemyActor>();
+    state.projectiles = level_.Scene().Count<ProjectileActor>();
+    state.loot = level_.Scene().Count<LootActor>();
+    state.paused = paused_;
+    state.scan = scan_;
+    state.boss = level_.BossSpawned();
+    state.cleared = level_.Cleared();
+    state.level = level_.Level();
+    return state;
 }

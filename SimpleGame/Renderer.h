@@ -7,6 +7,8 @@
 #include "PostProcessor.h"
 #include "MeshCache.h"
 #include "FontGlyphCache.h"
+#include "GpuProfiler.h"
+#include "ProfileMetrics.h"
 
 struct Point
 {
@@ -59,10 +61,88 @@ struct Color
     }
 };
 
-// Ordered dynamic batches and cached static meshes; world projection lives in Prototype.
+// Ordered mesh instances share one geometry atlas and one draw per batch.
 class Renderer
 {
   public:
+
+    struct BatchSample
+    {
+        uint64_t frame, batch, instances, triangles, bytes;
+        const char* stage;
+        const char* reason;
+        double submitMs;
+    };
+
+    struct FrameStatistics
+    {
+        uint64_t frame = 0, worldDraws = 0, hudDraws = 0, triangles = 0, gpuSkipped = 0;
+    };
+
+    const FrameStatistics& FrameStats() const
+    {
+        return frameStats_;
+    }
+
+    const std::vector<BatchSample>& Batches() const
+    {
+        return batches_;
+    }
+
+    std::vector<GpuProfiler::Sample> CollectGpuSamples()
+    {
+        return gpuProfiler_.Collect();
+    }
+
+    bool GpuTimingAvailable() const
+    {
+        return gpuProfiler_.Available();
+    }
+
+    size_t PendingGpuSamples() const
+    {
+        return gpuProfiler_.Pending();
+    }
+
+    size_t MeshCount() const
+    {
+        return meshes_.Count();
+    }
+
+    size_t MeshBytes() const
+    {
+        return meshes_.Bytes();
+    }
+
+    size_t MeshCapacityBytes() const
+    {
+        return meshes_.CapacityBytes();
+    }
+
+    size_t MeshLimitBytes() const
+    {
+        return meshes_.LimitBytes();
+    }
+
+    size_t InstanceLimit() const
+    {
+        return maxInstances_;
+    }
+
+    size_t TriangleLimit() const
+    {
+        return MaxBatchTriangles;
+    }
+
+    bool DiskCacheEnabled() const
+    {
+        return meshes_.DiskEnabled();
+    }
+
+    const PostProcessor& PostProcessorStats() const
+    {
+        return postProcessor_;
+    }
 
     Renderer(int width, int height);
     ~Renderer();
@@ -71,7 +151,8 @@ class Renderer
 
     bool IsInitialized() const
     {
-        return program_ != 0 && vao_ != 0 && vbo_ != 0;
+        return program_ != 0 && vao_ != 0 && vbo_ != 0 && instanceTexture_ != 0
+               && triangle_ != nullptr && quad_ != nullptr;
     }
 
     void Resize(int width, int height);
@@ -86,13 +167,39 @@ class Renderer
         return drawCalls_ + postProcessor_.DrawCalls();
     }
 
+    const MeshCache::Statistics& CacheStats() const
+    {
+        return meshes_.Stats();
+    }
+
+    std::uint64_t InstanceCount() const
+    {
+        return instanceCount_;
+    }
+
+    std::uint64_t InstanceUploadBytes() const
+    {
+        return instanceUploadBytes_;
+    }
+
     // On a cache hit, enqueue the mesh and return false. On a miss, submit local
     // coordinates until EndCachedMesh(). Origin/scale apply at draw time only.
     // Do not nest recordings; the key must identify geometry AND color state.
     bool BeginCachedMesh(const std::string& key, Point origin, float scale);
     void EndCachedMesh();
+    // Enqueue another instance of a stored mesh. False means the key is not cached yet.
+    bool DrawCachedMesh(const std::string& key,
+                        Point origin,
+                        Point xAxis,
+                        Point yAxis,
+                        Color tint = {});
 
     PostProcessingSettings& PostEffects()
+    {
+        return postProcessor_.settings;
+    }
+
+    const PostProcessingSettings& PostEffects() const
     {
         return postProcessor_.settings;
     }
@@ -123,30 +230,42 @@ class Renderer
 
   private:
 
-    void Flush();
-    void SealDynamicBatch();
+    void Flush(const char* reason);
     const std::vector<Point>& CirclePoints(int segments);
+    const MeshCache::Mesh* GlyphMesh(wchar_t character);
     using Vertex = MeshVertex;
 
-    struct DrawCommand
+    struct MeshInstance
     {
-        const MeshCache::Mesh* mesh = nullptr;
-        size_t first = 0;
-        size_t count = 0;
-        Point origin;
-        float scale = 1;
+        float x, y, xx, xy;
+        float yx, yy, reserved0 = 0, reserved1 = 0;
+        float r, g, b, a;
+        float emission, reserved2 = 0, reserved3 = 0, reserved4 = 0;
     };
+
+    struct TriangleReference
+    {
+        uint32_t firstVertex, instance;
+    };
+
+    void Submit(const MeshCache::Mesh& mesh, Point origin, Point xAxis, Point yAxis, Color tint);
+    void RecordTriangle(Point a, Point b, Point c, Color color);
 
     int width_, height_;
     GLuint program_ = 0, vao_ = 0, vbo_ = 0;
-    GLint viewport_ = -1, linearScene_ = -1, transform_ = -1;
+    GLuint instanceBuffer_ = 0, instanceTexture_ = 0;
+    GLint viewport_ = -1, linearScene_ = -1;
     bool capturing_ = false, overlay_ = false;
     std::uint64_t drawCalls_ = 0;
+    std::uint64_t instanceCount_ = 0, instanceUploadBytes_ = 0;
     PostProcessor postProcessor_;
     MeshCache meshes_;
-    std::vector<Vertex> vertices_;
-    std::vector<DrawCommand> commands_;
-    size_t dynamicStart_ = 0;
+    std::vector<MeshInstance> instances_;
+    std::vector<TriangleReference> triangles_;
+    const MeshCache::Mesh* triangle_ = nullptr;
+    const MeshCache::Mesh* quad_ = nullptr;
+    size_t maxInstances_ = 16384;
+    static constexpr size_t MaxBatchTriangles = 1024 * 1024;
     bool recording_ = false;
     std::string recordingKey_;
     Point recordingOrigin_;
@@ -154,4 +273,7 @@ class Renderer
     std::vector<Vertex> recordedVertices_;
     std::map<int, std::vector<Point>> circles_;
     FontGlyphCache font_;
+    FrameStatistics frameStats_;
+    std::vector<BatchSample> batches_;
+    GpuProfiler gpuProfiler_;
 };

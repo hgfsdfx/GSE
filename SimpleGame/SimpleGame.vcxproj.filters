@@ -22,6 +22,7 @@
     <Text Include="..\후처리_구현안내.txt" />
     <Text Include="..\레벨1_실행안내.txt" />
     <Text Include="..\렌더링_캐시_구조.txt" />
+    <Text Include="..\성능분석_로그_및_DrawCall_개선_리포트.txt" />
     <None Include="..\Actor_SceneGraph_구조.md" />
   </ItemGroup>
   <ItemGroup>
@@ -32,6 +33,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="FontGlyphCache.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="ProfileMetrics.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="GpuProfiler.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="PerformanceLog.h"><Filter>헤더 파일</Filter></ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -70,10 +74,15 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="FontGlyphCache.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="GpuProfiler.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="PerformanceLog.cpp"><Filter>소스 파일</Filter></ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MeshCache.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCacheDisk.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ShaderProgram.cpp">

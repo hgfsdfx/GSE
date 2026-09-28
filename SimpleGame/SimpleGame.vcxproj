@@ -163,10 +163,14 @@
     <Text Include="..\후처리_구현안내.txt" />
     <Text Include="..\레벨1_실행안내.txt" />
     <Text Include="..\렌더링_캐시_구조.txt" />
+    <Text Include="..\성능분석_로그_및_DrawCall_개선_리포트.txt" />
     <None Include="..\Actor_SceneGraph_구조.md" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="ProfileMetrics.h" />
+    <ClInclude Include="GpuProfiler.h" />
+    <ClInclude Include="PerformanceLog.h" />
     <ClInclude Include="FontGlyphCache.h" />
     <ClInclude Include="MeshCache.h" />
     <ClInclude Include="ShaderProgram.h" />
@@ -187,8 +191,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="GpuProfiler.cpp" />
+    <ClCompile Include="PerformanceLog.cpp" />
     <ClCompile Include="FontGlyphCache.cpp" />
     <ClCompile Include="MeshCache.cpp" />
+    <ClCompile Include="MeshCacheDisk.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="World.cpp" />

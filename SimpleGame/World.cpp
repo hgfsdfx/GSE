@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "ProfileMetrics.h"
 #include "World.h"
 #include "SceneGraph.h"
 #include "WorldActors.h"
@@ -71,6 +72,7 @@ Chunk World::Generate(ChunkKey key) const
 
 void World::Stream(WorldPoint player, int radius)
 {
+    const CpuProfileScope profile(CpuMetric::WorldStream);
     const ChunkKey center = KeyAt(player);
     for (auto it = chunks_.begin(); it != chunks_.end();)
     {

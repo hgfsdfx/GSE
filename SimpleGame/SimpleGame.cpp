@@ -6,6 +6,7 @@ Prototype extensions: procedural night city and simulated hacking.
 #include "stdafx.h"
 #include "Renderer.h"
 #include "Prototype.h"
+#include "PerformanceLog.h"
 #include "Dependencies/freeglut.h"
 #include <algorithm>
 #include <chrono>
@@ -24,52 +25,7 @@ namespace
     auto previousTick = std::chrono::steady_clock::now();
     bool closing = false;
 
-    struct FrameProfiler
-    {
-        using Clock = std::chrono::steady_clock;
-
-        Clock::time_point sampleStart = Clock::now();
-        std::uint64_t frames = 0;
-        std::uint64_t totalDrawCalls = 0;
-        std::uint64_t minimumDrawCalls = 0;
-        std::uint64_t maximumDrawCalls = 0;
-
-        void RecordFrame(std::uint64_t drawCalls)
-        {
-            const auto now = Clock::now();
-            if (frames == 0)
-            {
-                minimumDrawCalls = drawCalls;
-                maximumDrawCalls = drawCalls;
-            }
-            ++frames;
-            totalDrawCalls += drawCalls;
-            minimumDrawCalls = std::min(minimumDrawCalls, drawCalls);
-            maximumDrawCalls = std::max(maximumDrawCalls, drawCalls);
-
-            const double seconds = std::chrono::duration<double>(now - sampleStart).count();
-            if (seconds < 1.0)
-            {
-                return;
-            }
-
-            // Use real display intervals, including update/timer/swap waits, not clamped game dt.
-            std::ostringstream line;
-            line << std::fixed << std::setprecision(1)
-                 << "[Profile] FPS=" << double(frames) / seconds
-                 << " | FrameMs(avg)=" << seconds * 1000.0 / double(frames)
-                 << " | DrawCalls/frame: last=" << drawCalls
-                 << " avg=" << double(totalDrawCalls) / double(frames)
-                 << " min=" << minimumDrawCalls << " max=" << maximumDrawCalls
-                 << " | Frames=" << frames << '\n';
-            std::cout << line.str() << std::flush;
-
-            // Include logging overhead in the following interval.
-            sampleStart = now;
-            frames = 0;
-            totalDrawCalls = 0;
-        }
-    } profiler;
+    PerformanceLog profiler;
 
     void Close()
     {
@@ -82,6 +38,7 @@ namespace
         {
             game->Save();
         }
+        profiler.Stop(renderer.get());
         game.reset();
         // freeglut invokes this callback while the window context still exists.
         renderer.reset();
@@ -93,9 +50,16 @@ namespace
         {
             return;
         }
+        const auto drawStart = ProfileClock::now();
         game->Draw();
+        const auto drawEnd = ProfileClock::now();
         glutSwapBuffers();
-        profiler.RecordFrame(renderer->DrawCalls());
+        const auto swapEnd = ProfileClock::now();
+        profiler.RecordFrame(*renderer,
+                             *game,
+                             swapEnd,
+                             std::chrono::duration<double, std::milli>(drawEnd - drawStart).count(),
+                             std::chrono::duration<double, std::milli>(swapEnd - drawEnd).count());
     }
 
     void Resize(int width, int height)
@@ -108,6 +72,11 @@ namespace
 
     void KeyDown(unsigned char key, int, int)
     {
+        if (key == 'm' || key == 'M')
+        {
+            profiler.Mark("manual_marker");
+            return;
+        }
         if (key == 27)
         {
             Close();
@@ -130,6 +99,7 @@ namespace
 
     void Visibility(int visible)
     {
+        profiler.Mark("visibility", visible == GLUT_VISIBLE ? "visible" : "hidden");
         if (game && visible != GLUT_VISIBLE)
         {
             game->ReleaseKeys();
@@ -151,7 +121,11 @@ namespace
         {
             game->ReleaseKeys();
         }
+        const auto updateStart = ProfileClock::now();
         game->Update(std::min(dt, .05f));
+        profiler.RecordUpdate(
+            std::chrono::duration<double, std::milli>(ProfileClock::now() - updateStart).count(),
+            dt);
         glutPostRedisplay();
         glutTimerFunc(16, Tick, 0);
     }
@@ -159,6 +133,9 @@ namespace
 
 int main(int argc, char** argv)
 {
+    char profilingOption[2] = {};
+    ProfilingEnabled = !(GetEnvironmentVariableA("GSE_PROFILE", profilingOption, 2) == 1
+                         && profilingOption[0] == '0');
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
     SetConsoleTitleW(L"나이트 / 링크 - 성능 로그");
@@ -222,8 +199,8 @@ int main(int argc, char** argv)
               << "O 후처리 | B 블룸 | V 비네트 | F 가장자리 흐림 | [ ] 노출\n"
               << ", . 블룸 강도 | 1 2 비네트 강도 | 3 4 가장자리 흐림 강도\n"
               << "저장 위치: " << savePath.u8string() << '\n';
-    std::cout << "성능 로그: 1초마다 FPS 및 프레임당 draw call 출력 (월드 + HUD + 후처리).\n";
-    profiler = FrameProfiler{};
+    std::cout << "성능 분석: 실행별 CSV 및 1초 요약 | M 분석 지점 표시 | GSE_PROFILE=0 비활성화\n";
+    profiler.Start(savePath.parent_path(), *renderer);
     glutMainLoop();
     Close();
     return 0;

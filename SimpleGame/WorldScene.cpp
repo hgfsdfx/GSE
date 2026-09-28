@@ -1,7 +1,64 @@
 #include "stdafx.h"
+#include "ProfileMetrics.h"
 #include "World.h"
 #include "SceneGraph.h"
 #include "WorldActors.h"
+#include <cmath>
+
+World::WalkabilitySnapshot World::CaptureWalkability() const
+{
+    const CpuProfileScope profile(CpuMetric::NavigationSnapshot);
+    WalkabilitySnapshot snapshot;
+    for (const auto& entry : chunks_)
+    {
+        auto& buildings = snapshot.chunks_[entry.first];
+        if (!scene_)
+        {
+            buildings = entry.second.buildings;
+            continue;
+        }
+        const auto bucket = colliders_.find(entry.first);
+        if (bucket == colliders_.end())
+        {
+            continue;
+        }
+        buildings.reserve(bucket->second.size());
+        for (auto id : bucket->second)
+        {
+            const auto actor = dynamic_cast<const BuildingActor*>(scene_->Find(id));
+            if (actor && scene_->IsActive(id))
+            {
+                buildings.push_back(actor->Geometry());
+            }
+        }
+    }
+    return snapshot;
+}
+
+bool World::WalkabilitySnapshot::CanWalk(WorldPoint point) const
+{
+    if (!std::isfinite(point.x) || !std::isfinite(point.y) || std::abs(point.x) > CoordinateLimit
+        || std::abs(point.y) > CoordinateLimit)
+    {
+        return false;
+    }
+    const ChunkKey key{static_cast<int64_t>(std::floor(point.x / ChunkSize)),
+                       static_cast<int64_t>(std::floor(point.y / ChunkSize))};
+    const auto chunk = chunks_.find(key);
+    if (chunk == chunks_.end())
+    {
+        return false;
+    }
+    for (const auto& b : chunk->second)
+    {
+        if (point.x > b.x - 8 && point.x < b.x + b.width + 8 && point.y > b.y - 8
+            && point.y < b.y + b.depth + 8)
+        {
+            return false;
+        }
+    }
+    return true;
+}
 
 void World::BindScene(SceneGraph* scene)
 {
@@ -51,6 +108,7 @@ void World::SpawnChunkActors(Chunk& chunk)
 
 void World::RefreshColliders()
 {
+    const CpuProfileScope profile(CpuMetric::CollisionRefresh);
     colliders_.clear();
     if (!scene_)
     {

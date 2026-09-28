@@ -1,0 +1,482 @@
+나이트 / 링크 — 성능 분석 로그 및 Draw Call 개선 리포트
+작성일: 2026-09-22
+대상: 현재 dev 작업 트리의 C++17 / OpenGL 3.3 렌더러
+상태: 사용자 실행 로그 분석 및 CPU 병목 개선 구현. 변경 후 빌드·실행·테스트는 수행하지 않음.
+최신 분석: 12절의 2026-09-22 사용자 실행 로그 분석과 수정 내역 참고.
+
+1. 현재 판단과 근거
+
+사용자가 제공한 기존 로그:
+  FPS 3.8 / 평균 프레임 262.7ms / draw call 171회
+  FPS 4.5 / 평균 프레임 220.9ms / draw call 171회
+
+위 수치는 배치 렌더러 변경 전의 실행 관측값이다. 변경 후 사용자 실행 로그는 12절에 추가했다.
+171회의 호출만으로 220~263ms의 원인을 확정할 수 없다.
+CPU 메시 조립, SceneGraph 탐색·정렬, GPU 후처리, 파일 I/O, 드라이버 대기 등을 나누어 봐야 한다.
+이번 작업은 추가 화질 변경 없이 분석 근거를 남기는 데 목적이 있다.
+
+이미 적용한 렌더러 구조:
+  원형 메시 생성/파일 로딩
+    → 공통 GPU 정점 저장소
+    → 위치·크기·색상별 메시 인스턴스
+    → 순서가 있는 삼각형 참조 스트림
+    → glDrawArraysInstanced
+    → 후처리
+    → HUD 배치
+
+기존 한글은 획마다 화면 좌표의 사각형 정점을 매 프레임 조립했다.
+현재 한글은 글자 전체 메시를 GPU에 캐싱하며 인스턴스로 재사용한다.
+건물별 개별 VAO/VBO와 draw 호출도 공통 저장소와 순서 보존 배치로 대체했다.
+이 변경은 API 호출과 CPU 조립·업로드를 줄이기 위한 것이며 FPS 개선량을 보장하는 수치는 아니다.
+
+2. 생성되는 분석 자료
+
+게임을 실행하면 실행 파일 옆에 다음 경로가 자동 생성된다.
+  PerformanceLogs/<UTC 날짜·시각-프로세스 ID-구분자>/
+
+session.txt
+  로그 형식 버전, 빌드 시각, MSVC 버전, Debug/Release, 32/64비트,
+  GL 공급자·GPU 렌더러·GL/GLSL 버전, 논리 프로세서 수, 물리 메모리,
+  GPU 시간 측정 지원 여부, 메시/배치 상한, 셰이더 파일 해시, 분석 라벨.
+  정상 종료 시 총 프레임·누락 패킷·파일 오류·용량 상한·미수집 GPU 쿼리도 추가한다.
+  Git revision은 자동으로 알 수 없으므로 not_embedded로 기록한다.
+  VSync 설정도 직접 조회하지 않으며 swap_interval=not_queried다.
+
+frames.csv
+  모든 표시 프레임에 대한 숫자형 원본.
+  완료 프레임 번호 frame이 다른 파일을 연결하는 기준이다.
+  시간·draw 호출·삼각형/인스턴스·캐시·메모리·설정·월드 상태를 함께 기록한다.
+  actors/enemies/projectiles/loot는 SceneGraph에 등록된 개수다.
+  숨김·비활성 상태도 포함하므로 실제 화면에 보이는 수나 렌더링한 수와는 다르다.
+
+batches.csv
+  실제 월드/HUD 배치 하나당 한 행.
+  frame, batch, stage, reason, instances, triangles, upload_bytes,
+  instance_fill_ratio, triangle_fill_ratio, submit_cpu_ms.
+  reason은 world_end, frame_end, instance_limit, triangle_limit 중 하나다.
+  후처리 개별 패스는 이 파일이 아니라 frames.csv의 패스별 카운터로 기록한다.
+
+gpu.csv
+  비동기 GPU 시간 측정 결과.
+  frame, batch, stage(world/hud/post), gpu_ms,
+  collected_at_frame, collected_at_elapsed_ms.
+  post는 전체 후처리 묶음이며 batch=0이다.
+  world/hud는 batches.csv와 (frame, batch, stage)로 연결한다.
+  수집된 시점의 프레임이 아닌 원래 frame을 기준으로 분석해야 한다.
+
+summary.csv
+  약 1초마다 FPS, 프레임 시간 평균·p50·p95·p99·최댓값,
+  33.33ms/50ms 초과 횟수, draw call 최근값·평균·최소·최대,
+  업데이트 1회 평균, 그리기 평균·p95, 버퍼 교환 평균,
+  메시 생성·로딩 합계 및 누락 패킷 수.
+  종료 시 마지막 1초 미만 구간도 남긴다.
+  백분위는 정렬한 n개 표본 중 ceil(p × n)번째 값을 사용하는 nearest-rank 방식이다.
+
+events.csv
+  세션 시작/종료, 설정 변경, 창 표시 상태, 50ms 초과 프레임,
+  캐시 오류/용량 문제, 수동 표시 지점.
+  게임에서 M을 누르면 manual_marker가 기록된다.
+  프레임 사이에 입력된 표시는 가장 최근 완료 frame과 실제 elapsed_ms를 가진다.
+
+tools/analyze_profile.py
+  Python 표준 라이브러리만 사용하는 오프라인 분석 도구.
+  frames/batches/gpu/session을 읽어 해당 세션 폴더에 analysis_report.txt를 만든다.
+  워밍업 구간 제외, 전경 프레임 필터, 이전 실행과의 평균 비용 비교를 지원한다.
+  이 스크립트도 이번 작업에서 실행하지 않았다.
+
+3. CPU·프레임 시간 열 정의
+
+frame_ms:
+  이전 버퍼 교환 완료부터 이번 완료까지의 실제 시간.
+  게임 업데이트, 타이머 대기, 렌더링, 버퍼 교환 및 이전 로그 처리 영향이 포함된다.
+  첫 프레임은 프로파일러 준비 완료부터 첫 버퍼 교환까지다.
+
+update_ms_total / update_ms_max / updates:
+  두 표시 프레임 사이에 수행한 업데이트의 총 시간, 최대 1회 시간, 호출 수.
+  표시와 업데이트의 비율을 1:1이라고 가정하지 않는다.
+  업데이트 평균이 필요하면 total/updates를 사용한다.
+
+raw_update_dt_s / dt_clamped_updates:
+  최근 업데이트의 실제 delta time과 0.05초 제한이 적용된 업데이트 수.
+  낮은 FPS에서 게임 시간 진행까지 영향을 받는지 구분하는 데 쓴다.
+
+draw_cpu_ms:
+  Prototype::Draw 진입부터 모든 렌더링 명령 제출 종료까지.
+  CPU 장면 구성, 캐시 생성/로딩, GL 호출과 드라이버 대기 등이 포함된다.
+  순수 GPU 작업 시간으로 해석하지 않는다.
+
+swap_ms:
+  glutSwapBuffers 호출 경과 시간.
+  VSync, GPU 완료 대기, 드라이버/창 시스템 영향이 섞일 수 있다.
+
+previous_log_cpu_ms:
+  직전 프레임의 상태 수집, GPU 결과 확인, CSV 문자열 생성, 대기열 등록 및 콘솔 요약 비용.
+  현재 frame_ms에 직전 로그 처리 시간이 들어가는 관계를 맞춘 값이다.
+  기록 스레드의 CPU 점유나 디스크 자원 경쟁 전체를 나타내지는 않는다.
+
+추가 구간은 모두 *_ms와 *_calls를 함께 기록한다.
+  scene_update       SceneGraph의 한 단계 갱신, Actor 선택과 Update 포함
+  scene_sort         렌더 레이어 대상 수집, 깊이 계산, 정렬
+  scene_render       정렬 이후 Actor Render 콜백 실행
+  navigation         NavigationGrid::BuildFlow
+  world_stream       World::Stream
+  collision_refresh  World::RefreshColliders
+  save_game          Prototype::Save
+  cache_read         파일 캐시 로딩 경로
+  cache_write        파일 캐시 저장 경로
+  cache_upload       공유 정점 저장소 업로드 호출
+
+구간은 중첩될 수 있다. 예를 들어 world_stream에 collision_refresh가 포함될 수 있다.
+모든 *_ms를 합산하여 프레임 총 시간으로 사용하면 중복 계산이다.
+cache_read/write 호출 수는 경로 진입 수이며, 디스크 캐시 비활성화로 즉시 반환한 경우도 포함한다.
+렌더러 생성·게임 최초 로딩·프로파일러 준비 과정은 프레임 로그 시작 이전이므로 포함되지 않는다.
+종료 시 저장 역시 종료 프레임을 새로 만들지 않으므로 프레임 비용 집계에 포함하지 않는다.
+
+4. 렌더링·캐시 열 정의
+
+draw_calls:
+  실제 glDraw* 제출 횟수.
+  Renderer의 glDrawArraysInstanced 1회는 삼각형 인스턴스 수와 무관하게 1회다.
+  glDrawBuffer는 프레임버퍼 출력 대상 설정이므로 제외한다.
+
+합계 관계:
+  draw_calls =
+    world_draws + hud_draws +
+    bloom_extract_draws + bloom_blur_draws +
+    edge_downsample_draws + edge_blur_draws + composite_draws
+
+mesh_instances:
+  제출한 메시 인스턴스 레코드 수. 한 메시가 배치 용량 때문에 분할되면 여러 레코드가 된다.
+triangle_instances:
+  월드/HUD의 삼각형 참조 수. 후처리 전체 화면 삼각형은 포함하지 않는다.
+instance_upload_bytes:
+  매 프레임 인스턴스 64바이트와 삼각형 참조 8바이트의 업로드 합계.
+mesh_upload_bytes:
+  원형 정점 업로드 합계. 최초 생성·파일 로딩·저장소 확장/압축 시 증가한다.
+
+mesh_count / mesh_live_bytes / mesh_capacity_bytes / mesh_limit_bytes:
+  메모리 캐시 엔트리 수, 실제 저장 정점 바이트, GPU 버퍼 할당 용량, 설정/장치 제한.
+  live_bytes는 CPU 정점 사본, 컨테이너, GDI 캐시, 후처리 텍스처 등 전체 메모리가 아니다.
+
+mesh_new / mesh_loaded:
+  새 원형 생성 수 / 파일에서 읽어 GPU에 등록한 메시 수.
+cache_hits / cache_misses:
+  메모리 메시 조회의 성공/실패 수. 프레임 수나 서로 다른 메시 개수가 아니다.
+  TextWidth와 Text가 같은 글자를 조회하면 각각 카운트한다.
+file_missing / file_invalid / file_errors:
+  파일 없음 / 버전·체크섬·형식 검증 실패 / 파일 열기·쓰기 등의 오류.
+file_saved / file_skipped:
+  저장 성공 / 비활성화·파일 크기 제한·예산 등으로 저장 생략.
+file_read_bytes / file_written_bytes:
+  성공한 메시 파일의 논리 데이터 크기. OS/디스크의 실제 전송량과 다를 수 있다.
+mesh_evicted / atlas_compactions / atlas_growth / upload_rejected:
+  프레임 경계 엔트리 제거, 정점 압축, GPU 저장소 확장, 용량 등에 의한 업로드 거절.
+disk_cache_enabled:
+  파일 캐시 경로가 현재 활성화되어 있는지 표시.
+
+파일 캐시는 MeshCache/v3, 분석 로그는 PerformanceLogs에 저장한다.
+파일 캐시 적중과 GPU 캐시 적중을 혼동하지 않는다.
+캐시가 준비된 정지 화면에서도 mesh_new 또는 업로드가 계속 증가하면
+키에 시간/위치가 잘못 포함되었는지, 용량 초과로 원형을 반복 생성하는지 확인한다.
+
+5. GPU 측정과 기록 품질
+
+OpenGL GL_TIME_ELAPSED를 사용한다.
+렌더링 스레드에서 쿼리를 시작/종료하고, GL_QUERY_RESULT_AVAILABLE이 참인 결과만 읽는다.
+결과를 얻기 위해 glFinish 또는 동기 대기를 추가하지 않는다.
+이 동작 방식은 Khronos의 Query Object 설명을 따른다.
+  https://wikis.khronos.org/opengl/Query_Object
+
+쿼리 풀은 128개다.
+지원되지 않거나 풀이 가득 차면 렌더링은 계속하고 gpu_skipped에 누락을 기록한다.
+gpu_available=0의 결과를 0ms로 해석하면 안 된다.
+정상 종료에도 아직 준비되지 않은 쿼리를 강제로 기다리지 않고 개수를 남긴다.
+
+world/hud 측정은 배치 Flush의 인스턴스 업로드 및 draw 제출 구간이다.
+post 측정은 전체 후처리 Present다. 개별 Bloom/블러 패스별 GPU 시간은 아직 분리하지 않았다.
+GL_TIME_ELAPSED 값은 드라이버·스케줄링 영향을 받을 수 있으며
+GPU 사용률, VRAM 사용량 또는 전체 GPU 프레임 시간과 동일하지 않다.
+Flush 밖에서 이루어진 원형 메시 업로드 등은 GPU 구간 합계에 포함되지 않는다.
+CPU와 GPU는 겹쳐 진행하므로 두 시간을 더해 frame_ms와 비교하지 않는다.
+
+CSV 쓰기는 별도 스레드에서 수행한다.
+대기열은 최대 512패킷 또는 8MiB, 실행별 CSV 총량은 256MiB다.
+약 1초마다 파일 버퍼를 flush하고 정상 종료 때 남은 큐를 처리한다.
+패킷에는 한 프레임의 여러 파일 행이 함께 들어갈 수 있다.
+대기열이 차면 패킷을 버리고 log_packets_dropped_total에 기록한다.
+파일 상한이나 I/O 오류면 기록을 중단하고 콘솔 요약을 유지한다.
+log_file_failed와 log_limit_reached를 구분해서 본다.
+디스크 오류가 발생하면 파일 사이 일부 행의 저장 여부가 다를 수 있다.
+분석 스크립트는 draw 합계와 배치 행 수, GPU 결과 누락을 확인해 이를 드러낸다.
+
+세션별 제한이므로 여러 번 실행하면 폴더 전체 용량은 계속 늘어난다.
+필요한 세션을 보관한 뒤 오래된 실행 폴더는 사용자가 정리한다.
+로그 작성 중 또는 비정상 종료 직후에는 마지막 행이 불완전할 수 있다.
+게임을 정상 종료하고 분석하는 것을 기준으로 한다.
+
+6. 재현 가능한 비교 절차
+
+A. 실행 환경 고정
+  같은 PC, GPU, 드라이버, Release/x64, 해상도와 전원 상태를 사용한다.
+  Debug와 Release를 섞어 비교하지 않는다.
+  비교 세션의 session.txt 및 셰이더 해시를 보관한다.
+  Git 커밋/변경 이름은 GSE_PROFILE_LABEL에 별도 라벨로 남길 수 있다.
+  Visual Studio 디버깅 환경 또는 실행한 셸에서 설정한다.
+    GSE_PROFILE_LABEL=before-change
+    GSE_PROFILE_LABEL=after-change
+  로그 자체의 영향을 비교할 때는 GSE_PROFILE=0으로 실행한다.
+  비활성화 시 CSV/콘솔 프로파일 요약/GPU 계측이 꺼지므로 그 비교에는 외부 측정이 필요하다.
+
+B. 캐시 상태 분리
+  첫 실행: 새 메시 생성·파일 저장 비용을 포함하는 cold 구간.
+  재실행: 기존 파일을 읽어 GPU에 적재하는 구간.
+  준비 후: CPU/GPU 메모리 캐시가 안정된 warm 구간.
+  cold와 warm 평균을 섞어 개선률로 제시하지 않는다.
+  같은 저장 게임과 시드를 사용하고, 캐시 폴더 상태를 함께 메모한다.
+
+C. 권장 장면
+  1) 같은 위치에서 60초 정지.
+  2) 동일한 경로로 60초 이동하며 청크를 스트리밍.
+  3) 적·발사체·아이템이 많은 전투.
+  4) 보스 전투와 범위 효과.
+  5) UI/한글 알림이 많은 장면.
+  각 시작 지점에 M으로 표시한다.
+  한 번에 Bloom/가장자리 흐림/스캔/줌 중 하나만 바꾼다.
+  플레이 입력이 완전히 결정적으로 재생되는 시스템은 아직 없으므로
+  적·아이템 수와 플레이어 좌표를 확인해 장면 차이를 함께 평가한다.
+
+D. 분석 실행 예
+  저장한 실제 세션 폴더 경로로 바꾼 뒤 저장소 루트에서 실행한다.
+  python tools/analyze_profile.py "세션폴더" --skip-seconds 5
+  python tools/analyze_profile.py "현재세션" --baseline "기준세션" --skip-seconds 5 --foreground-only
+  기본적으로 처음 5초를 제외한다. 짧은 실행은 --skip-seconds 0으로 분석할 수 있다.
+  결과는 현재 세션의 analysis_report.txt이며 다시 실행하면 이 분석 결과 파일을 갱신한다.
+
+E. 판단 기준
+  전체 원본에서 frame_ms p95/p99와 50ms 초과 횟수를 확인한다.
+  1초 구간의 프레임 수가 5개라면 p99는 사실상 최댓값이므로 장시간 표본으로 다시 본다.
+  표시 FPS만 보지 말고 draw_cpu_ms, GPU stage 시간, 업로드, cache miss를 함께 비교한다.
+  설정 혼합, 전경/백그라운드 전환, 누락 패킷, GPU 표본 누락을 먼저 확인한다.
+  summary.csv의 FPS는 해당 구간 완료 프레임 수/실제 구간 시간이다.
+  분석 스크립트의 FPS는 선택된 frame_ms 표본의 평균 역수이므로 필터/누락이 있으면
+  전체 세션 FPS와 다르다.
+
+7. Draw Call 감소 현황
+
+배치 용량을 넘지 않는 월드/HUD 각각 1회 기준:
+  후처리 기본 설정              15회 = 월드 1 + HUD 1 + 후처리 13
+  Bloom만 끔                     8회 = 월드 1 + HUD 1 + 가장자리 5 + 합성 1
+  가장자리 흐림만 끔             10회 = 월드 1 + HUD 1 + Bloom 7 + 합성 1
+  Bloom/가장자리 흐림 둘 다 끔     3회 = 월드 1 + HUD 1 + 합성 1
+  후처리 전체 끔                  2회 = 월드 1 + HUD 1
+
+Bloom: 밝은 영역 추출 1 + 가로/세로 블러 3회 반복 = 7회.
+가장자리 흐림: 축소 1 + 가로/세로 블러 2회 반복 = 5회.
+합성: 톤 매핑, 비네트, 결과 합성 = 1회.
+비네트 토글만으로는 draw call이 줄지 않는다.
+
+이 값은 코드상 예상이다. 실행으로 확인된 171회와 직접 실측 비교한 결과는 아니다.
+삼각형/인스턴스 상한에 걸리면 월드/HUD 배치가 나뉘어 더 증가한다.
+후처리 사용 불가나 효과 강도 0이면 실행 경로에 따라 줄어든다.
+실제로 확인할 때는 frames.csv 패스 카운터와 batches.csv의 reason을 사용한다.
+
+8. 추가 개선 후보와 우선순위
+
+[우선 1] 병목 구분: draw call 수만 목표로 삼지 않는다
+  조건: draw call이 이미 15 안팎인데 여전히 frame_ms가 높음.
+  측정: draw_cpu_ms, scene_sort_ms, scene_render_ms, GPU world/hud/post, swap_ms.
+  CPU 정렬이 길다면 후처리 패스를 줄여도 해결되지 않는다.
+  GPU post가 길다면 Actor 구조 변경보다 후처리 품질 단계 실험이 우선이다.
+
+[우선 2] 후처리 패스 수 줄이기 — API 호출 수를 직접 줄이는 방법
+  A. Bloom 반복을 3→2로 줄이면 블러 draw 2회 감소.
+  B. 가장자리 블러 반복을 2→1로 줄이면 draw 2회 감소.
+  두 변경은 기본 예상 15→11회지만 번짐 폭·부드러움이 바뀌므로 화질 비교가 필요하다.
+  C. 두 축소 입력을 MRT로 동시에 출력하는 방식 검토:
+     현재 같은 장면에서 Bloom 추출과 일반 축소를 각각 수행한다.
+     같은 해상도의 두 출력 attachment에 한 번에 쓰면 두 효과 활성 시 축소 draw 1회 감소 가능.
+     임계값 적용 후 평균을 내는 기존 Bloom 의미를 유지해야 한다.
+     프레임버퍼 구성과 출력 셰이더 변경이 필요하며 아직 구현하지 않았다.
+  D. 비네트는 이미 최종 합성에 포함되므로 별도 패스로 분리하지 않는다.
+  E. 순차 의존성이 있는 가로/세로 블러를 단순히 같은 draw에 합치면 같은 알고리즘이 아니다.
+
+[우선 3] 한글 GPU 부하 줄이기 — draw call이 같아도 개선될 수 있는 방법
+  현재 획을 메시로 캐시해 CPU 재생성은 피하지만 글자당 삼각형은 많다.
+  증상: HUD triangle_instances와 GPU hud 시간이 큼.
+  후보: 글자 coverage texture atlas + 글자당 사각형 인스턴싱.
+  기대: 글자당 수백 개 획 삼각형을 사각형 2개 삼각형으로 줄일 수 있음.
+  비용: 텍스처 atlas 패킹, 글리프 업로드, 샘플링/확대 품질, 기존 도형과의 배치 통합.
+  별도 폰트 패스로 나누면 호출이 1회 늘 수 있지만 전체 GPU/CPU 시간은 줄 수 있다.
+  새 텍스처 때문에 글자마다 바인딩/flush하지 않는 구조가 필요하다.
+  본 작업에서는 한글 렌더링 결과를 바꾸지 않고 계측만 추가했다.
+
+[우선 4] 배치 용량 때문에 생기는 추가 호출 줄이기
+  근거: batches.csv에 instance_limit 또는 triangle_limit가 실제로 나타남.
+  A. 화면 밖 Actor/청크를 CPU 단계에서 제거해 제출량 자체를 줄인다.
+  B. 건물처럼 안정된 복합 Actor는 하나의 원형 메시로 기록해 기본 도형 인스턴스 수를 줄인다.
+  C. 필요할 때만 배치 상한을 늘린다. 장치 texture buffer 제한과 업로드 증가를 같이 확인한다.
+  D. 인스턴스 fill ratio가 낮은데 호출이 많으면 상한 문제가 아닌 상태/패스 경계를 조사한다.
+  현재 world_end와 frame_end는 HDR 및 HUD 분리 때문에 필요한 경계다.
+
+[우선 5] 인스턴스 참조 조립과 업로드 줄이기
+  현재 원형은 재사용하지만 삼각형 참조 스트림은 매 프레임 채운다.
+  증상: mesh_new=0, mesh_upload_bytes=0인데 draw_cpu_ms와 instance_upload_bytes가 큼.
+  후보: 변경되지 않은 청크의 명령/참조 구간 재사용, 변환만 갱신,
+        링/복합 이펙트의 원형화, 참조 배열 용량 재사용 강화.
+  깊이 순서가 바뀌는 Actor와 반투명 도형을 무조건 한 그룹으로 정렬하면 안 된다.
+  GPU 버퍼 다중화 등 전송 방식 개선은 드라이버 대기 증가가 보일 때 검토한다.
+
+[우선 6] CPU 장면 관리의 구조 변경
+  scene_sort_ms: 현재 깊이 계산에서 비건물 Actor와 건물 관계를 반복 검사한다.
+    후보: 건물 공간 인덱스, 이웃 청크 검사, 변경된 Actor만 깊이 재평가.
+  scene_update_ms: 단계별 대상 수집이 반복된다.
+    후보: 갱신 단계별 Actor 목록 유지 및 생성/삭제 때 갱신.
+  collision_refresh_ms: 변경 없는 건물 충돌 정보를 매번 재구성하는지 확인한다.
+    후보: 청크 생성/제거, 건물 이동 때만 갱신하는 변경 표시.
+  navigation_ms: 맵/플레이어 셀 변경과 flow 재계산 빈도를 비교한다.
+  위 후보는 현재 소스의 검사 경로를 바탕으로 한 가설이며 실측 병목이 확인되어야 우선순위를 정한다.
+
+[우선 7] 더 새로운 OpenGL 기능 검토
+  현재 최소 버전은 3.3이다.
+  Multi Draw Indirect는 OpenGL 4.3 또는 관련 확장 지원을 전제로 검토한다.
+  메시/인덱스 기반 간접 명령으로 현재 삼각형 참조 스트림의 CPU·업로드 비용을 줄일 여지가 있다.
+  API 호출 수 감소 자체보다 참조 데이터 양, 드라이버 비용, 호환성 비용을 비교해야 한다.
+  최소 GPU 요구 사항과 셰이더 데이터 접근 설계를 함께 변경해야 하므로 즉시 교체 대상은 아니다.
+  근거: https://wikis.khronos.org/opengl/GLAPI/glMultiDrawElementsIndirect
+
+9. 로그 패턴별 다음 행동
+
+패턴                                  조사/대응
+mesh_new·file_saved가 초기만 증가      정상적인 최초 생성인지 warm 구간과 구분
+mesh_loaded가 재실행 초기 증가         파일 캐시 재사용 확인
+정지 상태에서 upload_rejected 반복    메모리 제한, 활성 메시 크기, fallback 재생성 확인
+atlas_compactions와 긴 프레임 동시     압축/퇴출 정책 및 GPU 저장소 재업로드 조사
+scene_sort_ms 증가와 actors 증가       공간 인덱스·깊이 갱신 정책 실험
+world_stream_ms와 cache_write_ms 동시   생성/저장 작업의 프레임 분산 또는 비동기화 검토
+GPU post만 큼                         B/F 토글 비교 후 후처리 반복·해상도·탭 수 실험
+GPU hud와 triangles 큼                글자 texture atlas 실험
+swap_ms만 큼                          VSync/화면 시스템/드라이버 대기와 GPU 결과 함께 확인
+draw_calls는 감소, frame_ms는 동일     실제 병목이 다른 곳인지 확인
+previous_log_cpu_ms 또는 누락 증가     계측 부담, 디스크 상태, 더 가벼운 기록 모드 검토
+dt_clamped_updates 반복                낮은 FPS 영향 기록, 시간 진행 정책은 별도 설계 검토
+
+10. 한계와 다음 구현 기준
+
+현재 포함하지 않은 계측:
+  실제 VRAM 사용량·GPU 사용률, 하드웨어 카운터, 오버드로,
+  텍스처 샘플 수 실측, 픽셀별 부하, 개별 Actor/함수의 전체 호출 그래프,
+  후처리 각 세부 패스별 GPU 시간, 저장/초기화의 모든 세부 구간,
+  자동 입력 재생과 완전 결정적 벤치마크.
+
+렌더러 API 호출 수를 줄이는 최적화와 처리량을 줄이는 최적화를 구분해야 한다.
+예를 들어 후처리 해상도 축소나 GaussianBlur.fs의 9-tap 샘플링 개선은
+draw call 수가 같아도 GPU 시간을 줄일 가능성이 있다.
+반대로 큰 배치 하나가 너무 많은 정점·픽셀을 처리하면 호출이 적어도 느릴 수 있다.
+
+추가 변경의 완료 조건:
+  동일 조건의 전후 세션과 코드/셰이더 식별 자료 보관.
+  warm/cold, CPU/GPU, 평균/p95/p99를 구분한 비교.
+  draw 호출 합계와 캐시 생성·업로드 변화 설명.
+  레이어 순서·반투명·Bloom·한글 품질의 사용자 화면 확인.
+  개선하지 못했거나 악화된 항목도 함께 기록.
+
+11. 주요 파일과 참고 자료
+
+PerformanceLog.h/cpp: 세션 파일, CSV, 요약, 이벤트, 비동기 기록.
+ProfileMetrics.h: CPU 구간 시간과 게임 상태 자료형.
+GpuProfiler.h/cpp: 비동기 GPU 시간 측정.
+Renderer.h/cpp: 배치별 기록, 종료 이유, draw/인스턴스 집계.
+PostProcessor.h/cpp: 실제 후처리 패스별 draw 횟수.
+MeshCache.h/cpp, MeshCacheDisk.cpp: 생성·로딩·오류·용량·업로드 계측.
+SceneGraph, World, NavigationGrid, Prototype: CPU 구간 계측.
+tools/analyze_profile.py: 원본 CSV 요약 및 전후 실행 비교.
+
+Khronos Query Object:
+  https://wikis.khronos.org/opengl/Query_Object
+Khronos glBeginQuery:
+  https://wikis.khronos.org/opengl/GLAPI/glBeginQuery
+Khronos Buffer Texture:
+  https://wikis.khronos.org/opengl/Buffer_Texture
+Khronos Multi Draw Elements Indirect:
+  https://wikis.khronos.org/opengl/GLAPI/glMultiDrawElementsIndirect
+
+1~11절은 계측 도입 시의 설계·분석 자료다.
+아래 실측은 사용자가 실행해 남긴 CSV에서 읽었으며, 수정 후 성능은 아직 측정하지 않았다.
+
+12. 2026-09-22 저 FPS 원인 분석과 CPU 병목 수정
+
+자료:
+  x64/Debug/PerformanceLogs/20260922T104301-296Z-33348-0/
+  session.txt, frames.csv, batches.csv, gpu.csv
+환경:
+  x64 Debug, AMD Radeon(TM) Graphics, OpenGL 3.3.
+  일부 프레임은 창이 전경이 아닌 상태다. Release/전경 실행과 직접 비교하지 않는다.
+  session.txt에 정상 종료 통계가 없어, 확보된 CSV 행만 분석했다.
+  게임을 다시 실행하거나 빌드하지 않고 기존 파일을 읽었다.
+
+시작 5초 이후 확보된 49프레임의 평균:
+  frame_ms           313.48ms
+  draw_cpu_ms        267.99ms
+  scene_sort_ms      242.23ms
+  scene_render_ms     24.98ms
+  update_ms_total     42.96ms
+  navigation_ms      34.76ms (탐색하지 않은 프레임의 0ms도 포함)
+  navigation_ms 최대 268.70ms
+
+scene_sort_ms는 std::stable_sort만의 시간이 아니다.
+Actor 수집, 활성/가시성 확인, ActorDepth 계산, 실제 정렬이 모두 들어간다.
+소스에서 ActorDepth가 월드 오브젝트마다 전체 BuildingActor를 순회하면서
+IsActive/IsVisible/Geometry를 반복 호출하는 구조를 확인했다.
+이 호출들은 SceneGraph의 ID 검색과 부모 계층 조회를 반복한다.
+별도의 함수 단위 계측은 없으므로 242ms 전체가 특정 함수 하나의 시간이라고 단정하지 않는다.
+
+프레임 53~56의 GPU 측정은 월드 약 1.08~1.38ms, 후처리 약 3.87~3.92ms,
+HUD 약 0.36~0.37ms였다. 측정 구간 합은 약 5.3~5.7ms다.
+프레임 54~56의 월드/HUD 배치 제출 CPU 시간도 각각 0.05~0.16ms 수준이었다.
+현재 자료에서는 draw call 15회나 GPU 후처리보다 CPU 정렬 준비 비용이 훨씬 크다.
+먼저 이 CPU 병목을 줄이는 것이 이번 수정의 목표다.
+
+수정 A: 건물 깊이 보정용 공간 인덱스
+  Prototype::PrepareDepthBuildings에서 활성·가시 건물의 위치와 깊이를
+  프레임당 한 번 수집하고 청크별 값 배열로 보관한다.
+  ActorDepth는 해당 오브젝트가 위치한 청크의 건물 후보만 읽는다.
+  전체 건물 × 전체 월드 오브젝트 형태의 반복적인 Actor 조회를 제거했다.
+  남쪽/동쪽 55 단위 깊이 보정 범위를 이웃 청크에도 등록한다.
+  기존 경계 비교식과 stable_sort를 유지해 앞뒤 가림과 동일 깊이 순서를 보존한다.
+  매 Draw마다 갱신하므로 건물/부모의 이동, 활성·가시성 변경을 반영한다.
+  Actor 포인터를 장기 보관하지 않아 삭제된 Actor를 참조하지 않는다.
+
+수정 B: 경로 탐색용 충돌 스냅샷
+  BuildFlow 시작 시 World::CaptureWalkability로 로드된 청크와
+  활성 건물의 현재 충돌 형상을 값으로 복사한다.
+  셀 및 경로 샘플마다 SceneGraph ID 검색, dynamic_cast, 활성 계층 및
+  부모 좌표 계산을 다시 하지 않고 복사된 형상만 검사한다.
+  스냅샷은 한 번의 동기 BuildFlow 안에서만 사용한다.
+  플레이어/적/발사체의 실제 이동은 기존 World::CanWalk를 사용한다.
+  미로드 청크 차단, 8 단위 여백, 엄격한 부등호, 6 단위 경로 샘플링을 유지했다.
+  부모 이동/삭제/비활성 처리는 기존 colliders_ 갱신 시점과 동일하다.
+
+수정 C: 배치 참조 배열 채우기
+  Renderer::Submit에서 삼각형마다 push_back하는 대신 메시 단위로 resize 후
+  연속 메모리에 참조를 채운다. 특히 Debug에서 반복적인 컨테이너 호출을 줄인다.
+  배치 상한, 참조 순서, 인스턴스 수와 업로드 형식은 유지한다.
+
+추가된 관측값:
+  콘솔 SortMs(avg): scene_sort_ms의 프레임 평균.
+  콘솔 DepthPrepMs(avg): 새 건물 공간 인덱스 준비 시간의 프레임 평균.
+  콘솔 NavMs(maxFrame): 요약 구간 내 프레임별 navigation_ms의 최댓값.
+  frames.csv depth_prepare_ms/calls: 건물 인덱스 생성 비용.
+  frames.csv navigation_snapshot_ms/calls: 충돌 정보 복사 비용.
+  navigation_snapshot_ms는 navigation_ms 안에 포함되므로 합산하지 않는다.
+  기존 정렬 준비와 비교할 때는 scene_sort_ms + depth_prepare_ms를 사용한다.
+  분석 스크립트는 새 열을 선택적으로 읽어 기존 CSV도 계속 처리한다.
+
+사용자 확인 절차:
+  먼저 같은 x64 Debug 설정과 해상도·저장 위치·후처리 옵션으로 다시 실행한다.
+  동일한 전경 상태와 워밍업 구간을 맞추고 이동/정지 각각을 비교한다.
+  SortMs와 DepthPrepMs 합, DrawMs, NavMs(maxFrame), 프레임 p95/p99를 확인한다.
+  건물 남쪽·동쪽 및 청크 경계의 앞뒤 가림, 적의 건물 우회도 확인한다.
+  별도로 Release를 비교할 때는 빌드 설정 효과를 코드 수정 효과와 구분한다.
+  DrawCalls는 같은 화면에서 15회로 남아도 정상이다. 이번 수정 대상은 CPU 비용이다.
+
+수정 후 FPS나 개선 비율은 아직 없다. 빌드·실행·테스트는 사용자가 진행한다.

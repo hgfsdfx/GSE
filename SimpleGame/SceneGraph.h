@@ -189,6 +189,21 @@ class SceneGraph
     bool IsActive(ActorId id) const;
     bool IsVisible(ActorId id) const;
 
+    size_t Count() const
+    {
+        return actors_.size();
+    }
+
+    template <class T> size_t Count() const
+    {
+        return Query(typeid(T),
+                     [](const Actor* actor)
+                     {
+                         return dynamic_cast<const T*>(actor) != nullptr;
+                     })
+            .size();
+    }
+
   private:
 
     void Rebind();

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "ProfileMetrics.h"
 #include "NavigationGrid.h"
 #include "GameMath.h"
 #include <algorithm>
@@ -8,6 +9,24 @@
 #include <utility>
 using GameMath::Direction;
 using GameMath::Distance;
+
+namespace
+{
+    template <class CollisionWorld>
+    bool IsPathClear(const CollisionWorld& world, WorldPoint a, WorldPoint b)
+    {
+        const int steps = std::max(1, int(std::ceil(Distance(a, b) / 6)));
+        for (int i = 0; i <= steps; ++i)
+        {
+            const double t = double(i) / steps;
+            if (!world.CanWalk({a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t}))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+} // namespace
 
 int NavigationGrid::CellAt(WorldPoint point) const
 {
@@ -28,20 +47,13 @@ WorldPoint NavigationGrid::CellCenter(int cell) const
 
 bool NavigationGrid::ClearPath(const World& world, WorldPoint a, WorldPoint b) const
 {
-    const int steps = std::max(1, int(std::ceil(Distance(a, b) / 6)));
-    for (int i = 0; i <= steps; ++i)
-    {
-        const double t = double(i) / steps;
-        if (!world.CanWalk({a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t}))
-        {
-            return false;
-        }
-    }
-    return true;
+    return IsPathClear(world, a, b);
 }
 
 void NavigationGrid::BuildFlow(const World& world, WorldPoint player)
 {
+    const CpuProfileScope profile(CpuMetric::Navigation);
+    const auto collision = world.CaptureWalkability();
     // Keep a bounded navigation grid around the player throughout the endless city.
     flowOrigin_ = {std::floor(player.x / CellSize) * CellSize - DistrictSize / 2,
                    std::floor(player.y / CellSize) * CellSize - DistrictSize / 2};
@@ -51,9 +63,9 @@ void NavigationGrid::BuildFlow(const World& world, WorldPoint player)
     for (int cell = 0; cell < GridSide * GridSide; ++cell)
     {
         const auto position = CellCenter(cell);
-        walkable_[cell] = world.CanWalk(position);
+        walkable_[cell] = collision.CanWalk(position);
         const double distance = Distance(position, player);
-        if (walkable_[cell] && distance < closest && ClearPath(world, position, player))
+        if (walkable_[cell] && distance < closest && IsPathClear(collision, position, player))
         {
             goal = cell;
             closest = distance;
@@ -80,7 +92,7 @@ void NavigationGrid::BuildFlow(const World& world, WorldPoint player)
             }
             const int next = ny * GridSide + nx;
             if (walkable_[next] && distance_[next] < 0
-                && ClearPath(world, CellCenter(cell), CellCenter(next)))
+                && IsPathClear(collision, CellCenter(cell), CellCenter(next)))
             {
                 distance_[next] = distance_[cell] + 1;
                 queue.push(next);

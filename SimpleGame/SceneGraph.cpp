@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "ProfileMetrics.h"
 #include "SceneGraph.h"
 #include <cassert>
 
@@ -208,6 +209,7 @@ bool SceneGraph::IsVisible(ActorId id) const
 
 void SceneGraph::Update(UpdatePhase phase, float dt, ActorUpdateContext& context)
 {
+    const CpuProfileScope profile(CpuMetric::SceneUpdate);
     std::vector<ActorId> order;
     for (const auto& entry : actors_)
     {
@@ -228,6 +230,8 @@ void SceneGraph::Update(UpdatePhase phase, float dt, ActorUpdateContext& context
 
 void SceneGraph::Render(RenderLayer layer, ActorRenderContext& context)
 {
+    const auto sortStart = ProfilingEnabled ? ProfileClock::now() : ProfileClock::time_point{};
+
     struct Entry
     {
         ActorId id;
@@ -249,6 +253,8 @@ void SceneGraph::Render(RenderLayer layer, ActorRenderContext& context)
                      {
                          return a.depth < b.depth;
                      });
+    RecordCpuMetric(CpuMetric::SceneSort, sortStart);
+    const CpuProfileScope renderProfile(CpuMetric::SceneRender);
     const TraversalGuard guard(traversals_);
     for (const auto& entry : order)
     {

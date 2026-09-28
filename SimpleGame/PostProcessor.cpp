@@ -146,6 +146,7 @@ void PostProcessor::Resize(int width, int height)
 bool PostProcessor::BeginScene()
 {
     drawCalls_ = 0;
+    passCounts_ = {};
     const bool capture = ready_ && settings.enabled;
     glBindFramebuffer(GL_FRAMEBUFFER, capture ? scene_.framebuffer : 0);
     glViewport(0, 0, width_, height_);
@@ -160,11 +161,12 @@ void PostProcessor::BindTarget(const Target& target, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-void PostProcessor::DrawTriangle()
+void PostProcessor::DrawTriangle(Pass pass)
 {
     glBindVertexArray(vao_);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     ++drawCalls_;
+    ++passCounts_[size_t(pass)];
 }
 
 void PostProcessor::Downsample(Target& destination, bool extract)
@@ -178,25 +180,25 @@ void PostProcessor::Downsample(Target& destination, bool extract)
     glUniform1i(down_.extract, extract ? 1 : 0);
     glUniform1f(down_.threshold, std::clamp(settings.bloomThreshold, .01f, 10.f));
     glUniform1f(down_.knee, std::clamp(settings.bloomKnee, .0001f, 5.f));
-    DrawTriangle();
+    DrawTriangle(extract ? Pass::BloomExtract : Pass::EdgeDownsample);
 }
 
-void PostProcessor::Blur(Target (&targets)[2], int iterations, float radius)
+void PostProcessor::Blur(Target (&targets)[2], int iterations, float radius, Pass pass)
 {
     glUseProgram(blurProgram_);
     glUniform1i(blur_.source, 0);
     glActiveTexture(GL_TEXTURE0);
     radius = std::clamp(radius, .25f, 6.f);
-    for (int pass = 0; pass < iterations; ++pass)
+    for (int iteration = 0; iteration < iterations; ++iteration)
     {
         BindTarget(targets[1], halfWidth_, halfHeight_);
         glBindTexture(GL_TEXTURE_2D, targets[0].texture);
         glUniform2f(blur_.direction, radius / halfWidth_, 0);
-        DrawTriangle();
+        DrawTriangle(pass);
         BindTarget(targets[0], halfWidth_, halfHeight_);
         glBindTexture(GL_TEXTURE_2D, targets[1].texture);
         glUniform2f(blur_.direction, 0, radius / halfHeight_);
-        DrawTriangle();
+        DrawTriangle(pass);
     }
 }
 
@@ -216,12 +218,12 @@ void PostProcessor::Present()
     if (bloomStrength > 0)
     {
         Downsample(bloom_[0], true);
-        Blur(bloom_, 3, settings.bloomRadius);
+        Blur(bloom_, 3, settings.bloomRadius, Pass::BloomBlur);
     }
     if (edgeStrength > 0)
     {
         Downsample(softScene_[0], false);
-        Blur(softScene_, 2, settings.edgeBlurRadius);
+        Blur(softScene_, 2, settings.edgeBlurRadius, Pass::EdgeBlur);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, width_, height_);
@@ -249,7 +251,7 @@ void PostProcessor::Present()
     glUniform2f(composite_.vignetteRange,
                 vignetteStart,
                 std::clamp(settings.vignetteEnd, vignetteStart + .01f, 1.5f));
-    DrawTriangle();
+    DrawTriangle(Pass::Composite);
     for (int i = 2; i >= 0; --i)
     {
         glActiveTexture(GL_TEXTURE0 + i);

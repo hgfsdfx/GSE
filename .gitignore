@@ -17,6 +17,8 @@
 *.exe.recipe
 *.save
 *.save.tmp
+**/MeshCache/
+**/PerformanceLogs/
 /x64/Debug/Shaders/
 /x64/Release/Shaders/
 /Debug/Shaders/

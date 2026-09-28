@@ -93,6 +93,35 @@ void Prototype::EnsurePresentationActors()
                                    });
 }
 
+void Prototype::PrepareDepthBuildings()
+{
+    const CpuProfileScope profile(CpuMetric::DepthPrepare);
+    // Snapshot once per Draw: actor transforms and visibility may change between frames.
+    // Store values, not actor pointers that could outlive scene destruction.
+    depthBuildings_.clear();
+    const auto& scene = level_.Scene();
+    for (const auto& actor : scene.Actors<BuildingActor>())
+    {
+        if (!scene.IsActive(actor.Id()) || !scene.IsVisible(actor.Id()))
+        {
+            continue;
+        }
+        const auto geometry = actor.Geometry();
+        const DepthBuilding building{geometry, actor.Depth()};
+        // Include both front-edge correction strips, including neighboring chunks.
+        const auto first = world_.KeyAt({geometry.x - 8, geometry.y - 8});
+        const auto last =
+            world_.KeyAt({geometry.x + geometry.width + 55, geometry.y + geometry.depth + 55});
+        for (auto y = first.y; y <= last.y; ++y)
+        {
+            for (auto x = first.x; x <= last.x; ++x)
+            {
+                depthBuildings_[{x, y}].push_back(building);
+            }
+        }
+    }
+}
+
 double Prototype::ActorDepth(const Actor& actor) const
 {
     double depth = actor.Depth();
@@ -101,20 +130,21 @@ double Prototype::ActorDepth(const Actor& actor) const
         return depth;
     }
     const auto point = actor.WorldPosition();
-    for (const auto& building : depthBuildings_)
+    const auto bucket = depthBuildings_.find(world_.KeyAt(point));
+    if (bucket == depthBuildings_.end())
     {
-        if (!level_.Scene().IsActive(building.Id()) || !level_.Scene().IsVisible(building.Id()))
-        {
-            continue;
-        }
-        const auto b = building.Geometry();
+        return depth;
+    }
+    for (const auto& building : bucket->second)
+    {
+        const auto& b = building.geometry;
         const bool south = point.y >= b.y + b.depth && point.y < b.y + b.depth + 55
                            && point.x >= b.x - 8 && point.x <= b.x + b.width + 8;
         const bool east = point.x >= b.x + b.width && point.x < b.x + b.width + 55
                           && point.y >= b.y - 8 && point.y <= b.y + b.depth + 8;
         if (south || east)
         {
-            depth = std::max(depth, building.Depth() + 1);
+            depth = std::max(depth, building.depth + 1);
         }
     }
     return depth;

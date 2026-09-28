@@ -1,6 +1,7 @@
 #pragma once
 #include <filesystem>
 #include <cstdint>
+#include <array>
 #include "Dependencies/glew.h"
 
 struct PostProcessingSettings
@@ -27,6 +28,21 @@ struct PostProcessingSettings
 class PostProcessor
 {
   public:
+
+    enum class Pass
+    {
+        BloomExtract,
+        BloomBlur,
+        EdgeDownsample,
+        EdgeBlur,
+        Composite,
+        Count
+    };
+
+    const std::array<uint64_t, size_t(Pass::Count)>& PassCounts() const
+    {
+        return passCounts_;
+    }
 
     PostProcessor() = default;
     ~PostProcessor();
@@ -75,12 +91,13 @@ class PostProcessor
     bool MakeTarget(Target& target, int width, int height);
     void ReleaseTargets();
     void Downsample(Target& destination, bool extract);
-    void Blur(Target (&targets)[2], int iterations, float radius);
+    void Blur(Target (&targets)[2], int iterations, float radius, Pass pass);
     void BindTarget(const Target& target, int width, int height);
-    void DrawTriangle();
+    void DrawTriangle(Pass pass);
     Target scene_, bloom_[2], softScene_[2];
     GLuint downsampleProgram_ = 0, blurProgram_ = 0, compositeProgram_ = 0, vao_ = 0;
     int width_ = 1, height_ = 1, halfWidth_ = 1, halfHeight_ = 1;
     bool ready_ = false;
     std::uint64_t drawCalls_ = 0;
+    std::array<uint64_t, size_t(Pass::Count)> passCounts_{};
 };

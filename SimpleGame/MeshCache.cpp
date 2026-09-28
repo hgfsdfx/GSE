@@ -1,149 +1,223 @@
 #include "stdafx.h"
+#include "ProfileMetrics.h"
 #include "MeshCache.h"
 #include <algorithm>
-#include <limits>
+#include <iostream>
 
 MeshCache::~MeshCache()
 {
-    Clear();
+    if (texture_)
+    {
+        glDeleteTextures(1, &texture_);
+    }
+    if (buffer_)
+    {
+        glDeleteBuffers(1, &buffer_);
+    }
 }
 
-void MeshCache::ConfigureVertexAttributes()
+bool MeshCache::Initialize(const std::filesystem::path& directory)
 {
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0,
-                          2,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          sizeof(MeshVertex),
-                          reinterpret_cast<void*>(offsetof(MeshVertex, x)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1,
-                          4,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          sizeof(MeshVertex),
-                          reinterpret_cast<void*>(offsetof(MeshVertex, r)));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2,
-                          1,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          sizeof(MeshVertex),
-                          reinterpret_cast<void*>(offsetof(MeshVertex, emission)));
-}
-
-void MeshCache::Release(Mesh& mesh)
-{
-    if (mesh.vao)
+    directory_ = directory;
+    std::error_code error;
+    std::filesystem::create_directories(directory_, error);
+    diskEnabled_ = !error;
+    if (diskEnabled_)
     {
-        glDeleteVertexArrays(1, &mesh.vao);
+        for (std::filesystem::directory_iterator it(directory_, error), end; !error && it != end;
+             it.increment(error))
+        {
+            if (it->is_regular_file(error) && it->path().extension() == L".gmesh")
+            {
+                const auto bytes = it->file_size(error);
+                if (!error)
+                {
+                    diskBytes_ += bytes;
+                    ++diskFiles_;
+                }
+            }
+        }
+        diskEnabled_ = !error;
     }
-    if (mesh.vbo)
+    if (!diskEnabled_)
     {
-        glDeleteBuffers(1, &mesh.vbo);
+        std::cerr << "메시 파일 캐시를 사용할 수 없습니다. 메모리 캐시로 계속합니다.\n";
     }
-    bytes_ -= mesh.bytes;
-    mesh = {};
-}
-
-void MeshCache::Clear()
-{
-    for (auto& entry : meshes_)
+    GLint texels = 0;
+    glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &texels);
+    maxVertices_ =
+        std::min(size_t(std::max(0, texels)) / 2, size_t(64 * 1024 * 1024) / sizeof(PackedVertex));
+    if (maxVertices_ < 6)
     {
-        Release(entry.second);
+        return false;
     }
-    meshes_.clear();
+    glGenBuffers(1, &buffer_);
+    glGenTextures(1, &texture_);
+    capacity_ = std::min(maxVertices_, size_t(32768));
+    glBindBuffer(GL_TEXTURE_BUFFER, buffer_);
+    glBufferData(GL_TEXTURE_BUFFER, capacity_ * sizeof(PackedVertex), nullptr, GL_DYNAMIC_DRAW);
+    glBindTexture(GL_TEXTURE_BUFFER, texture_);
+    glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, buffer_);
+    return buffer_ != 0 && texture_ != 0;
 }
 
 void MeshCache::BeginFrame()
 {
+    stats_ = {};
     ++frame_;
-    for (auto it = meshes_.begin(); it != meshes_.end();)
+    // Repack only between frames, after all queued triangle references were consumed.
+    if (compactNextFrame_)
     {
-        if (frame_ - it->second.lastUsedFrame > IdleFrames)
+        bool removed = false;
+        for (auto it = meshes_.begin(); it != meshes_.end();)
         {
-            Release(it->second);
-            it = meshes_.erase(it);
+            if (!it->second.pinned && frame_ - it->second.lastUsedFrame > 1)
+            {
+                it = meshes_.erase(it);
+                ++stats_.evicted;
+                removed = true;
+            }
+            else
+            {
+                ++it;
+            }
         }
-        else
+        if (removed)
         {
-            ++it;
+            Compact();
         }
+        compactNextFrame_ = false;
+    }
+}
+
+void MeshCache::Compact()
+{
+    ++stats_.compactions;
+    std::vector<PackedVertex> compact;
+    for (auto& entry : meshes_)
+    {
+        auto& mesh = entry.second;
+        const auto first = compact.size();
+        compact.insert(compact.end(),
+                       atlas_.begin() + mesh.firstVertex,
+                       atlas_.begin() + mesh.firstVertex + mesh.vertexCount);
+        mesh.firstVertex = static_cast<uint32_t>(first);
+    }
+    atlas_.swap(compact);
+    UploadAtlas();
+}
+
+void MeshCache::UploadAtlas()
+{
+    const CpuProfileScope profile(CpuMetric::CacheUpload);
+    glBindBuffer(GL_TEXTURE_BUFFER, buffer_);
+    glBufferData(GL_TEXTURE_BUFFER, capacity_ * sizeof(PackedVertex), nullptr, GL_DYNAMIC_DRAW);
+    if (!atlas_.empty())
+    {
+        glBufferSubData(GL_TEXTURE_BUFFER, 0, atlas_.size() * sizeof(PackedVertex), atlas_.data());
+        stats_.uploadedBytes += atlas_.size() * sizeof(PackedVertex);
     }
 }
 
 const MeshCache::Mesh* MeshCache::Find(const std::string& key)
 {
-    const auto it = meshes_.find(key);
-    if (it == meshes_.end())
+    const auto found = meshes_.find(key);
+    if (found != meshes_.end())
     {
-        return nullptr;
+        found->second.lastUsedFrame = frame_;
+        ++stats_.hits;
+        return &found->second;
     }
-    it->second.lastUsedFrame = frame_;
-    return &it->second;
+    std::vector<MeshVertex> vertices;
+    ++stats_.misses;
+    float advance = 0;
+    if (LoadFile(key, vertices, advance))
+    {
+        if (const auto mesh = Upload(key, vertices, advance, false))
+        {
+            ++stats_.diskLoaded;
+            return mesh;
+        }
+    }
+    return nullptr;
 }
 
 const MeshCache::Mesh* MeshCache::Store(const std::string& key,
-                                        const std::vector<MeshVertex>& vertices)
+                                        const std::vector<MeshVertex>& vertices,
+                                        float advance,
+                                        bool pinned)
 {
-    if (const auto cached = Find(key))
+    const auto found = meshes_.find(key);
+    if (found != meshes_.end())
     {
-        return cached;
+        found->second.lastUsedFrame = frame_;
+        found->second.pinned |= pinned;
+        return &found->second;
     }
-    if (vertices.empty() || vertices.size() > MaxBytes / sizeof(MeshVertex)
-        || vertices.size() > size_t(std::numeric_limits<GLsizei>::max()))
+    ++stats_.generated;
+    SaveFile(key, vertices, advance);
+    return Upload(key, vertices, advance, pinned);
+}
+
+const MeshCache::Mesh* MeshCache::Upload(const std::string& key,
+                                         const std::vector<MeshVertex>& vertices,
+                                         float advance,
+                                         bool pinned)
+{
+    if (vertices.size() % 3 != 0 || vertices.size() > maxVertices_ - atlas_.size()
+        || meshes_.size() >= MaxEntries)
     {
+        compactNextFrame_ = true;
+        ++stats_.uploadRejected;
         return nullptr;
     }
-    const size_t bytes = vertices.size() * sizeof(MeshVertex);
-    // Never evict a mesh referenced by a command queued during this frame.
-    while (meshes_.size() >= MaxEntries || bytes_ + bytes > MaxBytes)
+    const auto first = atlas_.size();
+    for (const auto& v : vertices)
     {
-        auto oldest = meshes_.end();
-        for (auto it = meshes_.begin(); it != meshes_.end(); ++it)
-        {
-            if (it->second.lastUsedFrame != frame_
-                && (oldest == meshes_.end()
-                    || it->second.lastUsedFrame < oldest->second.lastUsedFrame))
-            {
-                oldest = it;
-            }
-        }
-        if (oldest == meshes_.end())
-        {
-            return nullptr;
-        }
-        Release(oldest->second);
-        meshes_.erase(oldest);
+        atlas_.push_back({v.x, v.y, v.r, v.g, v.b, v.a, v.emission, 0});
     }
-    Mesh mesh;
-    glGenVertexArrays(1, &mesh.vao);
-    glGenBuffers(1, &mesh.vbo);
-    if (!mesh.vao || !mesh.vbo)
+    if (atlas_.size() > capacity_)
     {
-        Release(mesh);
-        return nullptr;
+        ++stats_.atlasGrowth;
+        capacity_ = std::min(maxVertices_, std::max(atlas_.size(), capacity_ * 2));
+        UploadAtlas();
     }
-    glBindVertexArray(mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBufferData(GL_ARRAY_BUFFER, bytes, vertices.data(), GL_STATIC_DRAW);
-    GLint64 allocated = 0;
-    glGetBufferParameteri64v(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &allocated);
-    if (allocated != static_cast<GLint64>(bytes))
+    else if (!vertices.empty())
     {
-        glBindVertexArray(0);
-        Release(mesh);
-        return nullptr;
+        const CpuProfileScope profile(CpuMetric::CacheUpload);
+        glBindBuffer(GL_TEXTURE_BUFFER, buffer_);
+        glBufferSubData(GL_TEXTURE_BUFFER,
+                        first * sizeof(PackedVertex),
+                        vertices.size() * sizeof(PackedVertex),
+                        atlas_.data() + first);
+        stats_.uploadedBytes += vertices.size() * sizeof(PackedVertex);
     }
-    ConfigureVertexAttributes();
-    glBindVertexArray(0);
-    mesh.vertexCount = static_cast<GLsizei>(vertices.size());
-    mesh.bytes = bytes;
-    mesh.lastUsedFrame = frame_;
-    const auto result = meshes_.emplace(key, mesh);
-    bytes_ += bytes;
-    return &result.first->second;
+    return &meshes_
+                .emplace(key,
+                         Mesh{static_cast<uint32_t>(first),
+                              static_cast<uint32_t>(vertices.size()),
+                              advance,
+                              frame_,
+                              pinned})
+                .first->second;
+}
+
+void MeshCache::Pin(const Mesh* mesh)
+{
+    if (mesh)
+    {
+        const_cast<Mesh*>(mesh)->pinned = true;
+    }
+}
+
+GLuint MeshCache::Texture() const
+{
+    return texture_;
+}
+
+const MeshCache::Statistics& MeshCache::Stats() const
+{
+    return stats_;
 }
 
 size_t MeshCache::Count() const
@@ -153,5 +227,5 @@ size_t MeshCache::Count() const
 
 size_t MeshCache::Bytes() const
 {
-    return bytes_;
+    return atlas_.size() * sizeof(PackedVertex);
 }

@@ -24,6 +24,7 @@ class FontGlyphCache
     FontGlyphCache(const FontGlyphCache&) = delete;
     FontGlyphCache& operator=(const FontGlyphCache&) = delete;
     const Glyph& Get(wchar_t character);
+    const std::string& Identity() const;
     static std::wstring Decode(const std::string& utf8);
     static constexpr float LineHeight = 14;
 

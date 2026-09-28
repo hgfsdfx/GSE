@@ -4,6 +4,7 @@
 #include "LevelOne.h"
 #include "WorldActors.h"
 #include <array>
+#include "ProfileMetrics.h"
 
 class Prototype
 {
@@ -15,6 +16,7 @@ class Prototype
     void Key(unsigned char key, bool down);
     void ReleaseKeys();
     bool Save();
+    GameProfileState ProfileState() const;
 
   private:
 
@@ -28,6 +30,7 @@ class Prototype
     void Hud();
     void BindActorRenderers();
     void EnsurePresentationActors();
+    void PrepareDepthBuildings();
     double ActorDepth(const Actor& actor) const;
     void DrawMarkers();
     void DrawTraffic(const TrafficActor& actor);
@@ -49,7 +52,14 @@ class Prototype
     std::filesystem::path savePath_;
     WorldPoint camera_{82, 245};
     ActorRenderContext actorRenderer_;
-    ActorView<const BuildingActor> depthBuildings_;
+
+    struct DepthBuilding
+    {
+        Building geometry;
+        double depth;
+    };
+
+    std::map<ChunkKey, std::vector<DepthBuilding>> depthBuildings_;
     std::array<bool, 256> keys_{};
     Device target_, hacking_;
     float time_ = 0, zoom_ = 1, hackProgress_ = 0, trace_ = 0, lockdown_ = 0;

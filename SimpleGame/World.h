@@ -22,6 +22,22 @@ class World
     ChunkKey KeyAt(WorldPoint point) const;
     void Stream(WorldPoint player, int radius);
     bool CanWalk(WorldPoint point) const;
+
+    // Immutable collision data for one synchronous navigation build. Runtime movement
+    // still uses World::CanWalk so actor mutations are observed immediately.
+    class WalkabilitySnapshot
+    {
+      public:
+
+        bool CanWalk(WorldPoint point) const;
+
+      private:
+
+        friend class World;
+        std::map<ChunkKey, std::vector<Building>> chunks_;
+    };
+
+    WalkabilitySnapshot CaptureWalkability() const;
     Device NearestDevice(WorldPoint point) const;
     std::vector<Device> Devices(const ChunkKey& key) const;
     const ChunkChanges& Changes(const ChunkKey& key) const;

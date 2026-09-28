@@ -6,6 +6,7 @@
 #include <limits>
 #include <map>
 #include <utility>
+#include <cstdint>
 
 #pragma comment(lib, "Gdi32.lib")
 
@@ -16,6 +17,7 @@ struct FontGlyphCache::Impl
     HGDIOBJ previousFont = nullptr;
     TEXTMETRICW metrics{};
     std::map<wchar_t, Glyph> glyphs;
+    std::string identity = "missing-font-v3";
 
     Impl()
     {
@@ -68,6 +70,33 @@ struct FontGlyphCache::Impl
             std::cerr
                 << "한글 글꼴을 찾지 못했습니다. Windows의 맑은 고딕 또는 굴림이 필요합니다.\n";
         }
+        else
+        {
+            // Fingerprint the actual selected font once, including fallback and font updates.
+            uint64_t hash = 14695981039346656037ull;
+            const DWORD size = GetFontData(dc, 0, 0, nullptr, 0);
+            std::vector<unsigned char> data;
+            if (size != GDI_ERROR && size <= 64 * 1024 * 1024)
+            {
+                data.resize(size);
+                if (GetFontData(dc, 0, 0, data.data(), size) == GDI_ERROR)
+                {
+                    data.clear();
+                }
+            }
+            if (data.empty())
+            {
+                wchar_t face[LF_FACESIZE] = {};
+                GetTextFaceW(dc, LF_FACESIZE, face);
+                const auto begin = reinterpret_cast<const unsigned char*>(face);
+                data.assign(begin, begin + sizeof(face));
+            }
+            for (auto byte : data)
+            {
+                hash = (hash ^ byte) * 1099511628211ull;
+            }
+            identity = "gdi24-v3-" + std::to_string(hash);
+        }
     }
 
     ~Impl()
@@ -93,6 +122,11 @@ FontGlyphCache::FontGlyphCache()
 }
 
 FontGlyphCache::~FontGlyphCache() = default;
+
+const std::string& FontGlyphCache::Identity() const
+{
+    return impl_->identity;
+}
 
 std::wstring FontGlyphCache::Decode(const std::string& utf8)
 {
