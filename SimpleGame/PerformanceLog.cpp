@@ -657,6 +657,15 @@ void PerformanceLog::RecordFrame(Renderer& renderer,
     row.Add("level", state.level);
     row.Add("boss", state.boss);
     row.Add("cleared", state.cleared);
+    row.Add("npcs", state.npcs);
+    row.Add("wallet", state.wallet);
+    row.Add("cargo", state.cargo);
+    row.Add("insight", state.insight);
+    row.Add("story", state.story);
+    row.Add("wanted", state.wanted);
+    row.Add("society_trades_total", state.trades);
+    row.Add("society_raids_total", state.raids);
+    row.Add("society_hunts_total", state.hunts);
     for (size_t i = 0; i < CpuMetricNames.size(); ++i)
     {
         row.Add(std::string(CpuMetricNames[i]) + "_ms", CpuProfile.milliseconds[i]);

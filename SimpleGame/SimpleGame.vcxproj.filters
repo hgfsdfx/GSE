@@ -24,11 +24,20 @@
     <Text Include="..\렌더링_캐시_구조.txt" />
     <Text Include="..\성능분석_로그_및_DrawCall_개선_리포트.txt" />
     <None Include="..\Actor_SceneGraph_구조.md" />
+    <None Include="..\doc\오픈월드_프로토타입_구현안내.md" />
+    <None Include="..\doc\월드_모니터링_실행안내.md" />
+    <None Include="..\doc\7개_마을_주택_소문_이사.md" />
+    <None Include="..\monitoring\index.html" />
+    <None Include="..\monitoring\dashboard.css" />
+    <None Include="..\monitoring\dashboard.js" />
+    <None Include="..\tools\monitor_server.py" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Society.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="WorldMonitor.h"><Filter>헤더 파일</Filter></ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -75,6 +84,12 @@
     </ClCompile>
     <ClCompile Include="FontGlyphCache.cpp"><Filter>소스 파일</Filter></ClCompile>
     <ClCompile Include="GpuProfiler.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="Society.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="SocietyAI.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="SocietySettlements.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="SocietySave.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="WorldMonitor.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="PrototypeSociety.cpp"><Filter>소스 파일</Filter></ClCompile>
     <ClCompile Include="PerformanceLog.cpp"><Filter>소스 파일</Filter></ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
@@ -140,5 +155,25 @@
     <None Include="Shaders\Composite.fs">
       <Filter>소스 파일\Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ModelMath.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="ModelAsset.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="AssetLibrary.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="ModelBatch.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="ModelActor.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClCompile Include="ModelMath.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="ModelAsset.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="AssetLibrary.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="ModelBatch.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="ModelActor.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="RendererModels.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="PrototypeModels.cpp"><Filter>소스 파일</Filter></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\doc\에셋_로더_및_애니메이션.md" />
+    <None Include="Dependencies\ASSET_LOADER_NOTICES.md" />
+    <None Include="Dependencies\cgltf.LICENSE" />
+    <None Include="Dependencies\json.LICENSE.MIT" />
   </ItemGroup>
 </Project>

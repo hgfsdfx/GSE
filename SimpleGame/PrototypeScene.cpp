@@ -4,6 +4,26 @@
 
 void Prototype::BindActorRenderers()
 {
+    actorRenderer_.Register<ModelActor>(
+        [this](const ModelActor& actor)
+        {
+            DrawModelActor(actor);
+        });
+    actorRenderer_.Register<HouseActor>(
+        [this](const HouseActor& house)
+        {
+            DrawHouse(house);
+        });
+    actorRenderer_.Register<NpcActor>(
+        [this](const NpcActor& npc)
+        {
+            DrawNpc(npc);
+        });
+    actorRenderer_.Register<TownActor>(
+        [this](const TownActor& town)
+        {
+            DrawTown(town);
+        });
     actorRenderer_.Register<GroundActor>(
         [this](const GroundActor& actor)
         {

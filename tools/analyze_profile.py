@@ -15,7 +15,7 @@ METRICS = (
     "mesh_upload_bytes", "instance_upload_bytes", "triangle_instances",
     "previous_log_cpu_ms",
 )
-OPTIONAL_METRICS = ("depth_prepare_ms", "navigation_snapshot_ms")
+OPTIONAL_METRICS = ("depth_prepare_ms", "navigation_snapshot_ms", "npc_simulation_ms")
 TOTALS = (
     "mesh_new", "mesh_loaded", "cache_hits", "cache_misses", "file_invalid",
     "file_errors", "file_saved", "file_skipped", "atlas_compactions",

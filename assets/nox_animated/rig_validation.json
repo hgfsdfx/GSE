@@ -1,0 +1,1348 @@
+{
+  "weights": [
+    {
+      "mesh": "SKM_NPC_Accessory_001_Visor",
+      "vertices": 32,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Accessory_002_DataPack",
+      "vertices": 56,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Accessory_003_RiotShield",
+      "vertices": 32,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_ArmL_001_Sleeve",
+      "vertices": 60,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_ArmL_002_Armor",
+      "vertices": 84,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_ArmL_003_Robot",
+      "vertices": 84,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_ArmR_001_Sleeve",
+      "vertices": 60,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_ArmR_002_Armor",
+      "vertices": 84,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_ArmR_003_Robot",
+      "vertices": 84,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Feet_001_Boots",
+      "vertices": 64,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Feet_002_Armor",
+      "vertices": 64,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Feet_003_Robot",
+      "vertices": 64,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Hair_001_Short",
+      "vertices": 120,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Hair_002_Long",
+      "vertices": 192,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Hair_003_Sidecut",
+      "vertices": 152,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Head_001_Male",
+      "vertices": 144,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Head_002_Female",
+      "vertices": 144,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Head_003_Robot",
+      "vertices": 80,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Legs_001_Pants",
+      "vertices": 120,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Legs_002_Armor",
+      "vertices": 184,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Legs_003_Robot",
+      "vertices": 184,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Torso_001_JacketMale",
+      "vertices": 136,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Torso_002_JacketFemale",
+      "vertices": 136,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Torso_003_Armor",
+      "vertices": 160,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_NPC_Torso_004_Robot",
+      "vertices": 128,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_MOB_01_Sentinel",
+      "vertices": 584,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_MOB_02_Strider",
+      "vertices": 580,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_MOB_03_Juggernaut",
+      "vertices": 680,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_MOB_04_Hound",
+      "vertices": 528,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_MOB_05_Scarab",
+      "vertices": 532,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_MOB_06_Spider",
+      "vertices": 504,
+      "unweighted": 0,
+      "normalized": true
+    },
+    {
+      "mesh": "SKM_MOB_07_Mule",
+      "vertices": 592,
+      "unweighted": 0,
+      "normalized": true
+    }
+  ],
+  "clips": [
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Idle",
+      "foot_target_error_m": 1.2561932411706868e-06,
+      "minimum_visible_vertex_z_m": 4.0813847590470687e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Walk",
+      "foot_target_error_m": 1.7523442449072298e-06,
+      "minimum_visible_vertex_z_m": -4.24743831217711e-08,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Run",
+      "foot_target_error_m": 2.169859284373435e-06,
+      "minimum_visible_vertex_z_m": 9.476585205447918e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Turn_L_45",
+      "foot_target_error_m": 1.5235845270405934e-06,
+      "minimum_visible_vertex_z_m": 2.8419941600077436e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Turn_R_45",
+      "foot_target_error_m": 1.646026168407732e-06,
+      "minimum_visible_vertex_z_m": 2.776697840545239e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Turn_L_90",
+      "foot_target_error_m": 1.6548886741354878e-06,
+      "minimum_visible_vertex_z_m": 3.0156556363181153e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Turn_R_90",
+      "foot_target_error_m": 1.7313745053104929e-06,
+      "minimum_visible_vertex_z_m": 4.3995376586281054e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Jump",
+      "foot_target_error_m": 1.6191278207666144e-06,
+      "minimum_visible_vertex_z_m": 4.94177015752939e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Jump_Start",
+      "foot_target_error_m": 1.7401583648596044e-06,
+      "minimum_visible_vertex_z_m": 4.94177015752939e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Jump_Air",
+      "foot_target_error_m": 1.7069551455089518e-06,
+      "minimum_visible_vertex_z_m": 5.402223450801102e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "clip": "Jump_Land",
+      "foot_target_error_m": 1.7614224645033497e-06,
+      "minimum_visible_vertex_z_m": 4.94177015752939e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Idle",
+      "foot_target_error_m": 8.76983501221758e-07,
+      "minimum_visible_vertex_z_m": 3.8067560126364697e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Walk",
+      "foot_target_error_m": 1.206257972439449e-06,
+      "minimum_visible_vertex_z_m": 1.178183950401035e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Run",
+      "foot_target_error_m": 1.4758169025016729e-06,
+      "minimum_visible_vertex_z_m": 7.99033330167731e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Turn_L_45",
+      "foot_target_error_m": 1.1043962218575346e-06,
+      "minimum_visible_vertex_z_m": 3.790754590227152e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Turn_R_45",
+      "foot_target_error_m": 1.1993583542276196e-06,
+      "minimum_visible_vertex_z_m": 3.74025091787189e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Turn_L_90",
+      "foot_target_error_m": 1.1156980125507643e-06,
+      "minimum_visible_vertex_z_m": 3.828344574685616e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Turn_R_90",
+      "foot_target_error_m": 1.2399342097469997e-06,
+      "minimum_visible_vertex_z_m": 3.110860973265517e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Jump",
+      "foot_target_error_m": 1.1714820098943397e-06,
+      "minimum_visible_vertex_z_m": 5.271052714306279e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Jump_Start",
+      "foot_target_error_m": 1.3260286504494393e-06,
+      "minimum_visible_vertex_z_m": 5.271052714306279e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Jump_Air",
+      "foot_target_error_m": 1.2434211803436866e-06,
+      "minimum_visible_vertex_z_m": 3.323474118133163e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "clip": "Jump_Land",
+      "foot_target_error_m": 1.3339849773995968e-06,
+      "minimum_visible_vertex_z_m": 3.323474118133163e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Idle",
+      "foot_target_error_m": 3.724727142250841e-07,
+      "minimum_visible_vertex_z_m": -8.848310528719594e-09,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Walk",
+      "foot_target_error_m": 6.521280009190421e-07,
+      "minimum_visible_vertex_z_m": -1.1375253450296441e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Run",
+      "foot_target_error_m": 7.3802128416537e-07,
+      "minimum_visible_vertex_z_m": 3.0557512786799634e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Turn_L_45",
+      "foot_target_error_m": 8.077010134062912e-07,
+      "minimum_visible_vertex_z_m": 1.6445220296645857e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Turn_R_45",
+      "foot_target_error_m": 7.670864830632104e-07,
+      "minimum_visible_vertex_z_m": 1.6445220296645857e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Turn_L_90",
+      "foot_target_error_m": 7.443499180084488e-07,
+      "minimum_visible_vertex_z_m": 1.362317902930954e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Turn_R_90",
+      "foot_target_error_m": 7.743228941784014e-07,
+      "minimum_visible_vertex_z_m": 1.6445220296645857e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Jump",
+      "foot_target_error_m": 6.40085735269486e-07,
+      "minimum_visible_vertex_z_m": 1.6445220296645857e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Jump_Start",
+      "foot_target_error_m": 6.914181167644051e-07,
+      "minimum_visible_vertex_z_m": 1.6445220296645857e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Jump_Air",
+      "foot_target_error_m": 6.914181167644051e-07,
+      "minimum_visible_vertex_z_m": 4.326731186665711e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "02_Strider",
+      "clip": "Jump_Land",
+      "foot_target_error_m": 7.469699716476397e-07,
+      "minimum_visible_vertex_z_m": 1.6445220296645857e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Idle",
+      "foot_target_error_m": 8.211928549943862e-07,
+      "minimum_visible_vertex_z_m": 2.0109163756387716e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Walk",
+      "foot_target_error_m": 1.156641147752108e-06,
+      "minimum_visible_vertex_z_m": -1.11533914548545e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Run",
+      "foot_target_error_m": 1.4013431007276471e-06,
+      "minimum_visible_vertex_z_m": -2.3156323436523962e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Turn_L_45",
+      "foot_target_error_m": 1.2103008959306076e-06,
+      "minimum_visible_vertex_z_m": 2.3297984341752453e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Turn_R_45",
+      "foot_target_error_m": 1.324297474455467e-06,
+      "minimum_visible_vertex_z_m": 2.3297984341752453e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Turn_L_90",
+      "foot_target_error_m": 1.1379893000700902e-06,
+      "minimum_visible_vertex_z_m": 1.917736653922475e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Turn_R_90",
+      "foot_target_error_m": 1.3886890918322563e-06,
+      "minimum_visible_vertex_z_m": 2.3297984341752453e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Jump",
+      "foot_target_error_m": 1.0454346877071752e-06,
+      "minimum_visible_vertex_z_m": 2.3297984341752453e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Jump_Start",
+      "foot_target_error_m": 1.3195389051208435e-06,
+      "minimum_visible_vertex_z_m": 2.3297984341752453e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Jump_Air",
+      "foot_target_error_m": 1.1395127396222245e-06,
+      "minimum_visible_vertex_z_m": 2.469872697474784e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "clip": "Jump_Land",
+      "foot_target_error_m": 1.2751804041158427e-06,
+      "minimum_visible_vertex_z_m": 2.3297984341752453e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Idle",
+      "foot_target_error_m": 2.827296549232345e-07,
+      "minimum_visible_vertex_z_m": -3.4190713904536096e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Walk",
+      "foot_target_error_m": 3.384893146634265e-07,
+      "minimum_visible_vertex_z_m": -3.3583492609068344e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Run",
+      "foot_target_error_m": 3.89715934712351e-07,
+      "minimum_visible_vertex_z_m": -2.1599234401037393e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Turn_L_45",
+      "foot_target_error_m": 4.204795080281038e-07,
+      "minimum_visible_vertex_z_m": -3.779306894102774e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Turn_R_45",
+      "foot_target_error_m": 4.163001491039691e-07,
+      "minimum_visible_vertex_z_m": -3.568827935396257e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Turn_L_90",
+      "foot_target_error_m": 3.8541904557876474e-07,
+      "minimum_visible_vertex_z_m": -4.084035936102737e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Turn_R_90",
+      "foot_target_error_m": 3.326164824597495e-07,
+      "minimum_visible_vertex_z_m": -4.082918110270839e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Jump",
+      "foot_target_error_m": 3.998401124775034e-07,
+      "minimum_visible_vertex_z_m": -2.8580427624547156e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Jump_Start",
+      "foot_target_error_m": 4.27743795347432e-07,
+      "minimum_visible_vertex_z_m": -4.7199426944644074e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Jump_Air",
+      "foot_target_error_m": 4.27743795347432e-07,
+      "minimum_visible_vertex_z_m": -1.0751187318192024e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "04_Hound",
+      "clip": "Jump_Land",
+      "foot_target_error_m": 3.449868232843347e-07,
+      "minimum_visible_vertex_z_m": -4.657358090298658e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Idle",
+      "foot_target_error_m": 2.1912814929861936e-07,
+      "minimum_visible_vertex_z_m": -2.1249053361316328e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Walk",
+      "foot_target_error_m": 2.1503671541306096e-07,
+      "minimum_visible_vertex_z_m": -2.2083520434534876e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Run",
+      "foot_target_error_m": 1.8685961073613842e-07,
+      "minimum_visible_vertex_z_m": -2.2381541953109263e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Turn_L_45",
+      "foot_target_error_m": 3.11145380404906e-07,
+      "minimum_visible_vertex_z_m": -2.546608470765932e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Turn_R_45",
+      "foot_target_error_m": 3.5832567979130295e-07,
+      "minimum_visible_vertex_z_m": -3.20821982313646e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Turn_L_90",
+      "foot_target_error_m": 2.443972150513042e-07,
+      "minimum_visible_vertex_z_m": -2.494454065526952e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Turn_R_90",
+      "foot_target_error_m": 3.4280768246434155e-07,
+      "minimum_visible_vertex_z_m": -2.6687979470807477e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Jump",
+      "foot_target_error_m": 2.4027400458748785e-07,
+      "minimum_visible_vertex_z_m": -1.8447639149599127e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Jump_Start",
+      "foot_target_error_m": 2.3466372114455137e-07,
+      "minimum_visible_vertex_z_m": -2.433359327369544e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Jump_Air",
+      "foot_target_error_m": 2.4027400458748785e-07,
+      "minimum_visible_vertex_z_m": -6.750224201823585e-08,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "clip": "Jump_Land",
+      "foot_target_error_m": 2.3760227440449558e-07,
+      "minimum_visible_vertex_z_m": -1.7806887342430855e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Idle",
+      "foot_target_error_m": 3.4506726792184744e-07,
+      "minimum_visible_vertex_z_m": -1.6812239778118965e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Walk",
+      "foot_target_error_m": 3.7608830523860343e-07,
+      "minimum_visible_vertex_z_m": -2.884865466512565e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Run",
+      "foot_target_error_m": 3.7170856247146194e-07,
+      "minimum_visible_vertex_z_m": -1.0289255669704289e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Turn_L_45",
+      "foot_target_error_m": 4.0157177979385453e-07,
+      "minimum_visible_vertex_z_m": -1.8127261114386783e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Turn_R_45",
+      "foot_target_error_m": 2.9950963321688443e-07,
+      "minimum_visible_vertex_z_m": -1.8530292322793684e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Turn_L_90",
+      "foot_target_error_m": 4.6079296159941634e-07,
+      "minimum_visible_vertex_z_m": -2.0235781050814694e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Turn_R_90",
+      "foot_target_error_m": 4.2598820802339333e-07,
+      "minimum_visible_vertex_z_m": -2.9232356268948934e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Jump",
+      "foot_target_error_m": 4.951133646320149e-07,
+      "minimum_visible_vertex_z_m": -1.180916910925589e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Jump_Start",
+      "foot_target_error_m": 4.3392836387637365e-07,
+      "minimum_visible_vertex_z_m": -2.314150435722695e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Jump_Air",
+      "foot_target_error_m": 4.951133646320149e-07,
+      "minimum_visible_vertex_z_m": -1.3053420389042003e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "06_Spider",
+      "clip": "Jump_Land",
+      "foot_target_error_m": 4.6079296159941634e-07,
+      "minimum_visible_vertex_z_m": -1.3053420389042003e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Idle",
+      "foot_target_error_m": 2.9950963321688443e-07,
+      "minimum_visible_vertex_z_m": -3.516301489980833e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Walk",
+      "foot_target_error_m": 2.913358032109909e-07,
+      "minimum_visible_vertex_z_m": -2.295337537816522e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Run",
+      "foot_target_error_m": 4.1140430248613723e-07,
+      "minimum_visible_vertex_z_m": -3.1573699743603356e-07,
+      "loop_matrix_error": 0.0,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Turn_L_45",
+      "foot_target_error_m": 3.608150875796457e-07,
+      "minimum_visible_vertex_z_m": -3.516301489980833e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Turn_R_45",
+      "foot_target_error_m": 3.589448174967141e-07,
+      "minimum_visible_vertex_z_m": -3.537908241924015e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Turn_L_90",
+      "foot_target_error_m": 3.6378370570342845e-07,
+      "minimum_visible_vertex_z_m": -3.516301489980833e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Turn_R_90",
+      "foot_target_error_m": 6.36098090961322e-07,
+      "minimum_visible_vertex_z_m": -6.263330760702956e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Jump",
+      "foot_target_error_m": 3.769728732309794e-07,
+      "minimum_visible_vertex_z_m": -3.516301489980833e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Jump_Start",
+      "foot_target_error_m": 3.29177409922697e-07,
+      "minimum_visible_vertex_z_m": -3.516301489980833e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Jump_Air",
+      "foot_target_error_m": 3.7814907850174666e-07,
+      "minimum_visible_vertex_z_m": -1.4138406356778432e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    },
+    {
+      "skeleton": "07_Mule",
+      "clip": "Jump_Land",
+      "foot_target_error_m": 2.9950963321688443e-07,
+      "minimum_visible_vertex_z_m": -3.516301489980833e-07,
+      "loop_matrix_error": null,
+      "unreachable_target_m": 0
+    }
+  ],
+  "exports": [
+    {
+      "file": "NPC_Common_Animated.glb",
+      "skins": 1,
+      "animations": [
+        "Idle",
+        "Jump",
+        "Jump_Air",
+        "Jump_Land",
+        "Jump_Start",
+        "Run",
+        "Turn_L_45",
+        "Turn_L_90",
+        "Turn_R_45",
+        "Turn_R_90",
+        "Walk"
+      ],
+      "durations": {
+        "Idle": 2,
+        "Walk": 1.0666666666666667,
+        "Run": 0.6666666666666666,
+        "Turn_L_45": 1.6,
+        "Turn_R_45": 1.6,
+        "Turn_L_90": 2.1333333333333333,
+        "Turn_R_90": 2.1333333333333333,
+        "Jump": 1.2,
+        "Jump_Start": 0.3333333333333333,
+        "Jump_Air": 0.5333333333333333,
+        "Jump_Land": 0.3333333333333333
+      }
+    },
+    {
+      "file": "robots/01_Sentinel.glb",
+      "skins": 1,
+      "animations": [
+        "Idle",
+        "Jump",
+        "Jump_Air",
+        "Jump_Land",
+        "Jump_Start",
+        "Run",
+        "Turn_L_45",
+        "Turn_L_90",
+        "Turn_R_45",
+        "Turn_R_90",
+        "Walk"
+      ],
+      "durations": {
+        "Idle": 2,
+        "Walk": 1.0666666666666667,
+        "Run": 0.6666666666666666,
+        "Turn_L_45": 1.6,
+        "Turn_R_45": 1.6,
+        "Turn_L_90": 2.1333333333333333,
+        "Turn_R_90": 2.1333333333333333,
+        "Jump": 1.2,
+        "Jump_Start": 0.3333333333333333,
+        "Jump_Air": 0.5333333333333333,
+        "Jump_Land": 0.3333333333333333
+      }
+    },
+    {
+      "file": "robots/02_Strider.glb",
+      "skins": 1,
+      "animations": [
+        "Idle",
+        "Jump",
+        "Jump_Air",
+        "Jump_Land",
+        "Jump_Start",
+        "Run",
+        "Turn_L_45",
+        "Turn_L_90",
+        "Turn_R_45",
+        "Turn_R_90",
+        "Walk"
+      ],
+      "durations": {
+        "Idle": 2,
+        "Walk": 1,
+        "Run": 0.6,
+        "Turn_L_45": 1.6,
+        "Turn_R_45": 1.6,
+        "Turn_L_90": 2.1333333333333333,
+        "Turn_R_90": 2.1333333333333333,
+        "Jump": 1.2,
+        "Jump_Start": 0.3333333333333333,
+        "Jump_Air": 0.5333333333333333,
+        "Jump_Land": 0.3333333333333333
+      }
+    },
+    {
+      "file": "robots/03_Juggernaut.glb",
+      "skins": 1,
+      "animations": [
+        "Idle",
+        "Jump",
+        "Jump_Air",
+        "Jump_Land",
+        "Jump_Start",
+        "Run",
+        "Turn_L_45",
+        "Turn_L_90",
+        "Turn_R_45",
+        "Turn_R_90",
+        "Walk"
+      ],
+      "durations": {
+        "Idle": 2,
+        "Walk": 1.4,
+        "Run": 1,
+        "Turn_L_45": 1.6,
+        "Turn_R_45": 1.6,
+        "Turn_L_90": 2.1333333333333333,
+        "Turn_R_90": 2.1333333333333333,
+        "Jump": 1.2,
+        "Jump_Start": 0.3333333333333333,
+        "Jump_Air": 0.5333333333333333,
+        "Jump_Land": 0.3333333333333333
+      }
+    },
+    {
+      "file": "robots/04_Hound.glb",
+      "skins": 1,
+      "animations": [
+        "Idle",
+        "Jump",
+        "Jump_Air",
+        "Jump_Land",
+        "Jump_Start",
+        "Run",
+        "Turn_L_45",
+        "Turn_L_90",
+        "Turn_R_45",
+        "Turn_R_90",
+        "Walk"
+      ],
+      "durations": {
+        "Idle": 2,
+        "Walk": 1.4,
+        "Run": 0.8,
+        "Turn_L_45": 1.6,
+        "Turn_R_45": 1.6,
+        "Turn_L_90": 2.1333333333333333,
+        "Turn_R_90": 2.1333333333333333,
+        "Jump": 1.2,
+        "Jump_Start": 0.3333333333333333,
+        "Jump_Air": 0.5333333333333333,
+        "Jump_Land": 0.3333333333333333
+      }
+    },
+    {
+      "file": "robots/05_Scarab.glb",
+      "skins": 1,
+      "animations": [
+        "Idle",
+        "Jump",
+        "Jump_Air",
+        "Jump_Land",
+        "Jump_Start",
+        "Run",
+        "Turn_L_45",
+        "Turn_L_90",
+        "Turn_R_45",
+        "Turn_R_90",
+        "Walk"
+      ],
+      "durations": {
+        "Idle": 2,
+        "Walk": 1.6,
+        "Run": 1,
+        "Turn_L_45": 1.6,
+        "Turn_R_45": 1.6,
+        "Turn_L_90": 2.1333333333333333,
+        "Turn_R_90": 2.1333333333333333,
+        "Jump": 1.2,
+        "Jump_Start": 0.3333333333333333,
+        "Jump_Air": 0.5333333333333333,
+        "Jump_Land": 0.3333333333333333
+      }
+    },
+    {
+      "file": "robots/06_Spider.glb",
+      "skins": 1,
+      "animations": [
+        "Idle",
+        "Jump",
+        "Jump_Air",
+        "Jump_Land",
+        "Jump_Start",
+        "Run",
+        "Turn_L_45",
+        "Turn_L_90",
+        "Turn_R_45",
+        "Turn_R_90",
+        "Walk"
+      ],
+      "durations": {
+        "Idle": 2,
+        "Walk": 1.2,
+        "Run": 0.7333333333333333,
+        "Turn_L_45": 1.6,
+        "Turn_R_45": 1.6,
+        "Turn_L_90": 2.1333333333333333,
+        "Turn_R_90": 2.1333333333333333,
+        "Jump": 1.2,
+        "Jump_Start": 0.3333333333333333,
+        "Jump_Air": 0.5333333333333333,
+        "Jump_Land": 0.3333333333333333
+      }
+    },
+    {
+      "file": "robots/07_Mule.glb",
+      "skins": 1,
+      "animations": [
+        "Idle",
+        "Jump",
+        "Jump_Air",
+        "Jump_Land",
+        "Jump_Start",
+        "Run",
+        "Turn_L_45",
+        "Turn_L_90",
+        "Turn_R_45",
+        "Turn_R_90",
+        "Walk"
+      ],
+      "durations": {
+        "Idle": 2,
+        "Walk": 1.6,
+        "Run": 1.0666666666666667,
+        "Turn_L_45": 1.6,
+        "Turn_R_45": 1.6,
+        "Turn_L_90": 2.1333333333333333,
+        "Turn_R_90": 2.1333333333333333,
+        "Jump": 1.2,
+        "Jump_Start": 0.3333333333333333,
+        "Jump_Air": 0.5333333333333333,
+        "Jump_Land": 0.3333333333333333
+      }
+    }
+  ],
+  "split_jump_seams": [
+    {
+      "skeleton": "NPC_Common",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump_Air",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "from_clip": "Jump_Air",
+      "to_clip": "Jump_Land",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "NPC_Common",
+      "from_clip": "Jump_Land",
+      "to_clip": "Idle",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump_Air",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "from_clip": "Jump_Air",
+      "to_clip": "Jump_Land",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "01_Sentinel",
+      "from_clip": "Jump_Land",
+      "to_clip": "Idle",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "02_Strider",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump_Air",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "02_Strider",
+      "from_clip": "Jump_Air",
+      "to_clip": "Jump_Land",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "02_Strider",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "02_Strider",
+      "from_clip": "Jump_Land",
+      "to_clip": "Idle",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump_Air",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "from_clip": "Jump_Air",
+      "to_clip": "Jump_Land",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "03_Juggernaut",
+      "from_clip": "Jump_Land",
+      "to_clip": "Idle",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "04_Hound",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump_Air",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "04_Hound",
+      "from_clip": "Jump_Air",
+      "to_clip": "Jump_Land",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "04_Hound",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "04_Hound",
+      "from_clip": "Jump_Land",
+      "to_clip": "Idle",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump_Air",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "from_clip": "Jump_Air",
+      "to_clip": "Jump_Land",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "05_Scarab",
+      "from_clip": "Jump_Land",
+      "to_clip": "Idle",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "06_Spider",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump_Air",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "06_Spider",
+      "from_clip": "Jump_Air",
+      "to_clip": "Jump_Land",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "06_Spider",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "06_Spider",
+      "from_clip": "Jump_Land",
+      "to_clip": "Idle",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "07_Mule",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump_Air",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "07_Mule",
+      "from_clip": "Jump_Air",
+      "to_clip": "Jump_Land",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "07_Mule",
+      "from_clip": "Jump_Start",
+      "to_clip": "Jump",
+      "matrix_error": 0.0
+    },
+    {
+      "skeleton": "07_Mule",
+      "from_clip": "Jump_Land",
+      "to_clip": "Idle",
+      "matrix_error": 0.0
+    }
+  ],
+  "summary": {
+    "meshes": 32,
+    "animated_exports": 8,
+    "clips": 88,
+    "max_foot_target_error_m": 2.169859284373435e-06,
+    "max_unreachable_target_m": 0,
+    "min_visible_vertex_z_m": -6.263330760702956e-07,
+    "max_loop_matrix_error": 0,
+    "max_split_seam_error": 0.0
+  }
+}

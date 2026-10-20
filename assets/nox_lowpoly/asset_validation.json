@@ -1,0 +1,218 @@
+{
+  "mesh_count": 42,
+  "npc_preset_count": 14,
+  "checks": [
+    {
+      "mesh": "SM_NPC_Head_001_Male",
+      "triangles": 256,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Head_002_Female",
+      "triangles": 256,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Head_003_Robot",
+      "triangles": 136,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Hair_001_Short",
+      "triangles": 220,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Hair_002_Long",
+      "triangles": 352,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Hair_003_Sidecut",
+      "triangles": 276,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Torso_001_JacketMale",
+      "triangles": 244,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Torso_002_JacketFemale",
+      "triangles": 244,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Torso_003_Armor",
+      "triangles": 288,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Torso_004_Robot",
+      "triangles": 228,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_ArmL_001_Sleeve",
+      "triangles": 104,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_ArmR_001_Sleeve",
+      "triangles": 104,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_ArmL_002_Armor",
+      "triangles": 148,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_ArmR_002_Armor",
+      "triangles": 148,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_ArmL_003_Robot",
+      "triangles": 148,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_ArmR_003_Robot",
+      "triangles": 148,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Legs_001_Pants",
+      "triangles": 220,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Legs_002_Armor",
+      "triangles": 332,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Legs_003_Robot",
+      "triangles": 332,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Feet_001_Boots",
+      "triangles": 112,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Feet_002_Armor",
+      "triangles": 112,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Feet_003_Robot",
+      "triangles": 112,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Accessory_001_Visor",
+      "triangles": 56,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Accessory_002_DataPack",
+      "triangles": 100,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_NPC_Accessory_003_RiotShield",
+      "triangles": 56,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Building_001_Residential",
+      "triangles": 956,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Building_002_Commercial",
+      "triangles": 528,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Building_003_Corporate",
+      "triangles": 1408,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Building_004_Industrial",
+      "triangles": 516,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Tree_001_Canopy",
+      "triangles": 120,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Tree_002_Slender",
+      "triangles": 120,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Tree_003_Bare",
+      "triangles": 60,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Rock_001_Small",
+      "triangles": 20,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Rock_002_Large",
+      "triangles": 20,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Rock_003_Cluster",
+      "triangles": 60,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Groundcover_001_GrassTuft",
+      "triangles": 70,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Groundcover_002_GrassPatch",
+      "triangles": 220,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Shrub_001_Urban",
+      "triangles": 40,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Planter_001_Rectangle",
+      "triangles": 56,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Street_001_Lamp",
+      "triangles": 120,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Street_002_Terminal",
+      "triangles": 132,
+      "valid_glb": true
+    },
+    {
+      "mesh": "SM_ENV_Street_003_Barricade",
+      "triangles": 80,
+      "valid_glb": true
+    }
+  ],
+  "preset_references_valid": true,
+  "checks_scope": "GLB header, mesh count, triangle count, finite source coordinates, preset references. Visual review via preview PNGs; no game integration test."
+}

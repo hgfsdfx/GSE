@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "LevelOne.h"
 #include "GameMath.h"
+#include "ProfileMetrics.h"
 #include <algorithm>
 #include <chrono>
 #include <stdexcept>
@@ -58,12 +59,13 @@ void LevelOne::Start(World& world)
         World::Hash(uint64_t(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
     randomState_ = seed_;
     world.ConfigureLevelOne(seed_);
-    Player().SetWorldPosition({90, 350});
+    Player().SetWorldPosition(Society::TownCenter(0));
+    society_.Initialize(scene_, gameplayRoot_);
     world.BindScene(&scene_);
     world.Stream(Player().WorldPosition(), 3);
     navigation_.BuildFlow(world, Player().WorldPosition());
     PopulateEnemies(world, Player().WorldPosition());
-    Say("레벨 1 / 드론에게 다가가면 스마트폰이 자동 발사합니다");
+    Say("녹스 / G 패치의 의뢰 · T 회복 · I 부품 구매 · Y 판매 · U 강화");
 }
 
 uint64_t LevelOne::Random()
@@ -233,11 +235,14 @@ const EnemyActor* LevelOne::Boss() const
 
 void LevelOne::Update(float dt, World& world, int streamRadius)
 {
-    ActorUpdateContext context{scene_, world, navigation_, *this, Player()};
+    ActorUpdateContext context{scene_, world, navigation_, *this, Player(), society_};
     scene_.Update(UpdatePhase::Effect, dt, context);
     scene_.FlushDestroyed();
     if (Dead())
     {
+        const CpuProfileScope profile(CpuMetric::NpcSimulation);
+        society_.Tick(dt, context);
+        scene_.Update(UpdatePhase::Npc, dt, context);
         return;
     }
     world.RefreshColliders();
@@ -253,19 +258,16 @@ void LevelOne::Update(float dt, World& world, int streamRadius)
     }
     for (auto& enemy : scene_.Actors<EnemyActor>())
     {
-        if (enemy.kind != EnemyKind::Boss && Distance(enemy.WorldPosition(), player) > 750)
+        if (enemy.kind != EnemyKind::Boss && Distance(enemy.WorldPosition(), player) > 550)
         {
             enemy.Destroy();
         }
     }
     spawnTimer_ -= dt;
-    const size_t limit = Boss() ? 7 : 13;
-    if (spawnTimer_ <= 0 && Enemies().size() < limit)
+    if (spawnTimer_ <= 0)
     {
         PopulateEnemies(world, player);
-        spawnTimer_ = Enemies().size() < limit && SpawnEnemy(world, player)
-                          ? (Kills() < 3 ? 2.8f : 1.9f)
-                          : .5f;
+        spawnTimer_ = EnemyRespawnInterval;
     }
     if (!bossSpawned_ && InDistrict(player) && Kills() >= BossKillsRequired
         && Level() >= BossLevelRequired && navigation_.Reachable(navigation_.CellAt(BossArena())))
@@ -284,5 +286,32 @@ void LevelOne::Update(float dt, World& world, int streamRadius)
         scene_.Update(UpdatePhase::Loot, dt, context);
     }
     scene_.Update(UpdatePhase::Decoration, dt, context);
+    {
+        const CpuProfileScope profile(CpuMetric::NpcSimulation);
+        society_.Tick(dt, context);
+        scene_.Update(UpdatePhase::Npc, dt, context);
+    }
     scene_.FlushDestroyed();
+}
+
+Society& LevelOne::Citizens()
+{
+    return society_;
+}
+
+const Society& LevelOne::Citizens() const
+{
+    return society_;
+}
+
+void LevelOne::SocietyCommand(unsigned char key, World& world)
+{
+    ActorUpdateContext context{scene_, world, navigation_, *this, Player(), society_};
+    society_.Command(key, context);
+}
+
+void LevelOne::SocietyHack(const Device& device, World& world)
+{
+    ActorUpdateContext context{scene_, world, navigation_, *this, Player(), society_};
+    society_.OnHack(device, context);
 }

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>녹스 · 월드 모니터</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <script src="/dashboard.js" defer></script>
+</head>
+<body>
+  <header>
+    <div><span class="eyebrow">NIGHT PROTOCOL / WORLD OBSERVATORY</span><h1>녹스 월드 모니터</h1></div>
+    <div class="connection"><span id="status" class="badge waiting" role="status">연결 대기</span><span id="updated">게임 상태를 기다리고 있습니다</span></div>
+  </header>
+  <main>
+    <p id="message" class="message">게임을 실행한 뒤 상태 수신을 기다려 주세요.</p>
+    <section id="metrics" class="metrics" aria-label="월드 주요 지표"></section>
+    <div class="section-title"><h2>마을 현황</h2><span>소속 주민 집계 · 현장 인원은 방문자 포함</span></div>
+    <section id="towns" class="towns" aria-label="마을별 전체 상태"></section>
+    <section class="overview">
+      <article class="panel"><div class="section-title"><h2>월드 위치</h2><span class="legend">● <i class="cyan">NPC</i>　● <i class="pink">몹</i>　● <i class="gold">플레이어</i></span></div><canvas id="map" aria-label="마을, NPC와 몬스터 위치 지도"></canvas><p class="caption">원: 마을 방어 구역 · 파란 테두리: 선택한 NPC · 표시 범위는 자동 조정</p></article>
+      <article class="panel"><div class="section-title"><h2>개체 수 추이</h2><span>최근 120회 수신</span></div><canvas id="history" aria-label="NPC와 몬스터 개체 수 추이"></canvas><p class="caption">청록: NPC · 분홍: 몹 · 페이지를 연 이후 기록</p><h3>월드 활동</h3><div id="activity" class="activity"></div><ul id="news" class="news"></ul></article>
+    </section>
+    <div class="section-title"><h2>NPC 상태</h2><span id="visible-count">0명 표시</span></div>
+    <section class="panel">
+      <div class="filters">
+        <label>검색<input id="search" type="search" placeholder="이름 또는 NPC 번호"></label>
+        <label>소속 마을<select id="town-filter"><option value="">전체 마을</option></select></label>
+        <label>직업<select id="job-filter"><option value="">전체 직업</option></select></label>
+        <label>상태<select id="health-filter"><option value="">전체 상태</option><option value="low">체력 30% 미만</option><option value="combat">전투 중</option><option value="outside">마을 밖</option><option value="dead">사망 / 부활 대기</option></select></label>
+        <label>정렬<select id="sort"><option value="id">번호순</option><option value="health">체력 낮은 순</option><option value="credits">자산 많은 순</option><option value="insight">깨달음 높은 순</option></select></label>
+        <button id="download" disabled>JSON 저장</button>
+      </div>
+      <div class="npc-layout">
+        <div class="table-wrap"><table><thead><tr><th>NPC</th><th>마을 / 직업</th><th>행동</th><th>체력</th><th>크레딧</th><th>부품</th><th>깨달음</th><th>위치</th></tr></thead><tbody id="npc-rows"></tbody></table><p id="empty" class="caption">수신된 NPC가 없습니다.</p></div>
+        <aside id="detail" class="detail" aria-live="polite"><h3>NPC 상세</h3><p>목록에서 주민을 선택하세요.</p></aside>
+      </div>
+    </section>
+  </main>
+  <footer><span>로컬 JSON 수신 · 0.5초 간격</span><span id="sequence">수신 대기</span></footer>
+</body>
+</html>

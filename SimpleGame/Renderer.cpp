@@ -58,16 +58,30 @@ Renderer::Renderer(int width, int height)
     }
     viewport_ = glGetUniformLocation(program_, "u_Viewport");
     linearScene_ = glGetUniformLocation(program_, "u_LinearScene");
+    depthStep_ = glGetUniformLocation(program_, "u_DepthStep");
     const auto meshUniform = glGetUniformLocation(program_, "u_MeshVertices");
     const auto instanceUniform = glGetUniformLocation(program_, "u_Instances");
-    if (viewport_ < 0 || linearScene_ < 0 || meshUniform < 0 || instanceUniform < 0)
+    if (viewport_ < 0 || linearScene_ < 0 || depthStep_ < 0 || meshUniform < 0
+        || instanceUniform < 0)
     {
         std::cerr << "셰이더 버전이 맞지 않습니다. 실행 파일 옆 Shaders 폴더를 갱신해 주세요.\n";
         glDeleteProgram(program_);
         program_ = 0;
         return;
     }
+    const auto modelUniform = glGetUniformLocation(program_, "u_ModelVertices");
+    const auto boneUniform = glGetUniformLocation(program_, "u_Bones");
+    if (modelUniform < 0 || boneUniform < 0)
+    {
+        std::cerr << "[AssetGPU] Model shader uniforms missing. Update Shaders.\n";
+        glDeleteProgram(program_);
+        program_ = 0;
+        return;
+    }
+    models_.Initialize(base / L"MeshCache" / L"models-v1");
     glUseProgram(program_);
+    glUniform1i(modelUniform, 3);
+    glUniform1i(boneUniform, 2);
     glUniform1i(meshUniform, 0);
     glUniform1i(instanceUniform, 1);
     glUseProgram(0);
@@ -156,6 +170,7 @@ void Renderer::Begin(Color c)
     drawCalls_ = instanceCount_ = instanceUploadBytes_ = 0;
     instances_.clear();
     triangles_.clear();
+    models_.Clear();
     recording_ = false;
     meshes_.BeginFrame();
     overlay_ = false;
@@ -166,7 +181,9 @@ void Renderer::Begin(Color c)
     }
     glClearColor(c.r, c.g, c.b, 1);
     glClear(GL_COLOR_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_TRUE);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -224,8 +241,17 @@ void Renderer::Flush(const char* reason)
     {
         ++frameStats_.gpuSkipped;
     }
+    // Each ordered batch paints over the preceding batch; models inside this
+    // batch retain per-triangle depth for limbs, faces and modular parts.
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_TRUE);
+    glClearDepth(1);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    models_.Bind();
     glUseProgram(program_);
     glUniform2f(viewport_, float(width_), float(height_));
+    glUniform1f(depthStep_, 1.8f / float(instances_.size() + 1));
     glUniform1i(linearScene_, capturing_ && !overlay_ ? 1 : 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_BUFFER, meshes_.Texture());
@@ -265,17 +291,19 @@ void Renderer::Flush(const char* reason)
                             instances_.size(),
                             triangles_.size(),
                             instances_.size() * sizeof(MeshInstance)
-                                + triangles_.size() * sizeof(TriangleReference),
+                                + triangles_.size() * sizeof(TriangleReference)
+                                + models_.UploadBytes(),
                             stage,
                             reason,
                             ProfileMilliseconds(ProfileClock::now() - start)});
     }
-    instanceUploadBytes_ +=
-        instances_.size() * sizeof(MeshInstance) + triangles_.size() * sizeof(TriangleReference);
+    instanceUploadBytes_ += instances_.size() * sizeof(MeshInstance)
+                            + triangles_.size() * sizeof(TriangleReference) + models_.UploadBytes();
     glBindVertexArray(0);
     glActiveTexture(GL_TEXTURE0);
     instances_.clear();
     triangles_.clear();
+    models_.Clear();
 }
 
 void Renderer::Submit(const MeshCache::Mesh& mesh,
@@ -284,22 +312,22 @@ void Renderer::Submit(const MeshCache::Mesh& mesh,
                       Point yAxis,
                       Color tint)
 {
-    const MeshInstance instance{origin.x,
-                                origin.y,
-                                xAxis.x,
-                                xAxis.y,
-                                yAxis.x,
-                                yAxis.y,
-                                0,
-                                0,
-                                tint.r,
-                                tint.g,
-                                tint.b,
-                                tint.a,
-                                tint.emission,
-                                0,
-                                0,
-                                0};
+    MeshInstance instance{origin.x,
+                          origin.y,
+                          xAxis.x,
+                          xAxis.y,
+                          yAxis.x,
+                          yAxis.y,
+                          0,
+                          0,
+                          tint.r,
+                          tint.g,
+                          tint.b,
+                          tint.a,
+                          tint.emission,
+                          0,
+                          0,
+                          0};
     for (uint32_t first = 0; first < mesh.vertexCount;)
     {
         if (instances_.size() >= maxInstances_ || triangles_.size() >= MaxBatchTriangles)
@@ -307,6 +335,7 @@ void Renderer::Submit(const MeshCache::Mesh& mesh,
             Flush(instances_.size() >= maxInstances_ ? "instance_limit" : "triangle_limit");
         }
         const auto index = static_cast<uint32_t>(instances_.size());
+        instance.reserved0 = float(instances_.size());
         instances_.push_back(instance);
         ++instanceCount_;
         const auto count =

@@ -22,7 +22,7 @@ bool LevelOne::Save(const std::filesystem::path& path, const World& world) const
     {
         return false;
     }
-    file << "GSE_LEVEL_ONE 2\n"
+    file << "GSE_LEVEL_ONE 3\n"
          << std::setprecision(17) << seed_ << ' ' << randomState_ << ' ' << nextId_ << '\n'
          << player.x << ' ' << player.y << '\n'
          << Player().stats.level_ << ' ' << Player().stats.experience_ << ' '
@@ -43,6 +43,10 @@ bool LevelOne::Save(const std::filesystem::path& path, const World& world) const
              << ' ' << item.amount << ' ' << item.attracted << '\n';
     }
     if (!world.WriteChanges(file))
+    {
+        return false;
+    }
+    if (!society_.Write(file, scene_))
     {
         return false;
     }
@@ -83,7 +87,7 @@ bool LevelOne::Load(const std::filesystem::path& path, World& world)
     WorldPoint position;
     std::string header;
     int version = 0, bossFlag = 0, clearedFlag = 0;
-    if (!(file >> header >> version) || header != "GSE_LEVEL_ONE" || (version != 1 && version != 2)
+    if (!(file >> header >> version) || header != "GSE_LEVEL_ONE" || (version < 1 || version > 3)
         || !(file >> loaded.seed_ >> loaded.randomState_ >> loaded.nextId_ >> position.x
              >> position.y >> loaded.Player().stats.level_ >> loaded.Player().stats.experience_
              >> loaded.Player().stats.weaponRank_ >> loaded.Player().stats.kills_
@@ -185,6 +189,17 @@ bool LevelOne::Load(const std::filesystem::path& path, World& world)
     {
         return false;
     }
+    if (version >= 3)
+    {
+        if (!loaded.society_.Read(file, loaded.scene_, loaded.gameplayRoot_))
+        {
+            return false;
+        }
+    }
+    else
+    {
+        loaded.society_.Initialize(loaded.scene_, loaded.gameplayRoot_);
+    }
     file >> std::ws;
     if (!file.eof())
     {
@@ -235,6 +250,24 @@ bool LevelOne::Load(const std::filesystem::path& path, World& world)
             return false;
         }
         item.SetWorldPosition(restored);
+    }
+    for (auto& npc : loaded.scene_.Actors<NpcActor>())
+    {
+        auto restored = npc.WorldPosition();
+        if (!restorePosition(restored))
+        {
+            npc.SetWorldPosition(npc.HomePosition());
+            npc.destinationTown = npc.home;
+            npc.destination = npc.HomePosition();
+            if (npc.health > 0)
+            {
+                npc.action = NpcAction::Rest;
+                npc.target = 0;
+                npc.againstPlayer = false;
+            }
+            npc.routeStep = 5;
+            npc.work = 0;
+        }
     }
     loadedWorld.Stream(position, 3);
     loaded.Player().SetWorldPosition(position);

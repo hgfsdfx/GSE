@@ -69,7 +69,7 @@ class PostProcessor
 
     struct Target
     {
-        GLuint framebuffer = 0, texture = 0;
+        GLuint framebuffer = 0, texture = 0, depth = 0;
     };
 
     struct DownsampleUniforms

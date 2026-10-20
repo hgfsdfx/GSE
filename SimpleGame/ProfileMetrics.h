@@ -21,6 +21,7 @@ enum class CpuMetric
     CacheUpload,
     DepthPrepare,
     NavigationSnapshot,
+    NpcSimulation,
     Count
 };
 inline constexpr std::array<const char*, size_t(CpuMetric::Count)> CpuMetricNames = {
@@ -35,7 +36,8 @@ inline constexpr std::array<const char*, size_t(CpuMetric::Count)> CpuMetricName
     "cache_write",
     "cache_upload",
     "depth_prepare",
-    "navigation_snapshot"};
+    "navigation_snapshot",
+    "npc_simulation"};
 
 struct CpuProfileCounters
 {
@@ -92,4 +94,8 @@ struct GameProfileState
     size_t actors = 0, chunks = 0, enemies = 0, projectiles = 0, loot = 0;
     bool paused = false, scan = false, boss = false, cleared = false;
     int level = 1;
+    size_t npcs = 0;
+    int wallet = 0, cargo = 0, insight = 0, story = 0;
+    float wanted = 0;
+    uint64_t trades = 0, raids = 0, hunts = 0;
 };

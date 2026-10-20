@@ -1,0 +1,1651 @@
+{
+  "schema_version": 2,
+  "fps": 30,
+  "units": "metres",
+  "blender_axes": {
+    "up": "+Z",
+    "forward": "-Y"
+  },
+  "gltf_axes": {
+    "up": "+Y",
+    "forward": "+Z"
+  },
+  "npc": {
+    "skeleton_id": "SK_NPC_Common",
+    "parts": [
+      {
+        "slot": "Accessory",
+        "index": 1,
+        "mesh": "SKM_NPC_Accessory_001_Visor",
+        "file": "npc_parts/SKM_NPC_Accessory_001_Visor.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Accessory",
+        "index": 2,
+        "mesh": "SKM_NPC_Accessory_002_DataPack",
+        "file": "npc_parts/SKM_NPC_Accessory_002_DataPack.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Accessory",
+        "index": 3,
+        "mesh": "SKM_NPC_Accessory_003_RiotShield",
+        "file": "npc_parts/SKM_NPC_Accessory_003_RiotShield.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "ArmL",
+        "index": 1,
+        "mesh": "SKM_NPC_ArmL_001_Sleeve",
+        "file": "npc_parts/SKM_NPC_ArmL_001_Sleeve.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "ArmL",
+        "index": 2,
+        "mesh": "SKM_NPC_ArmL_002_Armor",
+        "file": "npc_parts/SKM_NPC_ArmL_002_Armor.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "ArmL",
+        "index": 3,
+        "mesh": "SKM_NPC_ArmL_003_Robot",
+        "file": "npc_parts/SKM_NPC_ArmL_003_Robot.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "ArmR",
+        "index": 1,
+        "mesh": "SKM_NPC_ArmR_001_Sleeve",
+        "file": "npc_parts/SKM_NPC_ArmR_001_Sleeve.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "ArmR",
+        "index": 2,
+        "mesh": "SKM_NPC_ArmR_002_Armor",
+        "file": "npc_parts/SKM_NPC_ArmR_002_Armor.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "ArmR",
+        "index": 3,
+        "mesh": "SKM_NPC_ArmR_003_Robot",
+        "file": "npc_parts/SKM_NPC_ArmR_003_Robot.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Feet",
+        "index": 1,
+        "mesh": "SKM_NPC_Feet_001_Boots",
+        "file": "npc_parts/SKM_NPC_Feet_001_Boots.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Feet",
+        "index": 2,
+        "mesh": "SKM_NPC_Feet_002_Armor",
+        "file": "npc_parts/SKM_NPC_Feet_002_Armor.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Feet",
+        "index": 3,
+        "mesh": "SKM_NPC_Feet_003_Robot",
+        "file": "npc_parts/SKM_NPC_Feet_003_Robot.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Hair",
+        "index": 1,
+        "mesh": "SKM_NPC_Hair_001_Short",
+        "file": "npc_parts/SKM_NPC_Hair_001_Short.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Hair",
+        "index": 2,
+        "mesh": "SKM_NPC_Hair_002_Long",
+        "file": "npc_parts/SKM_NPC_Hair_002_Long.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Hair",
+        "index": 3,
+        "mesh": "SKM_NPC_Hair_003_Sidecut",
+        "file": "npc_parts/SKM_NPC_Hair_003_Sidecut.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Head",
+        "index": 1,
+        "mesh": "SKM_NPC_Head_001_Male",
+        "file": "npc_parts/SKM_NPC_Head_001_Male.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Head",
+        "index": 2,
+        "mesh": "SKM_NPC_Head_002_Female",
+        "file": "npc_parts/SKM_NPC_Head_002_Female.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Head",
+        "index": 3,
+        "mesh": "SKM_NPC_Head_003_Robot",
+        "file": "npc_parts/SKM_NPC_Head_003_Robot.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Legs",
+        "index": 1,
+        "mesh": "SKM_NPC_Legs_001_Pants",
+        "file": "npc_parts/SKM_NPC_Legs_001_Pants.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Legs",
+        "index": 2,
+        "mesh": "SKM_NPC_Legs_002_Armor",
+        "file": "npc_parts/SKM_NPC_Legs_002_Armor.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Legs",
+        "index": 3,
+        "mesh": "SKM_NPC_Legs_003_Robot",
+        "file": "npc_parts/SKM_NPC_Legs_003_Robot.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Torso",
+        "index": 1,
+        "mesh": "SKM_NPC_Torso_001_JacketMale",
+        "file": "npc_parts/SKM_NPC_Torso_001_JacketMale.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Torso",
+        "index": 2,
+        "mesh": "SKM_NPC_Torso_002_JacketFemale",
+        "file": "npc_parts/SKM_NPC_Torso_002_JacketFemale.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Torso",
+        "index": 3,
+        "mesh": "SKM_NPC_Torso_003_Armor",
+        "file": "npc_parts/SKM_NPC_Torso_003_Armor.glb",
+        "skeleton_id": "SK_NPC_Common"
+      },
+      {
+        "slot": "Torso",
+        "index": 4,
+        "mesh": "SKM_NPC_Torso_004_Robot",
+        "file": "npc_parts/SKM_NPC_Torso_004_Robot.glb",
+        "skeleton_id": "SK_NPC_Common"
+      }
+    ],
+    "animated_example": "NPC_Common_Animated.glb",
+    "preset_file": "npc_presets.json"
+  },
+  "robots": [
+    {
+      "id": "01_Sentinel",
+      "display_name": "경계병",
+      "locomotion": "biped",
+      "skeleton_id": "SK_01_Sentinel",
+      "mesh": "SKM_MOB_01_Sentinel",
+      "file": "robots/01_Sentinel.glb",
+      "triangles": 1044,
+      "mob_index": 1
+    },
+    {
+      "id": "02_Strider",
+      "display_name": "고속 추격병",
+      "locomotion": "biped",
+      "skeleton_id": "SK_02_Strider",
+      "mesh": "SKM_MOB_02_Strider",
+      "file": "robots/02_Strider.glb",
+      "triangles": 1032,
+      "mob_index": 2
+    },
+    {
+      "id": "03_Juggernaut",
+      "display_name": "중장갑병",
+      "locomotion": "biped",
+      "skeleton_id": "SK_03_Juggernaut",
+      "mesh": "SKM_MOB_03_Juggernaut",
+      "file": "robots/03_Juggernaut.glb",
+      "triangles": 1212,
+      "mob_index": 3
+    },
+    {
+      "id": "04_Hound",
+      "display_name": "하운드",
+      "locomotion": "quadruped",
+      "skeleton_id": "SK_04_Hound",
+      "mesh": "SKM_MOB_04_Hound",
+      "file": "robots/04_Hound.glb",
+      "triangles": 936,
+      "mob_index": 4
+    },
+    {
+      "id": "05_Scarab",
+      "display_name": "갑충형 방어 로봇",
+      "locomotion": "quadruped",
+      "skeleton_id": "SK_05_Scarab",
+      "mesh": "SKM_MOB_05_Scarab",
+      "file": "robots/05_Scarab.glb",
+      "triangles": 940,
+      "mob_index": 5
+    },
+    {
+      "id": "06_Spider",
+      "display_name": "거미형 침투 로봇",
+      "locomotion": "quadruped",
+      "skeleton_id": "SK_06_Spider",
+      "mesh": "SKM_MOB_06_Spider",
+      "file": "robots/06_Spider.glb",
+      "triangles": 884,
+      "mob_index": 6
+    },
+    {
+      "id": "07_Mule",
+      "display_name": "수송형 작업 로봇",
+      "locomotion": "quadruped",
+      "skeleton_id": "SK_07_Mule",
+      "mesh": "SKM_MOB_07_Mule",
+      "file": "robots/07_Mule.glb",
+      "triangles": 1056,
+      "mob_index": 7
+    }
+  ],
+  "skeletons": [
+    {
+      "id": "SK_NPC_Common",
+      "bones": [
+        "root",
+        "pelvis",
+        "spine",
+        "head",
+        "upper_arm.L",
+        "forearm.L",
+        "hand.L",
+        "upper_arm.R",
+        "forearm.R",
+        "hand.R",
+        "thigh.L",
+        "shin.L",
+        "foot.L",
+        "thigh.R",
+        "shin.R",
+        "foot.R"
+      ],
+      "clips": [
+        {
+          "name": "Idle",
+          "action": "NPC_Common__Idle",
+          "frames": [
+            1,
+            61
+          ],
+          "duration_seconds": 2.0,
+          "loop": true,
+          "root_motion": "none"
+        },
+        {
+          "name": "Walk",
+          "action": "NPC_Common__Walk",
+          "frames": [
+            1,
+            33
+          ],
+          "duration_seconds": 1.0666666666666667,
+          "loop": true,
+          "recommended_speed_mps": 0.46875,
+          "stance_ratio": 0.64,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Run",
+          "action": "NPC_Common__Run",
+          "frames": [
+            1,
+            21
+          ],
+          "duration_seconds": 0.6666666666666666,
+          "loop": true,
+          "recommended_speed_mps": 1.56,
+          "stance_ratio": 0.4,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Turn_L_45",
+          "action": "NPC_Common__Turn_L_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 45
+        },
+        {
+          "name": "Turn_R_45",
+          "action": "NPC_Common__Turn_R_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -45
+        },
+        {
+          "name": "Turn_L_90",
+          "action": "NPC_Common__Turn_L_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 90
+        },
+        {
+          "name": "Turn_R_90",
+          "action": "NPC_Common__Turn_R_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -90
+        },
+        {
+          "name": "Jump",
+          "action": "NPC_Common__Jump",
+          "frames": [
+            1,
+            37
+          ],
+          "duration_seconds": 1.2,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        },
+        {
+          "name": "Jump_Start",
+          "action": "NPC_Common__Jump_Start",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        },
+        {
+          "name": "Jump_Air",
+          "action": "NPC_Common__Jump_Air",
+          "frames": [
+            1,
+            17
+          ],
+          "duration_seconds": 0.5333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        },
+        {
+          "name": "Jump_Land",
+          "action": "NPC_Common__Jump_Land",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        }
+      ],
+      "export": "NPC_Common_Animated.glb"
+    },
+    {
+      "id": "SK_01_Sentinel",
+      "bones": [
+        "root",
+        "pelvis",
+        "spine",
+        "head",
+        "upper_arm.L",
+        "forearm.L",
+        "hand.L",
+        "upper_arm.R",
+        "forearm.R",
+        "hand.R",
+        "thigh.L",
+        "shin.L",
+        "foot.L",
+        "thigh.R",
+        "shin.R",
+        "foot.R"
+      ],
+      "clips": [
+        {
+          "name": "Idle",
+          "action": "01_Sentinel__Idle",
+          "frames": [
+            1,
+            61
+          ],
+          "duration_seconds": 2.0,
+          "loop": true,
+          "root_motion": "none"
+        },
+        {
+          "name": "Walk",
+          "action": "01_Sentinel__Walk",
+          "frames": [
+            1,
+            33
+          ],
+          "duration_seconds": 1.0666666666666667,
+          "loop": true,
+          "recommended_speed_mps": 0.5859375,
+          "stance_ratio": 0.64,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Run",
+          "action": "01_Sentinel__Run",
+          "frames": [
+            1,
+            21
+          ],
+          "duration_seconds": 0.6666666666666666,
+          "loop": true,
+          "recommended_speed_mps": 1.9500000000000002,
+          "stance_ratio": 0.4,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Turn_L_45",
+          "action": "01_Sentinel__Turn_L_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 45
+        },
+        {
+          "name": "Turn_R_45",
+          "action": "01_Sentinel__Turn_R_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -45
+        },
+        {
+          "name": "Turn_L_90",
+          "action": "01_Sentinel__Turn_L_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 90
+        },
+        {
+          "name": "Turn_R_90",
+          "action": "01_Sentinel__Turn_R_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -90
+        },
+        {
+          "name": "Jump",
+          "action": "01_Sentinel__Jump",
+          "frames": [
+            1,
+            37
+          ],
+          "duration_seconds": 1.2,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        },
+        {
+          "name": "Jump_Start",
+          "action": "01_Sentinel__Jump_Start",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        },
+        {
+          "name": "Jump_Air",
+          "action": "01_Sentinel__Jump_Air",
+          "frames": [
+            1,
+            17
+          ],
+          "duration_seconds": 0.5333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        },
+        {
+          "name": "Jump_Land",
+          "action": "01_Sentinel__Jump_Land",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        }
+      ],
+      "export": "robots/01_Sentinel.glb"
+    },
+    {
+      "id": "SK_02_Strider",
+      "bones": [
+        "root",
+        "pelvis",
+        "spine",
+        "head",
+        "upper_arm.L",
+        "forearm.L",
+        "hand.L",
+        "upper_arm.R",
+        "forearm.R",
+        "hand.R",
+        "thigh.L",
+        "shin.L",
+        "foot.L",
+        "thigh.R",
+        "shin.R",
+        "foot.R"
+      ],
+      "clips": [
+        {
+          "name": "Idle",
+          "action": "02_Strider__Idle",
+          "frames": [
+            1,
+            61
+          ],
+          "duration_seconds": 2.0,
+          "loop": true,
+          "root_motion": "none"
+        },
+        {
+          "name": "Walk",
+          "action": "02_Strider__Walk",
+          "frames": [
+            1,
+            31
+          ],
+          "duration_seconds": 1.0,
+          "loop": true,
+          "recommended_speed_mps": 1.0,
+          "stance_ratio": 0.64,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Run",
+          "action": "02_Strider__Run",
+          "frames": [
+            1,
+            19
+          ],
+          "duration_seconds": 0.6,
+          "loop": true,
+          "recommended_speed_mps": 3.466666666666667,
+          "stance_ratio": 0.4,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Turn_L_45",
+          "action": "02_Strider__Turn_L_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 45
+        },
+        {
+          "name": "Turn_R_45",
+          "action": "02_Strider__Turn_R_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -45
+        },
+        {
+          "name": "Turn_L_90",
+          "action": "02_Strider__Turn_L_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 90
+        },
+        {
+          "name": "Turn_R_90",
+          "action": "02_Strider__Turn_R_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -90
+        },
+        {
+          "name": "Jump",
+          "action": "02_Strider__Jump",
+          "frames": [
+            1,
+            37
+          ],
+          "duration_seconds": 1.2,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.65
+        },
+        {
+          "name": "Jump_Start",
+          "action": "02_Strider__Jump_Start",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.65
+        },
+        {
+          "name": "Jump_Air",
+          "action": "02_Strider__Jump_Air",
+          "frames": [
+            1,
+            17
+          ],
+          "duration_seconds": 0.5333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.65
+        },
+        {
+          "name": "Jump_Land",
+          "action": "02_Strider__Jump_Land",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.65
+        }
+      ],
+      "export": "robots/02_Strider.glb"
+    },
+    {
+      "id": "SK_03_Juggernaut",
+      "bones": [
+        "root",
+        "pelvis",
+        "spine",
+        "head",
+        "upper_arm.L",
+        "forearm.L",
+        "hand.L",
+        "upper_arm.R",
+        "forearm.R",
+        "hand.R",
+        "thigh.L",
+        "shin.L",
+        "foot.L",
+        "thigh.R",
+        "shin.R",
+        "foot.R"
+      ],
+      "clips": [
+        {
+          "name": "Idle",
+          "action": "03_Juggernaut__Idle",
+          "frames": [
+            1,
+            61
+          ],
+          "duration_seconds": 2.0,
+          "loop": true,
+          "root_motion": "none"
+        },
+        {
+          "name": "Walk",
+          "action": "03_Juggernaut__Walk",
+          "frames": [
+            1,
+            43
+          ],
+          "duration_seconds": 1.4,
+          "loop": true,
+          "recommended_speed_mps": 0.4241071428571429,
+          "stance_ratio": 0.64,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Run",
+          "action": "03_Juggernaut__Run",
+          "frames": [
+            1,
+            31
+          ],
+          "duration_seconds": 1.0,
+          "loop": true,
+          "recommended_speed_mps": 0.9500000000000001,
+          "stance_ratio": 0.52,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Turn_L_45",
+          "action": "03_Juggernaut__Turn_L_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 45
+        },
+        {
+          "name": "Turn_R_45",
+          "action": "03_Juggernaut__Turn_R_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -45
+        },
+        {
+          "name": "Turn_L_90",
+          "action": "03_Juggernaut__Turn_L_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 90
+        },
+        {
+          "name": "Turn_R_90",
+          "action": "03_Juggernaut__Turn_R_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -90
+        },
+        {
+          "name": "Jump",
+          "action": "03_Juggernaut__Jump",
+          "frames": [
+            1,
+            37
+          ],
+          "duration_seconds": 1.2,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.3
+        },
+        {
+          "name": "Jump_Start",
+          "action": "03_Juggernaut__Jump_Start",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.3
+        },
+        {
+          "name": "Jump_Air",
+          "action": "03_Juggernaut__Jump_Air",
+          "frames": [
+            1,
+            17
+          ],
+          "duration_seconds": 0.5333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.3
+        },
+        {
+          "name": "Jump_Land",
+          "action": "03_Juggernaut__Jump_Land",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.3
+        }
+      ],
+      "export": "robots/03_Juggernaut.glb"
+    },
+    {
+      "id": "SK_04_Hound",
+      "bones": [
+        "root",
+        "pelvis",
+        "spine",
+        "head",
+        "upper_leg.FL",
+        "lower_leg.FL",
+        "foot.FL",
+        "upper_leg.FR",
+        "lower_leg.FR",
+        "foot.FR",
+        "tail",
+        "upper_leg.HL",
+        "lower_leg.HL",
+        "foot.HL",
+        "upper_leg.HR",
+        "lower_leg.HR",
+        "foot.HR"
+      ],
+      "clips": [
+        {
+          "name": "Idle",
+          "action": "04_Hound__Idle",
+          "frames": [
+            1,
+            61
+          ],
+          "duration_seconds": 2.0,
+          "loop": true,
+          "root_motion": "none"
+        },
+        {
+          "name": "Walk",
+          "action": "04_Hound__Walk",
+          "frames": [
+            1,
+            43
+          ],
+          "duration_seconds": 1.4,
+          "loop": true,
+          "recommended_speed_mps": 0.43956043956043955,
+          "stance_ratio": 0.78,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Run",
+          "action": "04_Hound__Run",
+          "frames": [
+            1,
+            25
+          ],
+          "duration_seconds": 0.8,
+          "loop": true,
+          "recommended_speed_mps": 1.8571428571428572,
+          "stance_ratio": 0.42,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Turn_L_45",
+          "action": "04_Hound__Turn_L_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 45
+        },
+        {
+          "name": "Turn_R_45",
+          "action": "04_Hound__Turn_R_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -45
+        },
+        {
+          "name": "Turn_L_90",
+          "action": "04_Hound__Turn_L_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 90
+        },
+        {
+          "name": "Turn_R_90",
+          "action": "04_Hound__Turn_R_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -90
+        },
+        {
+          "name": "Jump",
+          "action": "04_Hound__Jump",
+          "frames": [
+            1,
+            37
+          ],
+          "duration_seconds": 1.2,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.38
+        },
+        {
+          "name": "Jump_Start",
+          "action": "04_Hound__Jump_Start",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.38
+        },
+        {
+          "name": "Jump_Air",
+          "action": "04_Hound__Jump_Air",
+          "frames": [
+            1,
+            17
+          ],
+          "duration_seconds": 0.5333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.38
+        },
+        {
+          "name": "Jump_Land",
+          "action": "04_Hound__Jump_Land",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.38
+        }
+      ],
+      "export": "robots/04_Hound.glb"
+    },
+    {
+      "id": "SK_05_Scarab",
+      "bones": [
+        "root",
+        "pelvis",
+        "spine",
+        "head",
+        "upper_leg.FL",
+        "lower_leg.FL",
+        "foot.FL",
+        "upper_leg.FR",
+        "lower_leg.FR",
+        "foot.FR",
+        "tail",
+        "upper_leg.HL",
+        "lower_leg.HL",
+        "foot.HL",
+        "upper_leg.HR",
+        "lower_leg.HR",
+        "foot.HR"
+      ],
+      "clips": [
+        {
+          "name": "Idle",
+          "action": "05_Scarab__Idle",
+          "frames": [
+            1,
+            61
+          ],
+          "duration_seconds": 2.0,
+          "loop": true,
+          "root_motion": "none"
+        },
+        {
+          "name": "Walk",
+          "action": "05_Scarab__Walk",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": true,
+          "recommended_speed_mps": 0.24038461538461536,
+          "stance_ratio": 0.78,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Run",
+          "action": "05_Scarab__Run",
+          "frames": [
+            1,
+            31
+          ],
+          "duration_seconds": 1.0,
+          "loop": true,
+          "recommended_speed_mps": 0.7222222222222222,
+          "stance_ratio": 0.54,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Turn_L_45",
+          "action": "05_Scarab__Turn_L_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 45
+        },
+        {
+          "name": "Turn_R_45",
+          "action": "05_Scarab__Turn_R_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -45
+        },
+        {
+          "name": "Turn_L_90",
+          "action": "05_Scarab__Turn_L_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 90
+        },
+        {
+          "name": "Turn_R_90",
+          "action": "05_Scarab__Turn_R_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -90
+        },
+        {
+          "name": "Jump",
+          "action": "05_Scarab__Jump",
+          "frames": [
+            1,
+            37
+          ],
+          "duration_seconds": 1.2,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.22
+        },
+        {
+          "name": "Jump_Start",
+          "action": "05_Scarab__Jump_Start",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.22
+        },
+        {
+          "name": "Jump_Air",
+          "action": "05_Scarab__Jump_Air",
+          "frames": [
+            1,
+            17
+          ],
+          "duration_seconds": 0.5333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.22
+        },
+        {
+          "name": "Jump_Land",
+          "action": "05_Scarab__Jump_Land",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.22
+        }
+      ],
+      "export": "robots/05_Scarab.glb"
+    },
+    {
+      "id": "SK_06_Spider",
+      "bones": [
+        "root",
+        "pelvis",
+        "spine",
+        "head",
+        "upper_leg.FL",
+        "lower_leg.FL",
+        "foot.FL",
+        "upper_leg.FR",
+        "lower_leg.FR",
+        "foot.FR",
+        "tail",
+        "upper_leg.HL",
+        "lower_leg.HL",
+        "foot.HL",
+        "upper_leg.HR",
+        "lower_leg.HR",
+        "foot.HR"
+      ],
+      "clips": [
+        {
+          "name": "Idle",
+          "action": "06_Spider__Idle",
+          "frames": [
+            1,
+            61
+          ],
+          "duration_seconds": 2.0,
+          "loop": true,
+          "root_motion": "none"
+        },
+        {
+          "name": "Walk",
+          "action": "06_Spider__Walk",
+          "frames": [
+            1,
+            37
+          ],
+          "duration_seconds": 1.2,
+          "loop": true,
+          "recommended_speed_mps": 0.42735042735042744,
+          "stance_ratio": 0.78,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Run",
+          "action": "06_Spider__Run",
+          "frames": [
+            1,
+            23
+          ],
+          "duration_seconds": 0.7333333333333333,
+          "loop": true,
+          "recommended_speed_mps": 1.6883116883116884,
+          "stance_ratio": 0.42,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Turn_L_45",
+          "action": "06_Spider__Turn_L_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 45
+        },
+        {
+          "name": "Turn_R_45",
+          "action": "06_Spider__Turn_R_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -45
+        },
+        {
+          "name": "Turn_L_90",
+          "action": "06_Spider__Turn_L_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 90
+        },
+        {
+          "name": "Turn_R_90",
+          "action": "06_Spider__Turn_R_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -90
+        },
+        {
+          "name": "Jump",
+          "action": "06_Spider__Jump",
+          "frames": [
+            1,
+            37
+          ],
+          "duration_seconds": 1.2,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        },
+        {
+          "name": "Jump_Start",
+          "action": "06_Spider__Jump_Start",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        },
+        {
+          "name": "Jump_Air",
+          "action": "06_Spider__Jump_Air",
+          "frames": [
+            1,
+            17
+          ],
+          "duration_seconds": 0.5333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        },
+        {
+          "name": "Jump_Land",
+          "action": "06_Spider__Jump_Land",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.48
+        }
+      ],
+      "export": "robots/06_Spider.glb"
+    },
+    {
+      "id": "SK_07_Mule",
+      "bones": [
+        "root",
+        "pelvis",
+        "spine",
+        "head",
+        "upper_leg.FL",
+        "lower_leg.FL",
+        "foot.FL",
+        "upper_leg.FR",
+        "lower_leg.FR",
+        "foot.FR",
+        "tail",
+        "upper_leg.HL",
+        "lower_leg.HL",
+        "foot.HL",
+        "upper_leg.HR",
+        "lower_leg.HR",
+        "foot.HR"
+      ],
+      "clips": [
+        {
+          "name": "Idle",
+          "action": "07_Mule__Idle",
+          "frames": [
+            1,
+            61
+          ],
+          "duration_seconds": 2.0,
+          "loop": true,
+          "root_motion": "none"
+        },
+        {
+          "name": "Walk",
+          "action": "07_Mule__Walk",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": true,
+          "recommended_speed_mps": 0.3365384615384615,
+          "stance_ratio": 0.78,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Run",
+          "action": "07_Mule__Run",
+          "frames": [
+            1,
+            33
+          ],
+          "duration_seconds": 1.0666666666666667,
+          "loop": true,
+          "recommended_speed_mps": 0.9479166666666666,
+          "stance_ratio": 0.54,
+          "root_motion": "in_place"
+        },
+        {
+          "name": "Turn_L_45",
+          "action": "07_Mule__Turn_L_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 45
+        },
+        {
+          "name": "Turn_R_45",
+          "action": "07_Mule__Turn_R_45",
+          "frames": [
+            1,
+            49
+          ],
+          "duration_seconds": 1.6,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -45
+        },
+        {
+          "name": "Turn_L_90",
+          "action": "07_Mule__Turn_L_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": 90
+        },
+        {
+          "name": "Turn_R_90",
+          "action": "07_Mule__Turn_R_90",
+          "frames": [
+            1,
+            65
+          ],
+          "duration_seconds": 2.1333333333333333,
+          "loop": false,
+          "root_motion": "yaw",
+          "yaw_degrees": -90
+        },
+        {
+          "name": "Jump",
+          "action": "07_Mule__Jump",
+          "frames": [
+            1,
+            37
+          ],
+          "duration_seconds": 1.2,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.22
+        },
+        {
+          "name": "Jump_Start",
+          "action": "07_Mule__Jump_Start",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.22
+        },
+        {
+          "name": "Jump_Air",
+          "action": "07_Mule__Jump_Air",
+          "frames": [
+            1,
+            17
+          ],
+          "duration_seconds": 0.5333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.22
+        },
+        {
+          "name": "Jump_Land",
+          "action": "07_Mule__Jump_Land",
+          "frames": [
+            1,
+            11
+          ],
+          "duration_seconds": 0.3333333333333333,
+          "loop": false,
+          "root_motion": "vertical",
+          "full_jump_height_m": 0.22
+        }
+      ],
+      "export": "robots/07_Mule.glb"
+    }
+  ],
+  "palettes": [
+    {
+      "index": 0,
+      "name": "Ghost_Cyan",
+      "cloth": [
+        0.045,
+        0.075,
+        0.13
+      ],
+      "hair": [
+        0.025,
+        0.03,
+        0.05
+      ],
+      "accent": [
+        0.035,
+        0.72,
+        0.8
+      ],
+      "skin": [
+        0.65,
+        0.38,
+        0.24
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Underground_Magenta",
+      "cloth": [
+        0.19,
+        0.035,
+        0.12
+      ],
+      "hair": [
+        0.38,
+        0.045,
+        0.17
+      ],
+      "accent": [
+        0.72,
+        0.035,
+        0.28
+      ],
+      "skin": [
+        0.38,
+        0.19,
+        0.12
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Police_Blue",
+      "cloth": [
+        0.055,
+        0.1,
+        0.24
+      ],
+      "hair": [
+        0.035,
+        0.025,
+        0.02
+      ],
+      "accent": [
+        0.08,
+        0.37,
+        0.95
+      ],
+      "skin": [
+        0.75,
+        0.49,
+        0.32
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Industrial_Amber",
+      "cloth": [
+        0.26,
+        0.16,
+        0.055
+      ],
+      "hair": [
+        0.17,
+        0.09,
+        0.035
+      ],
+      "accent": [
+        0.95,
+        0.38,
+        0.045
+      ],
+      "skin": [
+        0.49,
+        0.26,
+        0.15
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Veil_Ivory",
+      "cloth": [
+        0.36,
+        0.41,
+        0.44
+      ],
+      "hair": [
+        0.36,
+        0.38,
+        0.43
+      ],
+      "accent": [
+        0.65,
+        0.1,
+        0.6
+      ],
+      "skin": [
+        0.69,
+        0.43,
+        0.3
+      ]
+    }
+  ]
+}

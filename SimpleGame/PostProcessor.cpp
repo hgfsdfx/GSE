@@ -71,6 +71,17 @@ bool PostProcessor::MakeTarget(Target& target, int width, int height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindFramebuffer(GL_FRAMEBUFFER, target.framebuffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target.texture, 0);
+    if (&target == &scene_)
+    {
+        glGenRenderbuffers(1, &target.depth);
+        glBindRenderbuffer(GL_RENDERBUFFER, target.depth);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+                                  GL_DEPTH_ATTACHMENT,
+                                  GL_RENDERBUFFER,
+                                  target.depth);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     const GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
@@ -94,6 +105,10 @@ void PostProcessor::ReleaseTargets()
         if (target->texture)
         {
             glDeleteTextures(1, &target->texture);
+        }
+        if (target->depth)
+        {
+            glDeleteRenderbuffers(1, &target->depth);
         }
         *target = {};
     }

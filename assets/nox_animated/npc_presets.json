@@ -1,0 +1,257 @@
+{
+  "schema_version": 2,
+  "npcs": [
+    {
+      "npc_id": "ghost",
+      "display_name": "고스트",
+      "role": "Player",
+      "parts": {
+        "Head": 1,
+        "Hair": 3,
+        "Torso": 1,
+        "ArmL": 1,
+        "ArmR": 1,
+        "Legs": 1,
+        "Feet": 1,
+        "Accessory": 2
+      },
+      "palette_index": 0,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "patch",
+      "display_name": "패치",
+      "role": "Merchant",
+      "parts": {
+        "Head": 1,
+        "Hair": 2,
+        "Torso": 1,
+        "ArmL": 1,
+        "ArmR": 1,
+        "Legs": 1,
+        "Feet": 1,
+        "Accessory": 2
+      },
+      "palette_index": 1,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "han_seojin",
+      "display_name": "한서진",
+      "role": "Investigator",
+      "parts": {
+        "Head": 2,
+        "Hair": 1,
+        "Torso": 2,
+        "ArmL": 1,
+        "ArmR": 1,
+        "Legs": 1,
+        "Feet": 1,
+        "Accessory": 1
+      },
+      "palette_index": 2,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "bastion",
+      "display_name": "바스티온",
+      "role": "Guard",
+      "parts": {
+        "Head": 1,
+        "Hair": 1,
+        "Torso": 3,
+        "ArmL": 2,
+        "ArmR": 2,
+        "Legs": 2,
+        "Feet": 2,
+        "Accessory": 3
+      },
+      "palette_index": 2,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "blackout",
+      "display_name": "블랙아웃",
+      "role": "PowerManager",
+      "parts": {
+        "Head": 1,
+        "Hair": 3,
+        "Torso": 3,
+        "ArmL": 2,
+        "ArmR": 2,
+        "Legs": 2,
+        "Feet": 2,
+        "Accessory": 2
+      },
+      "palette_index": 3,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "argos",
+      "display_name": "아르고스",
+      "role": "SurveillanceDirector",
+      "parts": {
+        "Head": 1,
+        "Hair": 1,
+        "Torso": 3,
+        "ArmL": 2,
+        "ArmR": 2,
+        "Legs": 2,
+        "Feet": 2,
+        "Accessory": 1
+      },
+      "palette_index": 4,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "administrator",
+      "display_name": "관리자",
+      "role": "Administrator",
+      "parts": {
+        "Head": 2,
+        "Hair": 2,
+        "Torso": 2,
+        "ArmL": 1,
+        "ArmR": 1,
+        "Legs": 1,
+        "Feet": 1,
+        "Accessory": 1
+      },
+      "palette_index": 4,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "hunter_01",
+      "display_name": "사냥꾼 01",
+      "role": "Hunter",
+      "parts": {
+        "Head": 2,
+        "Hair": 1,
+        "Torso": 2,
+        "ArmL": 1,
+        "ArmR": 1,
+        "Legs": 1,
+        "Feet": 1,
+        "Accessory": 2
+      },
+      "palette_index": 3,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "raider_01",
+      "display_name": "약탈자 01",
+      "role": "Raider",
+      "parts": {
+        "Head": 1,
+        "Hair": 3,
+        "Torso": 3,
+        "ArmL": 2,
+        "ArmR": 2,
+        "Legs": 2,
+        "Feet": 2,
+        "Accessory": 1
+      },
+      "palette_index": 1,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "hacker_01",
+      "display_name": "해커 01",
+      "role": "Hacker",
+      "parts": {
+        "Head": 2,
+        "Hair": 2,
+        "Torso": 2,
+        "ArmL": 1,
+        "ArmR": 1,
+        "Legs": 1,
+        "Feet": 1,
+        "Accessory": 2
+      },
+      "palette_index": 0,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "merchant_01",
+      "display_name": "상인 01",
+      "role": "Merchant",
+      "parts": {
+        "Head": 1,
+        "Hair": 1,
+        "Torso": 1,
+        "ArmL": 1,
+        "ArmR": 1,
+        "Legs": 1,
+        "Feet": 1,
+        "Accessory": 0
+      },
+      "palette_index": 3,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "seeker_01",
+      "display_name": "탐색자 01",
+      "role": "Seeker",
+      "parts": {
+        "Head": 2,
+        "Hair": 3,
+        "Torso": 2,
+        "ArmL": 1,
+        "ArmR": 1,
+        "Legs": 1,
+        "Feet": 1,
+        "Accessory": 2
+      },
+      "palette_index": 4,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "guard_01",
+      "display_name": "경비 01",
+      "role": "Guard",
+      "parts": {
+        "Head": 2,
+        "Hair": 1,
+        "Torso": 3,
+        "ArmL": 2,
+        "ArmR": 2,
+        "Legs": 2,
+        "Feet": 2,
+        "Accessory": 1
+      },
+      "palette_index": 2,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    },
+    {
+      "npc_id": "service_robot_01",
+      "display_name": "정비 로봇 01",
+      "role": "ServiceRobot",
+      "parts": {
+        "Head": 3,
+        "Hair": 0,
+        "Torso": 4,
+        "ArmL": 3,
+        "ArmR": 3,
+        "Legs": 3,
+        "Feet": 3,
+        "Accessory": 0
+      },
+      "palette_index": 0,
+      "skeleton_id": "SK_NPC_Common",
+      "animation_set": "NPC_Common"
+    }
+  ]
+}

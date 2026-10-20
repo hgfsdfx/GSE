@@ -9,6 +9,7 @@
 #include "FontGlyphCache.h"
 #include "GpuProfiler.h"
 #include "ProfileMetrics.h"
+#include "ModelBatch.h"
 
 struct Point
 {
@@ -194,6 +195,18 @@ class Renderer
                         Point yAxis,
                         Color tint = {});
 
+    // GLB Y-up metres -> the same 2.5D projection as world actors. Whole modular
+    // appearances are reserved atomically and share one painter-depth group.
+    bool DrawModel(const ModelAppearance& appearance,
+                   Point origin,
+                   ModelMath::Vec3 scale,
+                   float yaw = 0,
+                   const std::string& clip = "Idle",
+                   float seconds = 0,
+                   bool loop = true,
+                   float emissionScale = 1,
+                   Color tint = {});
+
     PostProcessingSettings& PostEffects()
     {
         return postProcessor_.settings;
@@ -254,12 +267,14 @@ class Renderer
     int width_, height_;
     GLuint program_ = 0, vao_ = 0, vbo_ = 0;
     GLuint instanceBuffer_ = 0, instanceTexture_ = 0;
-    GLint viewport_ = -1, linearScene_ = -1;
+    GLint viewport_ = -1, linearScene_ = -1, depthStep_ = -1;
     bool capturing_ = false, overlay_ = false;
     std::uint64_t drawCalls_ = 0;
     std::uint64_t instanceCount_ = 0, instanceUploadBytes_ = 0;
     PostProcessor postProcessor_;
     MeshCache meshes_;
+    ModelBatch models_;
+    std::vector<ModelBatch::Surface> modelSurfaces_;
     std::vector<MeshInstance> instances_;
     std::vector<TriangleReference> triangles_;
     const MeshCache::Mesh* triangle_ = nullptr;

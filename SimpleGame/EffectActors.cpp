@@ -3,6 +3,7 @@
 #include "SceneGraph.h"
 #include "NavigationGrid.h"
 #include "GameMath.h"
+#include "Society.h"
 #include <algorithm>
 #include <cmath>
 using GameMath::Direction;
@@ -22,7 +23,8 @@ void PulseActor::Update(float dt, ActorUpdateContext& context)
     remaining -= dt;
     if (remaining <= 0)
     {
-        if (Distance(context.player.WorldPosition(), WorldPosition()) < radius)
+        if (!Society::InTownSafeZone(context.player.WorldPosition())
+            && Distance(context.player.WorldPosition(), WorldPosition()) < radius)
         {
             context.events.Hurt(24, context.player.WorldPosition());
         }

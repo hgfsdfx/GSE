@@ -165,9 +165,25 @@
     <Text Include="..\렌더링_캐시_구조.txt" />
     <Text Include="..\성능분석_로그_및_DrawCall_개선_리포트.txt" />
     <None Include="..\Actor_SceneGraph_구조.md" />
+    <None Include="..\doc\오픈월드_프로토타입_구현안내.md" />
+    <None Include="..\doc\월드_모니터링_실행안내.md" />
+    <None Include="..\doc\7개_마을_주택_소문_이사.md" />
+    <None Include="..\doc\에셋_로더_및_애니메이션.md" />
+    <None Include="Dependencies\ASSET_LOADER_NOTICES.md" />
+    <None Include="Dependencies\cgltf.LICENSE" />
+    <None Include="Dependencies\json.LICENSE.MIT" />
+    <None Include="..\monitoring\index.html" />
+    <None Include="..\monitoring\dashboard.css" />
+    <None Include="..\monitoring\dashboard.js" />
+    <None Include="..\tools\monitor_server.py" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="ModelMath.h" />
+    <ClInclude Include="ModelAsset.h" />
+    <ClInclude Include="AssetLibrary.h" />
+    <ClInclude Include="ModelBatch.h" />
+    <ClInclude Include="ModelActor.h" />
     <ClInclude Include="ProfileMetrics.h" />
     <ClInclude Include="GpuProfiler.h" />
     <ClInclude Include="PerformanceLog.h" />
@@ -185,12 +201,21 @@
     <ClInclude Include="PlayerStats.h" />
     <ClInclude Include="GameMath.h" />
     <ClInclude Include="LevelOne.h" />
+    <ClInclude Include="Society.h" />
+    <ClInclude Include="WorldMonitor.h" />
     <ClInclude Include="Prototype.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ModelMath.cpp" />
+    <ClCompile Include="ModelAsset.cpp" />
+    <ClCompile Include="AssetLibrary.cpp" />
+    <ClCompile Include="ModelBatch.cpp" />
+    <ClCompile Include="ModelActor.cpp" />
+    <ClCompile Include="RendererModels.cpp" />
+    <ClCompile Include="PrototypeModels.cpp" />
     <ClCompile Include="GpuProfiler.cpp" />
     <ClCompile Include="PerformanceLog.cpp" />
     <ClCompile Include="FontGlyphCache.cpp" />
@@ -214,6 +239,12 @@
     <ClCompile Include="LevelOneRewards.cpp" />
     <ClCompile Include="PrototypeScene.cpp" />
     <ClCompile Include="LevelOne.cpp" />
+    <ClCompile Include="Society.cpp" />
+    <ClCompile Include="SocietyAI.cpp" />
+    <ClCompile Include="SocietySettlements.cpp" />
+    <ClCompile Include="SocietySave.cpp" />
+    <ClCompile Include="WorldMonitor.cpp" />
+    <ClCompile Include="PrototypeSociety.cpp" />
     <ClCompile Include="LevelOneSave.cpp" />
     <ClCompile Include="PrototypeLevel.cpp" />
     <ClCompile Include="Prototype.cpp" />
@@ -240,6 +271,14 @@
     </ItemGroup>
     <MakeDir Directories="$(OutDir)Shaders" />
     <Copy SourceFiles="@(PrototypeShader)" DestinationFolder="$(OutDir)Shaders" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="CopyPrototypeAssets" AfterTargets="Build">
+    <ItemGroup>
+      <PrototypeAsset Include="$(ProjectDir)..\assets\**\*.glb;$(ProjectDir)..\assets\**\*.gltf;$(ProjectDir)..\assets\**\*.bin;$(ProjectDir)..\assets\**\*.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PrototypeAsset)" DestinationFiles="@(PrototypeAsset->'$(OutDir)assets\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <MakeDir Directories="$(OutDir)Licenses" />
+    <Copy SourceFiles="$(ProjectDir)Dependencies\cgltf.LICENSE;$(ProjectDir)Dependencies\json.LICENSE.MIT;$(ProjectDir)Dependencies\ASSET_LOADER_NOTICES.md" DestinationFolder="$(OutDir)Licenses" SkipUnchangedFiles="true" />
   </Target>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

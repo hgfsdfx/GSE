@@ -87,17 +87,22 @@ void Prototype::DrawEnemyActor(const EnemyActor& enemy)
                         : enemy.kind == EnemyKind::Armored ? Amber
                                                            : Pink;
     r_.Circle(ground, size, Color(0, .01f, .025f, .55f));
-    r_.Quad(p + Point(0, -size),
-            p + Point(size, 0),
-            p + Point(0, size),
-            p + Point(-size, 0),
-            Color(.14f, .18f, .25f));
-    r_.Line(p + Point(-size, 0), p + Point(size, 0), 2, color.Emissive(1.8f));
-    r_.Circle(p, boss ? 7.f : 4.f, color.Emissive(2.5f));
-    for (int sign : {-1, 1})
+    const auto* model =
+        assets_.Robot(enemy.kind == EnemyKind::Armored ? "03_Juggernaut" : "01_Sentinel");
+    if (!DrawActorModel(enemy, model, boss ? 36.f : 19.f, enemy.hitFlash > 0))
     {
-        r_.Line(p + Point(sign * size, 0), p + Point(sign * size * 1.5f, -5), 3, Muted);
-        r_.Ring(p + Point(sign * size * 1.6f, -5), boss ? 10.f : 5.f, 1.5f, color);
+        r_.Quad(p + Point(0, -size),
+                p + Point(size, 0),
+                p + Point(0, size),
+                p + Point(-size, 0),
+                Color(.14f, .18f, .25f));
+        r_.Line(p + Point(-size, 0), p + Point(size, 0), 2, color.Emissive(1.8f));
+        r_.Circle(p, boss ? 7.f : 4.f, color.Emissive(2.5f));
+        for (int sign : {-1, 1})
+        {
+            r_.Line(p + Point(sign * size, 0), p + Point(sign * size * 1.5f, -5), 3, Muted);
+            r_.Ring(p + Point(sign * size * 1.6f, -5), boss ? 10.f : 5.f, 1.5f, color);
+        }
     }
     const float ratio = std::clamp(enemy.health / enemy.maxHealth, 0.f, 1.f);
     r_.Rect(p.x - size, p.y - size - 12, size * 2, 3, Color(.12f, .13f, .18f));

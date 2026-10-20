@@ -3,6 +3,7 @@
 #include "SceneGraph.h"
 #include "NavigationGrid.h"
 #include "GameMath.h"
+#include "Society.h"
 #include <algorithm>
 #include <cmath>
 using GameMath::Direction;
@@ -48,6 +49,16 @@ void SmartphoneActor::Update(float, ActorUpdateContext& context)
     }
     auto& stats = owner->stats;
     if (stats.fireTimer_ > 0 || stats.Dead())
+    {
+        return;
+    }
+    if (owner->npcAttackRequested)
+    {
+        context.society.Command('h', context);
+        return;
+    }
+    // An NPC attacking the player is a valid defensive target even with PK disabled.
+    if (context.society.AttackNpc(context, false))
     {
         return;
     }

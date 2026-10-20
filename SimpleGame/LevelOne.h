@@ -3,6 +3,7 @@
 #include "SceneGraph.h"
 #include "GameplayActors.h"
 #include "NavigationGrid.h"
+#include "Society.h"
 #include <string>
 
 // Coordinates one encounter; actors, navigation and progression own their reusable behavior.
@@ -15,6 +16,9 @@ class LevelOne : public GameplayEvents
     static constexpr double DistrictSize = GridSide * CellSize;
     static constexpr int BossKillsRequired = 20;
     static constexpr int BossLevelRequired = 4;
+    static constexpr float EnemyRespawnInterval = 1.f;
+    static constexpr size_t EnemyLimit = 18;
+    static constexpr size_t BossEnemyLimit = 9;
 
     LevelOne();
     void Start(World& world);
@@ -59,23 +63,27 @@ class LevelOne : public GameplayEvents
     void Hurt(float damage, WorldPoint position) override;
     void GainExperience(int amount) override;
     void Say(const std::string& message) override;
+    Society& Citizens();
+    const Society& Citizens() const;
+    void SocietyCommand(unsigned char key, World& world);
+    void SocietyHack(const Device& device, World& world);
 
   private:
 
     uint64_t Random();
-    bool SpawnEnemy(const World& world, WorldPoint player, bool nearby = false);
     void PopulateEnemies(const World& world, WorldPoint player);
     void SpawnBoss();
     void DropLoot(const EnemyActor& enemy);
     void AddLoot(LootKind kind, WorldPoint point, int amount);
     SceneGraph scene_;
     NavigationGrid navigation_;
+    Society society_;
     ActorId playerId_ = 0;
     ActorId gameplayRoot_ = 0;
     uint64_t seed_ = 1;
     uint64_t randomState_ = 1;
     uint64_t nextId_ = 1;
-    float spawnTimer_ = 1;
+    float spawnTimer_ = EnemyRespawnInterval;
     float flowTimer_ = 0;
     bool bossSpawned_ = false;
     bool cleared_ = false;

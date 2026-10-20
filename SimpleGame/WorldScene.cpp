@@ -103,7 +103,6 @@ void World::SpawnChunkActors(Chunk& chunk)
     {
         chunk.deviceActors.push_back(scene_->Spawn<DeviceActor>(root.Id(), device).Id());
     }
-    scene_->Spawn<TrafficActor>(root.Id(), chunk.key);
 }
 
 void World::RefreshColliders()

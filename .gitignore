@@ -19,8 +19,20 @@
 *.save.tmp
 **/MeshCache/
 **/PerformanceLogs/
+**/monitoring/state.json
+**/monitoring/state.json.tmp
 /x64/Debug/Shaders/
 /x64/Release/Shaders/
 /Debug/Shaders/
 /Release/Shaders/
 
+
+# Runtime model copies; keep the source assets/ directory tracked.
+/x64/Debug/assets/
+/x64/Release/assets/
+/Debug/assets/
+/Release/assets/
+/x64/Debug/Licenses/
+/x64/Release/Licenses/
+/Debug/Licenses/
+/Release/Licenses/

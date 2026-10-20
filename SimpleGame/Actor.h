@@ -19,7 +19,8 @@ enum class UpdatePhase
     Projectile,
     Loot,
     Effect,
-    Decoration
+    Decoration,
+    Npc
 };
 
 enum class RenderLayer

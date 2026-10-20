@@ -1,0 +1,1218 @@
+{
+  "schema_version": 1,
+  "asset_pack": "Nox_Lowpoly_v1",
+  "units": "metres",
+  "blender_axes": {
+    "up": "+Z",
+    "front": "-Y",
+    "right": "+X"
+  },
+  "gltf_axes": {
+    "up": "+Y",
+    "front": "+Z",
+    "right": "+X"
+  },
+  "npc_body_height": 1.8,
+  "head_height": 0.6,
+  "headwear_may_exceed_height": true,
+  "pivot": "All NPC parts share the feet origin (0,0,0). Assemble with identical transforms.",
+  "index_policy": "Indices are local to each slot. 0 means absent for Hair/Accessory only. Never renumber published entries.",
+  "assets": [
+    {
+      "category": "npc",
+      "slot": "Head",
+      "index": 1,
+      "mesh": "SM_NPC_Head_001_Male",
+      "file": "meshes/SM_NPC_Head_001_Male.glb",
+      "triangles": 256,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.3174999952316284,
+          -0.2459999918937683,
+          1.2000000476837158
+        ],
+        "max": [
+          0.3174999952316284,
+          0.22499999403953552,
+          1.7999999523162842
+        ]
+      },
+      "material_slots": [
+        "MAT_Skin_Base",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Head",
+      "index": 2,
+      "mesh": "SM_NPC_Head_002_Female",
+      "file": "meshes/SM_NPC_Head_002_Female.glb",
+      "triangles": 256,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.29750001430511475,
+          -0.2459999918937683,
+          1.2000000476837158
+        ],
+        "max": [
+          0.29750001430511475,
+          0.22499999403953552,
+          1.7999999523162842
+        ]
+      },
+      "material_slots": [
+        "MAT_Skin_Base",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Head",
+      "index": 3,
+      "mesh": "SM_NPC_Head_003_Robot",
+      "file": "meshes/SM_NPC_Head_003_Robot.glb",
+      "triangles": 136,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.2800000011920929,
+          -0.25600001215934753,
+          1.2000000476837158
+        ],
+        "max": [
+          0.2800000011920929,
+          0.22499999403953552,
+          1.7999999523162842
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Hair",
+      "index": 1,
+      "mesh": "SM_NPC_Hair_001_Short",
+      "file": "meshes/SM_NPC_Hair_001_Short.glb",
+      "triangles": 220,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.3201828598976135,
+          -0.25050002336502075,
+          1.5099999904632568
+        ],
+        "max": [
+          0.30000001192092896,
+          0.25999999046325684,
+          1.840000033378601
+        ]
+      },
+      "material_slots": [
+        "MAT_Hair_Base"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Hair",
+      "index": 2,
+      "mesh": "SM_NPC_Hair_002_Long",
+      "file": "meshes/SM_NPC_Hair_002_Long.glb",
+      "triangles": 352,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.32749998569488525,
+          -0.25050002336502075,
+          1.090000033378601
+        ],
+        "max": [
+          0.32749998569488525,
+          0.3099999725818634,
+          1.840000033378601
+        ]
+      },
+      "material_slots": [
+        "MAT_Hair_Base"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Hair",
+      "index": 3,
+      "mesh": "SM_NPC_Hair_003_Sidecut",
+      "file": "meshes/SM_NPC_Hair_003_Sidecut.glb",
+      "triangles": 276,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.3201828598976135,
+          -0.25050002336502075,
+          1.5099999904632568
+        ],
+        "max": [
+          0.3019999861717224,
+          0.25999999046325684,
+          1.9450000524520874
+        ]
+      },
+      "material_slots": [
+        "MAT_Hair_Base",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Torso",
+      "index": 1,
+      "mesh": "SM_NPC_Torso_001_JacketMale",
+      "file": "meshes/SM_NPC_Torso_001_JacketMale.glb",
+      "triangles": 244,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.23999999463558197,
+          -0.20000000298023224,
+          0.7200000286102295
+        ],
+        "max": [
+          0.23999999463558197,
+          0.16500000655651093,
+          1.2799999713897705
+        ]
+      },
+      "material_slots": [
+        "MAT_Cloth_Navy",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan",
+        "MAT_Panel_Slate"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Torso",
+      "index": 2,
+      "mesh": "SM_NPC_Torso_002_JacketFemale",
+      "file": "meshes/SM_NPC_Torso_002_JacketFemale.glb",
+      "triangles": 244,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.23499999940395355,
+          -0.20000000298023224,
+          0.7200000286102295
+        ],
+        "max": [
+          0.23499999940395355,
+          0.16500000655651093,
+          1.2799999713897705
+        ]
+      },
+      "material_slots": [
+        "MAT_Cloth_Navy",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan",
+        "MAT_Panel_Slate"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Torso",
+      "index": 3,
+      "mesh": "SM_NPC_Torso_003_Armor",
+      "file": "meshes/SM_NPC_Torso_003_Armor.glb",
+      "triangles": 288,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.3449999988079071,
+          -0.25699999928474426,
+          0.7200000286102295
+        ],
+        "max": [
+          0.3449999988079071,
+          0.19499999284744263,
+          1.2799999713897705
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Amber",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Torso",
+      "index": 4,
+      "mesh": "SM_NPC_Torso_004_Robot",
+      "file": "meshes/SM_NPC_Torso_004_Robot.glb",
+      "triangles": 228,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.23999999463558197,
+          -0.23000000417232513,
+          0.7200000286102295
+        ],
+        "max": [
+          0.23999999463558197,
+          0.16500000655651093,
+          1.2799999713897705
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Amber",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "ArmL",
+      "index": 1,
+      "mesh": "SM_NPC_ArmL_001_Sleeve",
+      "file": "meshes/SM_NPC_ArmL_001_Sleeve.glb",
+      "triangles": 104,
+      "bounds_blender_z_up": {
+        "min": [
+          0.22495120763778687,
+          -0.0950000062584877,
+          0.5699999928474426
+        ],
+        "max": [
+          0.4999999403953552,
+          0.07794231176376343,
+          1.149440050125122
+        ]
+      },
+      "material_slots": [
+        "MAT_Cloth_Navy",
+        "MAT_Rubber_Charcoal",
+        "MAT_Skin_Base"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "ArmR",
+      "index": 1,
+      "mesh": "SM_NPC_ArmR_001_Sleeve",
+      "file": "meshes/SM_NPC_ArmR_001_Sleeve.glb",
+      "triangles": 104,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.4999999403953552,
+          -0.0950000062584877,
+          0.5699999928474426
+        ],
+        "max": [
+          -0.22495120763778687,
+          0.07794231176376343,
+          1.149440050125122
+        ]
+      },
+      "material_slots": [
+        "MAT_Cloth_Navy",
+        "MAT_Rubber_Charcoal",
+        "MAT_Skin_Base"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "ArmL",
+      "index": 2,
+      "mesh": "SM_NPC_ArmL_002_Armor",
+      "file": "meshes/SM_NPC_ArmL_002_Armor.glb",
+      "triangles": 148,
+      "bounds_blender_z_up": {
+        "min": [
+          0.22495120763778687,
+          -0.09750000387430191,
+          0.5699999928474426
+        ],
+        "max": [
+          0.4999999403953552,
+          0.07794231176376343,
+          1.149440050125122
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "ArmR",
+      "index": 2,
+      "mesh": "SM_NPC_ArmR_002_Armor",
+      "file": "meshes/SM_NPC_ArmR_002_Armor.glb",
+      "triangles": 148,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.4999999403953552,
+          -0.09750000387430191,
+          0.5699999928474426
+        ],
+        "max": [
+          -0.22495120763778687,
+          0.07794231176376343,
+          1.149440050125122
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "ArmL",
+      "index": 3,
+      "mesh": "SM_NPC_ArmL_003_Robot",
+      "file": "meshes/SM_NPC_ArmL_003_Robot.glb",
+      "triangles": 148,
+      "bounds_blender_z_up": {
+        "min": [
+          0.22495120763778687,
+          -0.09750000387430191,
+          0.5699999928474426
+        ],
+        "max": [
+          0.4999999403953552,
+          0.07794231176376343,
+          1.149440050125122
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "ArmR",
+      "index": 3,
+      "mesh": "SM_NPC_ArmR_003_Robot",
+      "file": "meshes/SM_NPC_ArmR_003_Robot.glb",
+      "triangles": 148,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.4999999403953552,
+          -0.09750000387430191,
+          0.5699999928474426
+        ],
+        "max": [
+          -0.22495120763778687,
+          0.07794231176376343,
+          1.149440050125122
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Legs",
+      "index": 1,
+      "mesh": "SM_NPC_Legs_001_Pants",
+      "file": "meshes/SM_NPC_Legs_001_Pants.glb",
+      "triangles": 220,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.21000000834465027,
+          -0.15000000596046448,
+          0.1899999976158142
+        ],
+        "max": [
+          0.21000000834465027,
+          0.15000000596046448,
+          0.7849999666213989
+        ]
+      },
+      "material_slots": [
+        "MAT_Cloth_Navy"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Legs",
+      "index": 2,
+      "mesh": "SM_NPC_Legs_002_Armor",
+      "file": "meshes/SM_NPC_Legs_002_Armor.glb",
+      "triangles": 332,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.21000000834465027,
+          -0.17999999225139618,
+          0.1899999976158142
+        ],
+        "max": [
+          0.21000000834465027,
+          0.15000000596046448,
+          0.7849999666213989
+        ]
+      },
+      "material_slots": [
+        "MAT_Rubber_Charcoal",
+        "MAT_Panel_Slate",
+        "MAT_Accent_Amber"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Legs",
+      "index": 3,
+      "mesh": "SM_NPC_Legs_003_Robot",
+      "file": "meshes/SM_NPC_Legs_003_Robot.glb",
+      "triangles": 332,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.21000000834465027,
+          -0.17999999225139618,
+          0.1899999976158142
+        ],
+        "max": [
+          0.21000000834465027,
+          0.15000000596046448,
+          0.7849999666213989
+        ]
+      },
+      "material_slots": [
+        "MAT_Rubber_Charcoal",
+        "MAT_Panel_Slate",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Feet",
+      "index": 1,
+      "mesh": "SM_NPC_Feet_001_Boots",
+      "file": "meshes/SM_NPC_Feet_001_Boots.glb",
+      "triangles": 112,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.2150000035762787,
+          -0.22500000894069672,
+          0.0
+        ],
+        "max": [
+          0.2149999737739563,
+          0.13500000536441803,
+          0.20000000298023224
+        ]
+      },
+      "material_slots": [
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Feet",
+      "index": 2,
+      "mesh": "SM_NPC_Feet_002_Armor",
+      "file": "meshes/SM_NPC_Feet_002_Armor.glb",
+      "triangles": 112,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.2150000035762787,
+          -0.22500000894069672,
+          0.0
+        ],
+        "max": [
+          0.2149999737739563,
+          0.13500000536441803,
+          0.20000000298023224
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Accent_Amber"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Feet",
+      "index": 3,
+      "mesh": "SM_NPC_Feet_003_Robot",
+      "file": "meshes/SM_NPC_Feet_003_Robot.glb",
+      "triangles": 112,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.2150000035762787,
+          -0.22500000894069672,
+          0.0
+        ],
+        "max": [
+          0.2149999737739563,
+          0.13500000536441803,
+          0.20000000298023224
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Accessory",
+      "index": 1,
+      "mesh": "SM_NPC_Accessory_001_Visor",
+      "file": "meshes/SM_NPC_Accessory_001_Visor.glb",
+      "triangles": 56,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.23999999463558197,
+          -0.31599998474121094,
+          1.4749999046325684
+        ],
+        "max": [
+          0.23999999463558197,
+          -0.2199999988079071,
+          1.6050000190734863
+        ]
+      },
+      "material_slots": [
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Accessory",
+      "index": 2,
+      "mesh": "SM_NPC_Accessory_002_DataPack",
+      "file": "meshes/SM_NPC_Accessory_002_DataPack.glb",
+      "triangles": 100,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.17000000178813934,
+          0.18000000715255737,
+          0.6800000071525574
+        ],
+        "max": [
+          0.17000000178813934,
+          0.42249998450279236,
+          1.0399999618530273
+        ]
+      },
+      "material_slots": [
+        "MAT_Rubber_Charcoal",
+        "MAT_Panel_Slate",
+        "MAT_Accent_Magenta"
+      ]
+    },
+    {
+      "category": "npc",
+      "slot": "Accessory",
+      "index": 3,
+      "mesh": "SM_NPC_Accessory_003_RiotShield",
+      "file": "meshes/SM_NPC_Accessory_003_RiotShield.glb",
+      "triangles": 56,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.6299999952316284,
+          -0.265500009059906,
+          0.5099999904632568
+        ],
+        "max": [
+          -0.23000000417232513,
+          -0.11500000953674316,
+          1.1699999570846558
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Building",
+      "index": 1,
+      "mesh": "SM_ENV_Building_001_Residential",
+      "file": "meshes/SM_ENV_Building_001_Residential.glb",
+      "triangles": 956,
+      "bounds_blender_z_up": {
+        "min": [
+          -1.809999942779541,
+          -1.5099999904632568,
+          0.0
+        ],
+        "max": [
+          1.809999942779541,
+          1.5099999904632568,
+          5.960000038146973
+        ]
+      },
+      "material_slots": [
+        "MAT_Concrete",
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan",
+        "MAT_Window_Dark",
+        "MAT_Accent_Amber"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Building",
+      "index": 2,
+      "mesh": "SM_ENV_Building_002_Commercial",
+      "file": "meshes/SM_ENV_Building_002_Commercial.glb",
+      "triangles": 528,
+      "bounds_blender_z_up": {
+        "min": [
+          -2.109999895095825,
+          -2.1700000762939453,
+          0.0
+        ],
+        "max": [
+          2.109999895095825,
+          1.6100000143051147,
+          3.760000228881836
+        ]
+      },
+      "material_slots": [
+        "MAT_Concrete",
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan",
+        "MAT_Window_Dark",
+        "MAT_Accent_Magenta"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Building",
+      "index": 3,
+      "mesh": "SM_ENV_Building_003_Corporate",
+      "file": "meshes/SM_ENV_Building_003_Corporate.glb",
+      "triangles": 1408,
+      "bounds_blender_z_up": {
+        "min": [
+          -1.7100000381469727,
+          -1.7100000381469727,
+          0.0
+        ],
+        "max": [
+          1.7100000381469727,
+          1.7100000381469727,
+          9.0600004196167
+        ]
+      },
+      "material_slots": [
+        "MAT_Concrete",
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan",
+        "MAT_Window_Dark"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Building",
+      "index": 4,
+      "mesh": "SM_ENV_Building_004_Industrial",
+      "file": "meshes/SM_ENV_Building_004_Industrial.glb",
+      "triangles": 516,
+      "bounds_blender_z_up": {
+        "min": [
+          -2.109999895095825,
+          -1.909999966621399,
+          0.0
+        ],
+        "max": [
+          2.109999895095825,
+          1.909999966621399,
+          4.774999618530273
+        ]
+      },
+      "material_slots": [
+        "MAT_Concrete",
+        "MAT_Panel_Slate",
+        "MAT_Rubber_Charcoal",
+        "MAT_Accent_Cyan",
+        "MAT_Window_Dark"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Tree",
+      "index": 1,
+      "mesh": "SM_ENV_Tree_001_Canopy",
+      "file": "meshes/SM_ENV_Tree_001_Canopy.glb",
+      "triangles": 120,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.8293240070343018,
+          -0.5529159903526306,
+          0.0
+        ],
+        "max": [
+          0.8224912285804749,
+          0.5529159903526306,
+          2.75
+        ]
+      },
+      "material_slots": [
+        "MAT_Bark",
+        "MAT_Foliage_Teal",
+        "MAT_Foliage_Sage"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Tree",
+      "index": 2,
+      "mesh": "SM_ENV_Tree_002_Slender",
+      "file": "meshes/SM_ENV_Tree_002_Slender.glb",
+      "triangles": 120,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.8293240070343018,
+          -0.5529159903526306,
+          0.0
+        ],
+        "max": [
+          0.8224912285804749,
+          0.5529159903526306,
+          3.130000114440918
+        ]
+      },
+      "material_slots": [
+        "MAT_Bark",
+        "MAT_Foliage_Teal",
+        "MAT_Foliage_Sage"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Tree",
+      "index": 3,
+      "mesh": "SM_ENV_Tree_003_Bare",
+      "file": "meshes/SM_ENV_Tree_003_Bare.glb",
+      "triangles": 60,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.48186326026916504,
+          -0.15000000596046448,
+          0.0
+        ],
+        "max": [
+          0.48186326026916504,
+          0.15000000596046448,
+          1.9115126132965088
+        ]
+      },
+      "material_slots": [
+        "MAT_Bark"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Rock",
+      "index": 1,
+      "mesh": "SM_ENV_Rock_001_Small",
+      "file": "meshes/SM_ENV_Rock_001_Small.glb",
+      "triangles": 20,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.4293239712715149,
+          -0.340256005525589,
+          -0.07000002264976501
+        ],
+        "max": [
+          0.4293239712715149,
+          0.340256005525589,
+          0.5900000333786011
+        ]
+      },
+      "material_slots": [
+        "MAT_Rock"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Rock",
+      "index": 2,
+      "mesh": "SM_ENV_Rock_002_Large",
+      "file": "meshes/SM_ENV_Rock_002_Large.glb",
+      "triangles": 20,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.7602612376213074,
+          -0.5529159903526306,
+          -0.12000003457069397
+        ],
+        "max": [
+          0.7602612376213074,
+          0.5529159903526306,
+          1.0800000429153442
+        ]
+      },
+      "material_slots": [
+        "MAT_Rock"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Rock",
+      "index": 3,
+      "mesh": "SM_ENV_Rock_003_Cluster",
+      "file": "meshes/SM_ENV_Rock_003_Cluster.glb",
+      "triangles": 60,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.8014947772026062,
+          -0.5529159903526306,
+          -0.12000003457069397
+        ],
+        "max": [
+          1.0256584882736206,
+          0.5529159903526306,
+          1.0800000429153442
+        ]
+      },
+      "material_slots": [
+        "MAT_Rock"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Groundcover",
+      "index": 1,
+      "mesh": "SM_ENV_Groundcover_001_GrassTuft",
+      "file": "meshes/SM_ENV_Groundcover_001_GrassTuft.glb",
+      "triangles": 70,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.18802861869335175,
+          -0.16703374683856964,
+          -0.011570538394153118
+        ],
+        "max": [
+          0.21026980876922607,
+          0.14117233455181122,
+          0.3996272683143616
+        ]
+      },
+      "material_slots": [
+        "MAT_Foliage_Sage",
+        "MAT_Foliage_Teal"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Groundcover",
+      "index": 2,
+      "mesh": "SM_ENV_Groundcover_002_GrassPatch",
+      "file": "meshes/SM_ENV_Groundcover_002_GrassPatch.glb",
+      "triangles": 220,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.5008156299591064,
+          -0.35766422748565674,
+          -0.011707313358783722
+        ],
+        "max": [
+          0.5264732837677002,
+          0.3658985197544098,
+          0.35492902994155884
+        ]
+      },
+      "material_slots": [
+        "MAT_Foliage_Sage",
+        "MAT_Foliage_Teal"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Shrub",
+      "index": 1,
+      "mesh": "SM_ENV_Shrub_001_Urban",
+      "file": "meshes/SM_ENV_Shrub_001_Urban.glb",
+      "triangles": 40,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.5366550087928772,
+          -0.3572687804698944,
+          -0.09999999403953552
+        ],
+        "max": [
+          0.7198814749717712,
+          0.3572687804698944,
+          0.7400000095367432
+        ]
+      },
+      "material_slots": [
+        "MAT_Foliage_Teal",
+        "MAT_Foliage_Sage"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Planter",
+      "index": 1,
+      "mesh": "SM_ENV_Planter_001_Rectangle",
+      "file": "meshes/SM_ENV_Planter_001_Rectangle.glb",
+      "triangles": 56,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.824999988079071,
+          -0.42500001192092896,
+          0.0
+        ],
+        "max": [
+          0.824999988079071,
+          0.42500001192092896,
+          0.44999998807907104
+        ]
+      },
+      "material_slots": [
+        "MAT_Concrete",
+        "MAT_Bark"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Street",
+      "index": 1,
+      "mesh": "SM_ENV_Street_001_Lamp",
+      "file": "meshes/SM_ENV_Street_001_Lamp.glb",
+      "triangles": 120,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.22499999403953552,
+          -0.6000000238418579,
+          0.0
+        ],
+        "max": [
+          0.22499999403953552,
+          0.22499999403953552,
+          2.7899999618530273
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Accent_Cyan"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Street",
+      "index": 2,
+      "mesh": "SM_ENV_Street_002_Terminal",
+      "file": "meshes/SM_ENV_Street_002_Terminal.glb",
+      "triangles": 132,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.25,
+          -0.23999999463558197,
+          0.0
+        ],
+        "max": [
+          0.25,
+          0.18000000715255737,
+          1.0
+        ]
+      },
+      "material_slots": [
+        "MAT_Panel_Slate",
+        "MAT_Accent_Cyan",
+        "MAT_Rubber_Charcoal"
+      ]
+    },
+    {
+      "category": "environment",
+      "slot": "Street",
+      "index": 3,
+      "mesh": "SM_ENV_Street_003_Barricade",
+      "file": "meshes/SM_ENV_Street_003_Barricade.glb",
+      "triangles": 80,
+      "bounds_blender_z_up": {
+        "min": [
+          -0.8999999761581421,
+          -0.2724999785423279,
+          0.0
+        ],
+        "max": [
+          0.8999999761581421,
+          0.25,
+          0.8999999761581421
+        ]
+      },
+      "material_slots": [
+        "MAT_Concrete",
+        "MAT_Accent_Amber"
+      ]
+    }
+  ],
+  "palettes": [
+    {
+      "index": 0,
+      "name": "Ghost_Cyan",
+      "cloth": [
+        0.045,
+        0.075,
+        0.13
+      ],
+      "hair": [
+        0.025,
+        0.03,
+        0.05
+      ],
+      "accent": [
+        0.035,
+        0.72,
+        0.8
+      ],
+      "skin": [
+        0.65,
+        0.38,
+        0.24
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Underground_Magenta",
+      "cloth": [
+        0.19,
+        0.035,
+        0.12
+      ],
+      "hair": [
+        0.38,
+        0.045,
+        0.17
+      ],
+      "accent": [
+        0.72,
+        0.035,
+        0.28
+      ],
+      "skin": [
+        0.38,
+        0.19,
+        0.12
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Police_Blue",
+      "cloth": [
+        0.055,
+        0.1,
+        0.24
+      ],
+      "hair": [
+        0.035,
+        0.025,
+        0.02
+      ],
+      "accent": [
+        0.08,
+        0.37,
+        0.95
+      ],
+      "skin": [
+        0.75,
+        0.49,
+        0.32
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Industrial_Amber",
+      "cloth": [
+        0.26,
+        0.16,
+        0.055
+      ],
+      "hair": [
+        0.17,
+        0.09,
+        0.035
+      ],
+      "accent": [
+        0.95,
+        0.38,
+        0.045
+      ],
+      "skin": [
+        0.49,
+        0.26,
+        0.15
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Veil_Ivory",
+      "cloth": [
+        0.36,
+        0.41,
+        0.44
+      ],
+      "hair": [
+        0.36,
+        0.38,
+        0.43
+      ],
+      "accent": [
+        0.65,
+        0.1,
+        0.6
+      ],
+      "skin": [
+        0.69,
+        0.43,
+        0.3
+      ]
+    }
+  ],
+  "sockets_blender": {
+    "Head": [
+      0,
+      0,
+      1.2
+    ],
+    "Torso": [
+      0,
+      0,
+      0.75
+    ],
+    "ArmL": [
+      0.31,
+      0,
+      1.12
+    ],
+    "ArmR": [
+      -0.31,
+      0,
+      1.12
+    ],
+    "Legs": [
+      0,
+      0,
+      0.75
+    ],
+    "Feet": [
+      0,
+      0,
+      0.2
+    ]
+  },
+  "notes": [
+    "Static modular meshes, no rig or animation.",
+    "Skinning and runtime NPC assignments are deferred.",
+    "NPC presets are visual proposals; unconfirmed character appearances are not story canon.",
+    "Hound quadruped and Blackout rideable mech are not included; humanoid operators are included."
+  ]
+}

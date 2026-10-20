@@ -47,8 +47,9 @@ namespace
 
 Prototype::Prototype(Renderer& renderer, const std::filesystem::path& savePath)
     : r_(renderer),
-      savePath_(savePath.parent_path() / L"level_one.save")
+      savePath_(savePath.parent_path() / L"open_world.save")
 {
+    assets_.Initialize();
     BindActorRenderers();
     level_.Start(world_);
     level_.Load(savePath_, world_);
@@ -71,6 +72,8 @@ Prototype::Prototype(Renderer& renderer, const std::filesystem::path& savePath)
     {
         Notify(message);
     }
+    monitor_.Start(savePath_.parent_path() / L"monitoring");
+    monitor_.Tick(level_, world_, paused_);
 }
 
 int Prototype::StreamRadius() const
@@ -107,6 +110,7 @@ void Prototype::ReleaseKeys()
 {
     keys_.fill(false);
     hackProgress_ = 0;
+    level_.Player().npcAttackRequested = false;
 }
 
 void Prototype::Key(unsigned char key, bool down)
@@ -149,6 +153,20 @@ void Prototype::Key(unsigned char key, bool down)
     {
         paused_ = !paused_;
         hackProgress_ = 0;
+        level_.Player().npcAttackRequested = false;
+    }
+    if (std::string("gtyuijhc").find(char(key)) != std::string::npos)
+    {
+        if (!paused_ && !level_.Dead())
+        {
+            level_.SocietyCommand(key, world_);
+            const auto message = level_.TakeMessage();
+            if (!message.empty())
+            {
+                Notify(message);
+            }
+        }
+        return;
     }
     if (key == '+' || key == '=')
     {
@@ -210,6 +228,8 @@ void Prototype::Key(unsigned char key, bool down)
 
 void Prototype::Update(float dt)
 {
+    // Wall-clock sampling also publishes pause/death states without advancing simulation.
+    monitor_.Tick(level_, world_, paused_);
     if (paused_)
     {
         return;
@@ -220,6 +240,8 @@ void Prototype::Update(float dt)
     if (level_.Dead())
     {
         moving_ = false;
+        level_.Update(dt, world_, StreamRadius());
+        UpdateModelVisuals(dt);
         return;
     }
     saveTime_ += dt;
@@ -231,6 +253,7 @@ void Prototype::Update(float dt)
     level_.Player().running = keys_[' '];
     const bool wasCleared = level_.Cleared();
     level_.Update(dt, world_, StreamRadius());
+    UpdateModelVisuals(dt);
     const double follow = 1 - std::exp(-dt * 8);
     camera_.x += (level_.Player().WorldPosition().x - camera_.x) * follow;
     camera_.y += (level_.Player().WorldPosition().y - camera_.y) * follow;
@@ -302,12 +325,18 @@ void Prototype::Hack(const Device& target)
 {
     if (target.type == DeviceType::Power)
     {
+        if (level_.Citizens().story == 3 && target.key == ChunkKey{0, 0})
+        {
+            Notify("경찰 접속 봉쇄 / C로 전력 우회 후 은신처에 보고하세요");
+            return;
+        }
         if (world_.Powered(target.key))
         {
             Notify("중계기 정상 / 복구할 필요가 없습니다");
             return;
         }
         world_.Change(target.key).eventSolved = true;
+        level_.Citizens().credits = std::min(1000000, level_.Citizens().credits + 150);
         Notify("전력 복구 / 150 크레딧 획득 / 해킹 속도 증가");
     }
     else if (target.type == DeviceType::Camera)
@@ -335,6 +364,7 @@ void Prototype::Hack(const Device& target)
         {
             // Recover the archive through the exterior terminal, without entering geometry.
             change.dataTaken = true;
+            level_.Citizens().credits = std::min(1000000, level_.Citizens().credits + 75);
             Notify("건물 소등 / 자료 다운로드 / 75 크레딧 획득");
         }
         else
@@ -342,6 +372,12 @@ void Prototype::Hack(const Device& target)
             Notify(change.lightsOff ? "건물 조명 꺼짐" : "건물 조명 켜짐");
         }
         trace_ = std::min(100.f, trace_ + 22);
+    }
+    level_.SocietyHack(target, world_);
+    const auto storyMessage = level_.TakeMessage();
+    if (!storyMessage.empty())
+    {
+        Notify(storyMessage);
     }
     Save();
 }
@@ -461,7 +497,7 @@ void Prototype::DrawBuilding(const Building& b, const ChunkKey& key)
     const auto& changes = world_.Changes(key);
     const bool power = world_.Powered(key) && !(b.hackable && changes.lightsOff);
     const std::string meshKey = BuildingMeshKey(b, power);
-    if (r_.BeginCachedMesh(meshKey, a, zoom_))
+    if (!DrawBuildingModel(b, power) && r_.BeginCachedMesh(meshKey, a, zoom_))
     {
         DrawBuildingMesh(b, power);
         r_.EndCachedMesh();
@@ -596,8 +632,12 @@ void Prototype::DrawPlayer(const PlayerActor& actor)
     {
         return;
     }
+    r_.Circle(p + Point(0, 2), 10 * zoom_, Color(0, 0, 0, .5f));
+    if (DrawActorModel(actor, assets_.Npc("ghost"), 24))
+    {
+        return;
+    }
     const float step = actor.input.x != 0 || actor.input.y != 0 ? std::sin(time_ * 14) * 3 : 0;
-    r_.Circle(p + Point(0, 2), 10, Color(0, 0, 0, .5f));
     r_.Line(p + Point(-4, -2), p + Point(-4 + step, -11), 4, Color(.13f, .2f, .26f));
     r_.Line(p + Point(4, -2), p + Point(4 - step, -11), 4, Color(.13f, .2f, .26f));
     r_.Quad(p + Point(-8, -25),
@@ -694,7 +734,7 @@ void Prototype::DrawMarkers()
 
 void Prototype::Hud()
 {
-    DrawLevelHud();
+    DrawOpenWorldHud();
 }
 
 GameProfileState Prototype::ProfileState() const
@@ -715,5 +755,15 @@ GameProfileState Prototype::ProfileState() const
     state.boss = level_.BossSpawned();
     state.cleared = level_.Cleared();
     state.level = level_.Level();
+    const auto& citizens = level_.Citizens();
+    state.npcs = level_.Scene().Count<NpcActor>();
+    state.wallet = citizens.credits;
+    state.cargo = citizens.cargo;
+    state.insight = citizens.insight;
+    state.story = citizens.story;
+    state.wanted = citizens.wanted;
+    state.trades = citizens.trades;
+    state.raids = citizens.raids;
+    state.hunts = citizens.hunts;
     return state;
 }

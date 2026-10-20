@@ -41,7 +41,7 @@ void LevelOne::EnemyDefeated(EnemyActor& enemy)
         {
             pulse.Destroy();
         }
-        spawnTimer_ = 6;
+        spawnTimer_ = 0;
     }
 }
 
@@ -81,6 +81,8 @@ void LevelOne::DropLoot(const EnemyActor& enemy)
         return;
     }
     Player().stats.kills_ = std::min(1000000, Player().stats.kills_ + 1);
+    society_.credits = std::min(1000000, society_.credits + 6);
+    society_.cargo = std::min(10000, society_.cargo + 1);
     AddLoot(LootKind::Semiconductor,
             enemy.WorldPosition(),
             enemy.kind == EnemyKind::Armored ? 14 : 8);

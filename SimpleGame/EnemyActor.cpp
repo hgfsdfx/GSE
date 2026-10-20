@@ -3,6 +3,7 @@
 #include "SceneGraph.h"
 #include "NavigationGrid.h"
 #include "GameMath.h"
+#include "Society.h"
 #include <algorithm>
 #include <cmath>
 using GameMath::Direction;
@@ -15,6 +16,12 @@ EnemyActor::EnemyActor()
 
 void EnemyActor::Update(float dt, ActorUpdateContext& context)
 {
+    if (Society::InTownSafeZone(WorldPosition(), 24))
+    {
+        // Remove legacy saved enemies inside a town without granting combat rewards.
+        Destroy();
+        return;
+    }
     hitFlash = std::max(0.f, hitFlash - dt);
     spawnGrace = std::max(0.f, spawnGrace - dt);
     if (health <= 0 || spawnGrace > 0 || context.player.stats.Dead())
@@ -23,6 +30,42 @@ void EnemyActor::Update(float dt, ActorUpdateContext& context)
     }
     const auto player = context.player.WorldPosition();
     auto position = WorldPosition();
+    auto moveOutsideTown = [&](WorldPoint goal, float distance)
+    {
+        auto next = position;
+        context.navigation.MoveActor(next, goal, distance, context.world);
+        if (!Society::BlocksMonsterTravel(position, next, 24))
+        {
+            position = next;
+        }
+    };
+    if (kind != EnemyKind::Boss && npcThreat)
+    {
+        const auto npc = dynamic_cast<NpcActor*>(context.scene.Find(npcThreat));
+        if (npc && npc->health > 0 && !Society::InTownSafeZone(npc->WorldPosition())
+            && Distance(position, npc->WorldPosition()) < 450)
+        {
+            moveOutsideTown(npc->WorldPosition(), 65.f * dt);
+            attackTimer -= dt;
+            if (Distance(position, npc->WorldPosition()) < 24 && attackTimer <= 0)
+            {
+                npc->health = std::max(0.f, npc->health - 10);
+                npc->flash = .15f;
+                attackTimer = 1;
+                if (npc->health <= 0)
+                {
+                    context.society.NpcDefeated(*npc, context);
+                }
+            }
+            SetWorldPosition(position);
+            return;
+        }
+        npcThreat = 0;
+    }
+    if (Society::InTownSafeZone(player))
+    {
+        return;
+    }
     if (kind == EnemyKind::Boss)
     {
         const bool enraged = health < maxHealth * .5f;
@@ -30,10 +73,7 @@ void EnemyActor::Update(float dt, ActorUpdateContext& context)
                               std::clamp(player.y, arenaMinimum.y, arenaMaximum.y)};
         if (Distance(position, player) > 170)
         {
-            context.navigation.MoveActor(position,
-                                         goal,
-                                         (enraged ? 66.f : 48.f) * dt,
-                                         context.world);
+            moveOutsideTown(goal, (enraged ? 66.f : 48.f) * dt);
         }
         attackTimer -= dt;
         pulseTimer -= dt;
@@ -71,10 +111,7 @@ void EnemyActor::Update(float dt, ActorUpdateContext& context)
     else
     {
         const auto goal = context.navigation.FollowFlow(position, player, context.world);
-        context.navigation.MoveActor(position,
-                                     goal,
-                                     (kind == EnemyKind::Armored ? 48.f : 75.f) * dt,
-                                     context.world);
+        moveOutsideTown(goal, (kind == EnemyKind::Armored ? 48.f : 75.f) * dt);
         if (Distance(position, player) < 21)
         {
             context.events.Hurt(kind == EnemyKind::Armored ? 14.f : 9.f, player);

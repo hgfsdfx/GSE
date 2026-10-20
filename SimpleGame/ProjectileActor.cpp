@@ -3,6 +3,7 @@
 #include "SceneGraph.h"
 #include "NavigationGrid.h"
 #include "GameMath.h"
+#include "Society.h"
 #include <algorithm>
 #include <cmath>
 using GameMath::Direction;
@@ -45,10 +46,12 @@ void ProjectileActor::Update(float dt, ActorUpdateContext& context)
     const int steps = std::max(1, int(std::ceil(travel / 4)));
     for (int i = 0; i < steps && distanceLeft > 0 && !PendingDestroy(); ++i)
     {
+        const auto previous = position;
         position.x += direction.x * travel / steps;
         position.y += direction.y * travel / steps;
         distanceLeft -= travel / steps;
-        if (!context.world.CanWalk(position))
+        if (!context.world.CanWalk(position)
+            || (hostile && Society::BlocksMonsterTravel(previous, position)))
         {
             distanceLeft = 0;
             break;

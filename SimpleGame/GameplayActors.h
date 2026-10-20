@@ -6,6 +6,7 @@ class World;
 class NavigationGrid;
 class PlayerActor;
 class EnemyActor;
+class Society;
 
 // Levels supply rewards/progression policy without actors depending on LevelOne.
 class GameplayEvents
@@ -27,6 +28,7 @@ struct ActorUpdateContext
     NavigationGrid& navigation;
     GameplayEvents& events;
     PlayerActor& player;
+    Society& society;
 };
 enum class EnemyKind
 {
@@ -50,6 +52,7 @@ class PlayerActor : public Actor
     PlayerStats stats;
     WorldPoint input;
     bool running = false;
+    bool npcAttackRequested = false;
 };
 
 class SmartphoneActor : public Actor
@@ -67,6 +70,7 @@ class EnemyActor : public Actor
     EnemyActor();
     void Update(float dt, ActorUpdateContext& context) override;
     uint64_t persistentId = 0;
+    ActorId npcThreat = 0;
     WorldPoint arenaMinimum;
     WorldPoint arenaMaximum;
     EnemyKind kind = EnemyKind::Scout;

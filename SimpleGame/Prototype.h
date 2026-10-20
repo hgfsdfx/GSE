@@ -5,6 +5,9 @@
 #include "WorldActors.h"
 #include <array>
 #include "ProfileMetrics.h"
+#include "WorldMonitor.h"
+#include "AssetLibrary.h"
+#include "ModelActor.h"
 
 class Prototype
 {
@@ -42,6 +45,17 @@ class Prototype
     void DrawProjectileActor(const ProjectileActor& shot);
     void DrawCombatNumber(const CombatNumberActor& number);
     void DrawLevelHud();
+    void DrawOpenWorldHud();
+    void DrawNpc(const NpcActor& npc);
+    void UpdateModelVisuals(float dt);
+    bool DrawActorModel(const Actor& actor,
+                        const ModelAppearance* appearance,
+                        float scale,
+                        bool flash = false);
+    bool DrawBuildingModel(const Building& building, bool illuminated);
+    void DrawModelActor(const ModelActor& actor);
+    void DrawTown(const TownActor& town);
+    void DrawHouse(const HouseActor& house);
     void WorldRing(WorldPoint center, float radius, Color color, float width = 1);
     void Hack(const Device& target);
     void Notify(const std::string& message);
@@ -49,6 +63,19 @@ class Prototype
     Renderer& r_;
     World world_;
     LevelOne level_;
+    WorldMonitor monitor_;
+    AssetLibrary assets_;
+
+    struct ModelVisual
+    {
+        WorldPoint position;
+        uint64_t lastSeen = 0;
+        float yaw = 0, clock = 0, speed = 0;
+        std::string clip = "Idle";
+    };
+
+    std::map<ActorId, ModelVisual> modelVisuals_;
+    uint64_t modelVisualFrame_ = 0;
     std::filesystem::path savePath_;
     WorldPoint camera_{82, 245};
     ActorRenderContext actorRenderer_;

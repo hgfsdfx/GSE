@@ -3,6 +3,7 @@
 #include "World.h"
 #include "SceneGraph.h"
 #include "WorldActors.h"
+#include "Society.h"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -64,6 +65,29 @@ Chunk World::Generate(ChunkKey key) const
                 building.depth = float(110 + (h >> 32) % 36);
                 building.height = float(65 + (h >> 40) % 101);
             }
+            if (levelOne_)
+            {
+                bool overlapsTown = false;
+                for (int town = 0; town < Society::TownCount; ++town)
+                {
+                    const auto center = Society::TownCenter(town);
+                    // Test the entire collision footprint, including adjacent chunks,
+                    // so large buildings cannot protrude into the town clearing.
+                    const double x =
+                        std::clamp(center.x, building.x - 8, building.x + building.width + 8);
+                    const double y =
+                        std::clamp(center.y, building.y - 8, building.y + building.depth + 8);
+                    if (std::hypot(center.x - x, center.y - y) <= Society::TownBuildingClearRadius)
+                    {
+                        overlapsTown = true;
+                        break;
+                    }
+                }
+                if (overlapsTown)
+                {
+                    continue;
+                }
+            }
             chunk.buildings.push_back(building);
         }
     }
@@ -116,13 +140,13 @@ const ChunkChanges& World::Changes(const ChunkKey& key) const
 
 bool World::HasOutage(const ChunkKey& key) const
 {
-    if (levelOne_ && key.x >= 0 && key.x < 3 && key.y >= 0 && key.y < 3)
-    {
-        return false;
-    }
     if (key.x == 0 && key.y == 0)
     {
         return true;
+    }
+    if (levelOne_ && key.x >= 0 && key.x < 3 && key.y >= 0 && key.y < 3)
+    {
+        return false;
     }
     return Hash(Hash(static_cast<uint64_t>(key.x)) ^ (Hash(static_cast<uint64_t>(key.y)) << 1)
                 ^ Seed)

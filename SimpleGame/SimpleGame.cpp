@@ -138,15 +138,15 @@ int main(int argc, char** argv)
                          && profilingOption[0] == '0');
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-    SetConsoleTitleW(L"나이트 / 링크 - 성능 로그");
+    SetConsoleTitleW(L"나이트 프로토콜 - 녹스 / 성능 로그");
     glutInit(&argc, argv);
     glutInitContextVersion(3, 3);
     glutInitContextProfile(GLUT_CORE_PROFILE);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     glutInitWindowSize(1440, 900);
     glutInitWindowPosition(70, 40);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
-    const int window = glutCreateWindow("NIGHT / LINK - Level 01: Scavenger District");
+    const int window = glutCreateWindow("NIGHT PROTOCOL - Nox Open World");
     if (!window)
     {
         std::cerr << "OpenGL 창을 생성할 수 없습니다.\n";
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
     // freeglut's narrow title API depends on the Windows ANSI code page.
     if (const HWND handle = WindowFromDC(wglGetCurrentDC()))
     {
-        SetWindowTextW(handle, L"나이트 / 링크 - 레벨 01: 수집가 구역");
+        SetWindowTextW(handle, L"나이트 프로토콜 - 녹스 오픈 월드");
     }
     glewExperimental = GL_TRUE;
     const GLenum glewResult = glewInit();
@@ -182,7 +182,7 @@ int main(int argc, char** argv)
         glutDestroyWindow(window);
         return 1;
     }
-    const auto savePath = std::filesystem::path(executable).parent_path() / L"level_one.save";
+    const auto savePath = std::filesystem::path(executable).parent_path() / L"open_world.save";
     game = std::make_unique<Prototype>(*renderer, savePath);
     glutDisplayFunc(Display);
     glutReshapeFunc(Resize);
@@ -193,13 +193,16 @@ int main(int argc, char** argv)
     glutIgnoreKeyRepeat(1);
     previousTick = std::chrono::steady_clock::now();
     glutTimerFunc(16, Tick, 0);
-    std::cout << "나이트 / 링크 - 레벨 01\nWASD 이동 | Space 달리기 | 스마트폰 자동 발사\n"
+    std::cout << "나이트 프로토콜 - 녹스\nWASD 이동 | Space 달리기 | 스마트폰 자동 발사\n"
               << "Tab 사거리·스캔 | E 길게 눌러 해킹 | 패배·완료 후 R 다시 시작\n"
               << "+/- 확대·축소 | K 저장 | P 일시정지 | Esc 저장 후 종료\n"
               << "O 후처리 | B 블룸 | V 비네트 | F 가장자리 흐림 | [ ] 노출\n"
               << ", . 블룸 강도 | 1 2 비네트 강도 | 3 4 가장자리 흐림 강도\n"
               << "저장 위치: " << savePath.u8string() << '\n';
     std::cout << "성능 분석: 실행별 CSV 및 1초 요약 | M 분석 지점 표시 | GSE_PROFILE=0 비활성화\n";
+    std::cout << "녹스 오픈 월드 | G 패치 의뢰 | T 회복 | I 부품 구매 | Y 판매 | U 강화\n"
+              << "J PK 전환 | H 주민 공격 | C 정전 의뢰 전력 우회 | 마을 7곳 / 주민 140명 / 개별 "
+                 "주택·우편·이사\n";
     profiler.Start(savePath.parent_path(), *renderer);
     glutMainLoop();
     Close();
