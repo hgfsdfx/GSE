@@ -30,14 +30,14 @@ NIGHT / LINK는 시제품 화면에 사용한 임시 명칭이다.
 권장 시작 구성은 기존 환경과 같은 Visual Studio 2022 / Debug / x64이다.
 SimpleGame.sln을 열어 SimpleGame 프로젝트를 빌드하고 실행한다.
 C++17, UTF-8 소스 처리, Windows SDK와 OpenGL 3.3 이상을 요구한다.
-기존 GLEW와 freeglut 헤더, 라이브러리, DLL을 그대로 사용한다.
+창·입력은 GLFW 3.4를 사용하며, 포함된 GLFW 프로젝트를 함께 정적 빌드한다.
+기존 GLEW는 유지한다. 최신 빌드 안내는 doc/GLFW_전환_및_빌드안내.md를 참고한다.
 
 기본 x64 Debug 출력 위치:
   x64\Debug\SimpleGame.exe
 
 실행 파일 옆에 필요한 파일:
   glew32.dll
-  freeglut.dll
   Shaders\SolidRect.vs
   Shaders\SolidRect.fs
   Shaders\Fullscreen.vs
@@ -46,8 +46,8 @@ C++17, UTF-8 소스 처리, Windows SDK와 OpenGL 3.3 이상을 요구한다.
   Shaders\Composite.fs
 
 프로젝트의 빌드 후 처리에서 셰이더를 출력 폴더로 복사하도록 설정했다.
-DLL은 저장소에 있던 각 플랫폼 및 구성별 출력 폴더의 파일을 사용한다.
-출력 폴더를 사용자 지정하거나 배포할 때는 해당 플랫폼의 DLL도 함께 배치해야 한다.
+GLEW DLL은 Dependencies/Runtime의 플랫폼별 원본에서 출력 폴더로 자동 복사한다.
+GLFW는 정적 링크이므로 별도 GLFW DLL이 필요하지 않다. 배포 시 glew32.dll도 함께 배치한다.
 셰이더와 저장 파일 경로는 실행 파일 위치를 기준으로 결정한다.
 새로 빌드하기 전의 기존 실행 파일에는 이번 변경이 반영되어 있지 않다.
 

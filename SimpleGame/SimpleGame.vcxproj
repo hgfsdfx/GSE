@@ -101,8 +101,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\Dependencies;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);opengl32.lib;freeglut.lib;glew32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);opengl32.lib;glew32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -116,8 +116,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\Dependencies\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);freeglut.lib;glew32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);opengl32.lib;glew32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,8 +135,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\Dependencies;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);freeglut.lib;glew32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);opengl32.lib;glew32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,8 +154,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);freeglut.lib;glew32.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\Dependencies\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);opengl32.lib;glew32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -264,6 +264,13 @@
     <None Include="Shaders\GaussianBlur.fs" />
     <None Include="Shaders\Composite.fs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Dependencies\GLFW\GLFW.vcxproj">
+      <Project>{BC8D4BE1-F064-4EC3-B423-22751EE48A6C}</Project>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <None Include="..\doc\GLFW_전환_및_빌드안내.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="CopyPrototypeShaders" AfterTargets="Build">
     <ItemGroup>
@@ -279,6 +286,15 @@
     <Copy SourceFiles="@(PrototypeAsset)" DestinationFiles="@(PrototypeAsset->'$(OutDir)assets\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     <MakeDir Directories="$(OutDir)Licenses" />
     <Copy SourceFiles="$(ProjectDir)Dependencies\cgltf.LICENSE;$(ProjectDir)Dependencies\json.LICENSE.MIT;$(ProjectDir)Dependencies\ASSET_LOADER_NOTICES.md" DestinationFolder="$(OutDir)Licenses" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="CopyFrameworkRuntime" AfterTargets="Build">
+    <PropertyGroup>
+      <GlewRuntimeArch Condition="'$(Platform)'=='Win32'">Win32</GlewRuntimeArch>
+      <GlewRuntimeArch Condition="'$(Platform)'=='x64'">x64</GlewRuntimeArch>
+    </PropertyGroup>
+    <Copy SourceFiles="$(ProjectDir)Dependencies\Runtime\$(GlewRuntimeArch)\glew32.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <MakeDir Directories="$(OutDir)Licenses\GLFW" />
+    <Copy SourceFiles="$(ProjectDir)Dependencies\GLFW\LICENSE.md" DestinationFolder="$(OutDir)Licenses\GLFW" SkipUnchangedFiles="true" />
   </Target>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

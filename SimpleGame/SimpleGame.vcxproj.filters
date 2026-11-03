@@ -176,4 +176,7 @@
     <None Include="Dependencies\cgltf.LICENSE" />
     <None Include="Dependencies\json.LICENSE.MIT" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\doc\GLFW_전환_및_빌드안내.md" />
+  </ItemGroup>
 </Project>

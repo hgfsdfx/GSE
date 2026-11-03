@@ -16,6 +16,7 @@ class PerformanceLog
     PerformanceLog& operator=(const PerformanceLog&) = delete;
     void Start(const std::filesystem::path& executableDirectory, const Renderer& renderer);
     void RecordUpdate(double milliseconds, double rawDeltaSeconds);
+    void SetPresentationActive(bool active);
     void RecordFrame(Renderer& renderer,
                      const Prototype& game,
                      ProfileClock::time_point presented,

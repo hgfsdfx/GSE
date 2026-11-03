@@ -332,7 +332,7 @@ namespace
 struct PerformanceLog::Impl
 {
     LogWriter writer;
-    bool started = false, frameHeader = false, warned = false;
+    bool started = false, frameHeader = false, warned = false, presentationActive = true;
     ProfileClock::time_point start{}, previous{}, windowStart{};
     uint64_t lastFrame = 0, windowFirst = 0, frameUpdates = 0, clampedUpdates = 0;
     uint64_t totalFrames = 0, windowDrawCalls = 0, windowNew = 0, windowLoads = 0;
@@ -518,7 +518,7 @@ void PerformanceLog::Start(const std::filesystem::path& base, const Renderer& re
 
 void PerformanceLog::RecordUpdate(double milliseconds, double rawDeltaSeconds)
 {
-    if (!impl_->started)
+    if (!impl_->started || !impl_->presentationActive)
     {
         return;
     }
@@ -527,6 +527,24 @@ void PerformanceLog::RecordUpdate(double milliseconds, double rawDeltaSeconds)
     impl_->rawDelta = rawDeltaSeconds;
     ++impl_->frameUpdates;
     impl_->clampedUpdates += rawDeltaSeconds > .05 ? 1 : 0;
+}
+
+void PerformanceLog::SetPresentationActive(bool active)
+{
+    if (!impl_->started || impl_->presentationActive == active)
+    {
+        return;
+    }
+    auto& p = *impl_;
+    Packet packet;
+    packet[3] = p.Summary(p.previous);
+    packet[4] = p.Event(p.lastFrame, "presentation", active ? "resumed" : "suspended");
+    p.writer.Submit(std::move(packet));
+    p.presentationActive = active;
+    // The FPS window covers presented frames, not time spent minimized.
+    p.previous = p.windowStart = ProfileClock::now();
+    p.updateMs = p.maxUpdateMs = p.rawDelta = p.previousLogMs = 0;
+    p.frameUpdates = p.clampedUpdates = 0;
 }
 
 void PerformanceLog::RecordFrame(Renderer& renderer,

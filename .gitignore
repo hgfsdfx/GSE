@@ -36,3 +36,6 @@
 /x64/Release/Licenses/
 /Debug/Licenses/
 /Release/Licenses/
+
+# GLFW is built from vendored source for each architecture/configuration.
+/SimpleGame/Dependencies/GLFW/build/
