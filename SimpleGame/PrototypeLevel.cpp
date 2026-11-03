@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Prototype.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iomanip>
 #include <sstream>
@@ -14,6 +15,26 @@ namespace
     const Color White(.82f, .9f, .94f);
     const Color Muted(.37f, .5f, .59f);
     const Color Panel(.025f, .055f, .09f, .96f);
+
+    const char* EnemyModelId(const EnemyActor& enemy)
+    {
+        if (enemy.kind == EnemyKind::Boss)
+        {
+            return "03_Juggernaut";
+        }
+        // Keep model 3 exclusive to bosses. A saved enemy keeps the same appearance.
+        static constexpr std::array<const char*, 2> armoredModels{"01_Sentinel", "02_Strider"};
+        static constexpr std::array<const char*, 4> scoutModels{"04_Hound",
+                                                                "05_Scarab",
+                                                                "06_Spider",
+                                                                "07_Mule"};
+        const uint64_t variant = enemy.persistentId > 0 ? enemy.persistentId - 1 : 0;
+        if (enemy.kind == EnemyKind::Armored)
+        {
+            return armoredModels[variant % armoredModels.size()];
+        }
+        return scoutModels[variant % scoutModels.size()];
+    }
 
     std::string Decimal(float value)
     {
@@ -87,8 +108,7 @@ void Prototype::DrawEnemyActor(const EnemyActor& enemy)
                         : enemy.kind == EnemyKind::Armored ? Amber
                                                            : Pink;
     r_.Circle(ground, size, Color(0, .01f, .025f, .55f));
-    const auto* model =
-        assets_.Robot(enemy.kind == EnemyKind::Armored ? "03_Juggernaut" : "01_Sentinel");
+    const auto* model = assets_.Robot(EnemyModelId(enemy));
     if (!DrawActorModel(enemy, model, boss ? 36.f : 19.f, enemy.hitFlash > 0))
     {
         r_.Quad(p + Point(0, -size),
